@@ -1,0 +1,854 @@
+/* HEADER NAV LOGO */
+.stat {
+	font-size: 2em;
+}
+#locationSearch {
+	margin-right: 1em;
+}
+input {
+	padding: 6px;
+	-webkit-border-radius: 4px;
+-moz-border-radius: 4px;
+border-radius: 4px;
+border: 1px solid #ccc;
+}
+.locationEvents .btn-link, .newsArticle .btn-link {
+	padding: 0;
+	margin-right: 0;
+	}
+aside {
+	margin-bottom: 2em;
+}
+.sidebar #listings .itemLocationCol {
+	line-height: 1.5em;
+	margin-left: 0;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	}
+
+.newsArticle {
+	margin-bottom: 2em;
+}
+.imageContainer {
+	width: 30%;
+	overflow: hidden;
+	margin-top: 1em;
+}
+.imageContainer img {
+	width: 100%;
+}
+.ui-widget-header{
+	background: #853232;
+}
+
+.ui-state-default {
+	background: #bbb;
+	background-image: none !important;
+}
+
+.specs .tapOnly {
+	background: #CCC;
+	color: #000;
+	}
+.aside {
+	margin-bottom: 2em; 
+}
+.adminButtons a {
+	margin-bottom: 0.5em;	
+}
+.brewinfo {
+	width: 50%;
+	float: left;
+}
+.addremove{
+	list-style: none;
+}
+.addremove li {
+	margin: 0.5em;
+}
+.red {
+	background: red;
+	}
+#addAvailList label {
+ float: left;
+ margin: 0 0 0.5em 0.5em;
+	}
+#addAvailList input {
+	display: none;
+	}
+.mobileNav li {
+	width: 50%;
+	display: inline-block;
+	float: left;
+	}
+.mobileNav li:hover {
+		background: #EEE;
+	color: #853232;
+}
+.navTitle {
+	background: #EEE;
+	color: #853232;
+	}
+.navTitle:hover {
+	background: #EEE;
+	color: #853232;
+	}
+.itemAlcohol {
+	line-height: 1.5em;
+}
+.itemTitleCol h3 {
+	margin-top: 1em;
+	}
+.mt2 {
+	margin-top: 2em;
+}
+.breweryimage {
+	margin-top: 1.5em;
+}
+.breweryimage img {
+	max-width: 100%;
+/* 	padding-top: 1em; */
+	}
+.beerphotocontainer{
+	margin-top: 1em;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	width: 50%;
+	float: right;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	-webkit-box-align: center;
+text-align: center;
+	align-items: center;
+	align-content: center;
+	justify-content: center;
+	margin-bottom: 1em;
+}
+.beerphotocontainer img {
+	text-align: center;
+	max-width: 100%;
+}
+.beerphoto{
+/*
+flex: 1;
+-webkit-box-flex: 1;
+*/
+}
+.claimbox {
+	margin-top: 1em;
+}
+.specs {
+	list-style: none;
+	padding-left: 0;
+	margin-top: 2em;
+	margin-bottom: 1em;
+	line-height: 2em;
+	margin-bottom: 0.5em;
+}
+.specs li {
+	display: inline-block;
+	background: #f9f9f9;
+	padding: 0.5em;
+	margin-right: .5em;
+	margin-bottom: .5em;
+}
+.fa-heart {
+	margin-right: 1em;	
+	}
+.brewdetails .breweryphoto {
+	margin-top: 1em;
+/* 	width: 50%; */
+	}
+.brewdetails .beerphoto {
+	margin-top: 2em;
+	}
+.brewdetails {
+	background: #eee;
+	padding: 0 1em 1em 1em;
+	margin-bottom: 1em;
+	}
+
+.padtop1em{
+	padding-top: 1em;
+	}
+.solidline {
+	border-bottom: 1px solid #853232;
+	margin-bottom: 1em;
+	}
+.spacer {
+	margin-bottom: 1em;
+	}
+.image {
+	text-align: center;
+	margin-bottom: 1em;
+	}
+.imgspace {
+	margin-bottom: 1em;
+	}
+.claim {
+	text-align: center;
+	margin-bottom: 1em;
+	}
+.claimleft {
+	margin-bottom: 1em;
+	}
+.contactDetails {
+	margin: 1em 0;
+	}
+.apply {
+	margin: 1em 0;
+	}
+.remove a, .btn.remove {
+	color: #fff;
+}
+.main {
+	background: #fff;
+	}
+#branding .beta {
+	font-size: .4em;
+	}
+#branding span .logotext {
+/* 	font-size: .5em; */
+	}
+ul.loginExtras {
+	padding: 0;
+	text-align: center;
+}
+.loginExtras li {
+	display: inline-block;
+}
+#mobileNavContainer {
+	display: none;
+	}
+.line {
+	border-bottom: rgba(255, 255, 255, 0.3) 1px solid;
+}
+.btn {
+	margin-right: 1em;
+}
+.nomargin {
+	margin: 0;
+}
+#mobileNavContainer .btn {
+	margin-right: 0;
+}
+#filters .btn, .quicklinks .btn {
+	margin-right: 1em;
+	margin-bottom: 1em;
+}
+
+.desktopVisible {
+	display: block;
+}
+.phoneVisible {
+	display: none;
+	}
+body {
+
+}
+#banner {
+	background: #000 url(../images/beerhead.jpg) no-repeat center -12em;;
+	background-size: 100em auto;
+	position: absolute;
+	display: block;
+	top: 0;
+	left: 0;
+	height: 400px;
+	width: 100%;
+	z-index: -100;
+}
+.wrapper {
+	width: 80%;
+	margin: 0 auto;
+	padding: 1em;
+}
+a {
+	color: #666;
+}
+a:hover {
+	color: #853232;
+	text-decoration: none;
+}
+header {
+	background: #853232;
+	margin-bottom: 3em;
+	height: 4em;
+}
+nav {
+	line-height: 4em;
+	width: 80%;
+	margin: 0 auto;
+}
+nav li a {
+	line-height: 3em;
+	padding: 1em;
+	width: 100%;
+}
+#branding {
+	width: 300px;
+	position: relative;
+	z-index: 1000;
+	background: url(../images/brewhound-icon.png) no-repeat left center;
+	padding-left: 3em;
+	color: #fff;
+	font-size: 2em;
+	}
+}
+#branding img {
+	height: 40px;
+
+}
+#branding:hover {
+	background: #461818 url(../images/brewhound-icon.png) no-repeat left center;
+}
+
+#mainNav {
+	display: flex;
+	display: -webkit-flex;
+	-webkit-justify-content: flex-end;
+   justify-content: flex-end;
+/*
+	justify-content: space-around;
+	-webkit-justify-content: space-around;
+*/
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+#mainNav li {
+	list-style: none;
+}
+#mainNav li a {
+	color: #fff;
+	padding: 1.5em;
+}
+#mainNav li a:hover {
+	background: #461818;
+}
+#mainNav .dropdown:hover > .dropdown-menu {
+	display: block;
+}
+.dropdown-menu {
+	background: #853232;
+	margin: 0;
+}
+/*
+.dropdown-menu li a:hover {
+	background: #461818;
+}
+*/
+
+#mobileNavContainer {
+	position: absolute;
+	top: 0;
+	right: 0;
+z-index: 0;
+	text-align: right;
+	color: #fff;
+	width: 100%;
+	z-index: 1;
+}
+.dropdown-toggle {
+	padding-right: 1em;
+}
+#mobileNavContainer a {
+	color: #fff;
+}
+#mobileNav {
+	list-style: none;
+}
+#mobileNav a {
+	color: #fff;
+	padding: 1.5em;
+	list-style: none;
+}
+#mobileNavContainer > ul {
+		display: none;
+		background: #853232;
+		padding-left: 0;
+	}
+#mobileNavContainer li {
+	list-style: none;
+/* 	width: 100%; */
+	text-align: center;
+}
+#mobileNavContainer li:hover {
+	background: #461818;
+}
+#mobileNavContainer .navTitle:hover {
+	background: #fff !important;
+}
+#intro {
+	color: #fff;
+	font-size: 3em;
+	font-weight: 100;
+	letter-spacing: .1em;
+	text-align: center;
+	margin-bottom: 1em;
+}
+
+#content {
+	width: 80%;
+	margin: 0 auto;
+}
+p {
+	line-height: 1.5em;
+}
+.container {
+	margin: 2em 0;
+}
+
+/* /////////////////////////// SEARCH FORM ///////// */
+
+#searchForm {
+	margin-bottom: 3em;
+}
+#searchForm .btn {
+	background: #999;
+	color: #fff;
+	letter-spacing: .05em;
+}
+#homeSearchForm {
+	background: #eee;
+	width: 60%;
+	margin: 0 auto;
+/* 	margin: 10em 0; */
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+.form-group {
+ 	padding: 1em;
+ 	margin-bottom: 0.5em;
+}
+.clear {
+	clear: both;
+}
+.filter {
+	float: left;
+	margin-right: 2em;
+	background: #eee;
+	margin-top: 0.4em;
+}
+select {
+	border: none;
+}
+.checkboxesList {
+	list-style: none;
+	padding-left: 0;
+}
+.checkboxesList li {
+	float: left;
+	margin-right: 2em;
+}
+input #submit {
+	align-content: right;
+}
+/* /////////////////////////// LISTINGS ///////// */
+
+
+.itemBrewery {
+	line-height: 1em;
+	padding: 0.5em 0.5em 0 0;
+}
+	
+.meta {
+	background: #eee;
+}
+
+
+.liked fa-heart {
+	color: pink;
+}
+.sort {
+	margin-top: 2em;
+	text-align: right;
+}
+#searchResults {
+	background: #fff;
+}
+#listings {
+	margin: 0 auto;
+	padding-left: 0;
+ 	padding-bottom: 1em;
+}
+#listings .row {
+	padding-left: 0;
+	margin: 0 0 1em 0;
+	background: #eee;
+	
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	-webkit-align-items: center;
+}
+#listings .row:hover {
+	background: #DDD;
+}
+#listings li {
+	list-style: none;
+	line-height: 3em;
+}
+#listings .col {
+	flex: 1 1 10%;
+	-webkit-flex: 1 1 10%;
+	text-align: center;
+	line-height: 1.5em;
+}
+
+#listings .itemLogo {
+	flex: 0 0 6em;
+	-webkit-flex: 0 0 6em;
+	cursor: pointer;
+}
+
+#listings .item-edit {
+	flex: 0 0 6em; /* FLEX */
+	-webkit-flex: 0 0 6em; /* FLEX */
+/* 	align-self: stretch; */
+}
+
+#listings .itemLogo img {
+	width: auto;
+	max-width: 50px;
+	max-height: 40px;
+}
+
+.commentFormat img {
+	width: auto;
+	max-width: 30px;
+	max-height: 20px;
+}
+
+#listings .itemTitleCol {
+	flex: 0 0 30%; /* FLEX */
+	-webkit-flex: 0 0 30%; /* FLEX */
+	text-align: left;
+	margin-left: 2em;
+
+}
+#listings .itemLocationCol {
+	flex: 0 0 20%; /* FLEX */
+	-webkit-flex: 0 0 20%; /* FLEX */
+	text-align: left;
+	margin-left: 2em;
+
+}
+.itemTitle {
+/* 	display: block; */
+/* 	margin-top: .5em; */
+	line-height: 1em;
+	padding: .5em 0;
+	font-weight: 500;
+	font-size: 1.2em;
+}
+.itemDescription {
+/* 	width: 50%; */
+}
+.itemStyle {
+	margin-bottom: .5em;
+	line-height: 1em;
+	padding: .5em 0;
+}
+a .itemStyle:hover {
+	text-decoration: none;
+}
+
+.image {
+	//float: right;
+	max-width: 100%;
+}
+.image img {
+	max-width: 80%;
+}
+
+/* -- -- -- -- -- -- -- -- -- -- -- -- ADD BEER FORM */
+
+.error {
+	color: #fff;
+	background: #853232;
+	padding: 0.25em 0.5em ;
+	margin-top: 0.5em;
+}
+
+.checkbox {
+	display: inline;
+}
+.form-group li {
+	list-style: none;
+}
+.form-group li label {
+	margin-left: 10px;
+}
+.singleCheckbox label {
+	margin-left: 10px;
+}
+
+.form-group select {
+	margin-left: 10px;
+}
+/* -- -- -- -- -- -- -- -- -- -- -- -- FOOTER */
+
+#footerNav {
+	padding-left: 0;
+	list-style: none;
+}
+#footerNav li {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+footer {
+	line-height: 2em;
+	background: #ddd;
+	margin-top: 3em;
+	padding-top: 1em;
+	padding-bottom: 2em;
+}
+#footer-container {
+	width: 80%;
+	margin: 0 auto;
+}
+
+@media (max-width: 1000px) {
+	#mainNav li a {
+		padding: 1.5em .5em; 
+	}
+}
+@media (max-width: 600px) {
+}
+@media (max-width: 800px) {
+	.brewTitle h2 {
+		font-size: 1.5em;
+	}
+	.wrapper > div > div{
+	padding: 0 !important;	
+	}
+	.brewTitle{
+		word-wrap: break-word;
+	}
+	.specs {
+/* 		width: 200%; */
+	}
+	.phoneCol {
+		line-height: 1.5em;
+		margin-left: 1em;
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		}
+	.col-md-8 {
+		padding-left: 0;
+		padding-right: 0;
+		}
+	.brewdetails {
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+		}
+	.remove a, .btn.remove {
+	margin-right: 0 !important;
+	}
+	.hidePhone {
+		display: none;
+		}
+	#mobileNavContainer {
+	display: block;	
+	}
+	.phoneVisible {
+	display: block;
+	}
+	.desktopVisible {
+	display: none;
+	}
+	nav {
+		line-height: 4em;
+		width: 90%;
+		margin: 0 auto;
+	}
+	#branding {
+		width: 85%;
+		background: url(../images/brewhound-icon-hires.png) no-repeat left 4px;
+		background-size: 70px 35px;
+		padding-left: 3em;
+		line-height: 0.7em;
+		margin-top: .2em;
+	}
+	#branding:hover {
+		background: #461818 url(../images/brewhound-icon-hires.png) no-repeat left 4px;
+		background-size: 70px 35px;
+	}
+	#content {
+		width: 90%;
+	}
+	.wrapper {
+		width: 100%;
+	}
+	#listings {
+		width: 100%;
+	}
+	#mobileNavContainer {
+		width: 100%;
+		height: 50px;
+	}
+	#mobileToggle {
+		background: #853232;
+	}
+	#mobileToggle ul {
+		padding-left: 0;
+	}
+	#mainNav {
+		display: none;
+	}
+	#intro {
+		font-size: 1.8em;
+		font-weight: normal;
+	}
+	#listings .row {
+		display: flex;
+		display: -webkit-flex;
+		flex-wrap: wrap;
+		-webkit-flex-wrap: wrap;
+	}
+	.itemDesktop {
+		display: none;
+	}
+	#listings .col {
+		flex: 0 0 20%;
+		-webkit-flex: 0 0 20%;
+		cursor: pointer;
+		line-height: 1.5em;
+		margin-left: auto;
+		margin-right: 0.5em;
+	}
+	#listings .adminButton {
+    	flex: 0 0 10%;
+    	-webkit-flex: 0 0 10%;
+	}
+	#listings .itemLogo {
+	flex: 0 0 15%;
+	-webkit-flex: 0 0 15%;
+	cursor: pointer;
+	}
+	#listings .itemLogo {
+		margin-left: 1em;
+	}
+	#listings .locations .itemTitle {
+	flex: 0 0 80%; 
+	-webkit-flex: 0 0 80%; 
+	}
+	.locations h3 {
+		font-size: 1em;
+	}
+	
+	.itemLogo {
+		
+	}
+	#listings .itemTitleCol {
+	flex: 0 0 40%;
+	-webkit-flex: 0 0 40%;
+	text-align: left;
+	margin-left: auto;
+	}
+	#listings .itemTitleColWide {
+	flex: 0 0 40%;
+	-webkit-flex: 0 0 40%;
+	text-align: left;
+	margin-left: 2em;
+	}
+	#listings .itemTitleColSmall {
+	flex: 0 0 40%;
+	-webkit-flex: 0 0 40%;
+	text-align: left;
+	margin-left: 1em;
+	}
+/*
+	#listings .locationData {
+	flex: 0 0 25%;
+	-webkit-flex: 0 0 25%;
+	text-align: left;
+	margin-left: 1em;
+	margin-right: 1em;
+	}
+*/
+
+	.itemTitle {
+	margin-top: 0;	
+	}
+	.itemDescription {
+	width: 100%;
+	}
+	.itemStyle {
+		display: none;
+	}
+	.itemBrewery {
+		line-height: 1em;
+			padding: 0.5em 0 0 0 ;
+	}
+	.itemLikes {
+		display: none;
+	}
+	.itemAlcohol {
+		display: none;
+		line-height: 1.5em;
+	}
+	#listings .item-edit {
+		flex: 0 0 10%;
+		-webkit-flex: 0 0 10%;
+	}
+	.image {
+		float: none;
+	}
+	.image img {
+		max-width: 80%;
+	}
+	.locations .responsive {
+		display: none;
+	}
+	
+	#homeSearchForm {
+		width: 100%;
+	}
+	header {
+    margin-bottom: 1em;
+    }
+    #searchForm .btn {
+	    text-align: center;
+	    margin: 1em 2em;
+	    color: #fff;
+    }
+    #logo a {
+		font-size: 1.5em;
+	}
+    #logo img {
+	height: 1.5em;;
+	width: auto;
+	}
+	.sort-col {
+		display: none;
+	}
+	#listings .phoneFullWidth {
+		width: 100%;
+		text-align: center;
+	}
+}
+
+/* ANIMATION */
+.label-success {
+            -webkit-animation-duration: 5s;animation-duration: 5s;
+            -webkit-animation-fill-mode: both;animation-fill-mode: both;
+}
+.fadeOut {
+-webkit-animation-name: fadeOut;
+animation-name: fadeOut;
+}
+@keyframes fadeOut {
+   0% {opacity: 1;}
+   100% {opacity: 0;} 
+} 
+
+@-webkit-keyframes fadeOut {
+   0% {opacity: 1;}
+   100% {opacity: 0;} 
+}

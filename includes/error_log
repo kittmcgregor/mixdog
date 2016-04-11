@@ -1,0 +1,106 @@
+[17-Dec-2015 12:20:24 Pacific/Auckland] PHP Parse error:  syntax error, unexpected 'public' (T_PUBLIC) in /home/kitmcgregor/public_html/brewhound/includes/beer.php on line 23
+[17-Dec-2015 12:20:48 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '$iBeerID' (T_VARIABLE) in /home/kitmcgregor/public_html/brewhound/includes/beer.php on line 30
+[17-Dec-2015 12:21:31 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '$oBeer' (T_VARIABLE), expecting function (T_FUNCTION) in /home/kitmcgregor/public_html/brewhound/includes/beer.php on line 79
+[17-Dec-2015 13:24:25 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '$oResultSet' (T_VARIABLE) in /home/kitmcgregor/public_html/brewhound/includes/allBeers.php on line 38
+[17-Dec-2015 13:25:06 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '$oResultSet' (T_VARIABLE) in /home/kitmcgregor/public_html/brewhound/includes/allBeers.php on line 38
+[17-Dec-2015 13:25:30 Pacific/Auckland] PHP Warning:  Missing argument 1 for AllBeers::load(), called in /home/kitmcgregor/public_html/brewhound/includes/allBeers.php on line 90 and defined in /home/kitmcgregor/public_html/brewhound/includes/allBeers.php on line 29
+[17-Dec-2015 13:25:30 Pacific/Auckland] PHP Fatal error:  Class 'Beer' not found in /home/kitmcgregor/public_html/brewhound/includes/allBeers.php on line 44
+[17-Dec-2015 13:33:52 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[17-Dec-2015 14:32:22 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[17-Dec-2015 14:32:52 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[17-Dec-2015 18:31:07 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 11:46:39 Pacific/Auckland] PHP Parse error:  syntax error, unexpected 'beerLikes' (T_STRING), expecting variable (T_VARIABLE) or '$' in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 32
+[18-Dec-2015 11:47:15 Pacific/Auckland] PHP Fatal error:  Class 'Connection' not found in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 11
+[18-Dec-2015 11:47:47 Pacific/Auckland] PHP Warning:  require_once(like.php): failed to open stream: No such file or directory in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 3
+[18-Dec-2015 11:47:47 Pacific/Auckland] PHP Fatal error:  require_once(): Failed opening required 'like.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 3
+[18-Dec-2015 11:47:59 Pacific/Auckland] PHP Warning:  require_once(includes/connection.php): failed to open stream: No such file or directory in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 2
+[18-Dec-2015 11:47:59 Pacific/Auckland] PHP Fatal error:  require_once(): Failed opening required 'includes/connection.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 2
+[18-Dec-2015 11:48:10 Pacific/Auckland] PHP Warning:  require_once(like.php): failed to open stream: No such file or directory in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 3
+[18-Dec-2015 11:48:10 Pacific/Auckland] PHP Fatal error:  require_once(): Failed opening required 'like.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/kitmcgregor/public_html/brewhound/includes/likes.php on line 3
+[18-Dec-2015 11:53:51 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:13:59 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '$oUser' (T_VARIABLE), expecting function (T_FUNCTION) in /home/kitmcgregor/public_html/brewhound/includes/user.php on line 60
+[18-Dec-2015 12:14:23 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '$oUser' (T_VARIABLE), expecting function (T_FUNCTION) in /home/kitmcgregor/public_html/brewhound/includes/user.php on line 60
+[18-Dec-2015 12:16:59 Pacific/Auckland] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/kitmcgregor/public_html/brewhound/includes/user.php on line 62
+[18-Dec-2015 12:17:10 Pacific/Auckland] PHP Fatal error:  Class 'Connection' not found in /home/kitmcgregor/public_html/brewhound/includes/user.php on line 24
+[18-Dec-2015 12:17:24 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:17:58 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:18:22 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:19:30 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:19:54 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:20:30 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:20:30 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:20:53 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:20:53 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:21:23 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Dec-2015 12:21:24 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:31:04 Pacific/Auckland] PHP Fatal error:  Class 'Connection' not found in /home/kitmcgregor/public_html/brewhound/includes/like.php on line 17
+[20-Dec-2015 11:31:45 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:32:16 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:34:04 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:35:00 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:35:02 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:36:54 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:36:56 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 11:37:08 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[20-Dec-2015 14:12:16 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:35:47 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:49:20 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:49:43 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:50:36 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:50:37 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:52:00 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:52:00 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:52:43 Pacific/Auckland] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/kitmcgregor/public_html/brewhound/includes/stylemanager.php on line 17
+[21-Dec-2015 08:52:50 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:54:32 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:54:33 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:54:43 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:54:44 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:55:16 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:55:16 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:55:37 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:59:07 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:59:32 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 08:59:33 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:01:50 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:21:40 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:22:25 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:22:46 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:22:47 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:23:01 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:23:02 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:23:53 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:32:15 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 09:32:50 Pacific/Auckland] PHP Fatal error:  Class 'Like' not found in /home/kitmcgregor/public_html/brewhound/includes/beer.php on line 58
+[21-Dec-2015 09:43:59 Pacific/Auckland] PHP Parse error:  syntax error, unexpected ';' in /home/kitmcgregor/public_html/brewhound/includes/beer.php on line 83
+[21-Dec-2015 10:38:42 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 10:39:39 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 10:45:49 Pacific/Auckland] PHP Warning:  require_once(likemanager.php): failed to open stream: No such file or directory in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 4
+[21-Dec-2015 10:45:49 Pacific/Auckland] PHP Fatal error:  require_once(): Failed opening required 'likemanager.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 4
+[21-Dec-2015 10:46:06 Pacific/Auckland] PHP Fatal error:  Class 'LikeManager' not found in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 34
+[21-Dec-2015 10:46:27 Pacific/Auckland] PHP Warning:  Missing argument 1 for LocationManager::loadLocations(), called in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 34 and defined in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 8
+[21-Dec-2015 10:46:27 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 10:46:40 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 10:46:47 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 10:51:46 Pacific/Auckland] PHP Fatal error:  Call to a member function load() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 23
+[21-Dec-2015 10:52:01 Pacific/Auckland] PHP Fatal error:  Call to a member function load() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/locationmanager.php on line 24
+[21-Dec-2015 10:52:53 Pacific/Auckland] PHP Catchable fatal error:  Object of class Location could not be converted to string in /home/kitmcgregor/public_html/brewhound/includes/location.php on line 28
+[21-Dec-2015 10:53:42 Pacific/Auckland] PHP Catchable fatal error:  Object of class Location could not be converted to string in /home/kitmcgregor/public_html/brewhound/includes/location.php on line 28
+[21-Dec-2015 10:54:43 Pacific/Auckland] PHP Catchable fatal error:  Object of class Location could not be converted to string in /home/kitmcgregor/public_html/brewhound/includes/location.php on line 28
+[21-Dec-2015 11:57:06 Pacific/Auckland] PHP Parse error:  syntax error, unexpected '=' in /home/kitmcgregor/public_html/brewhound/includes/user.php on line 24
+[21-Dec-2015 11:57:33 Pacific/Auckland] PHP Fatal error:  Class 'Like' not found in /home/kitmcgregor/public_html/brewhound/includes/user.php on line 52
+[21-Dec-2015 12:22:42 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 12:28:24 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 12:52:46 Pacific/Auckland] PHP Warning:  Missing argument 1 for UserLikedBeers::load(), called in /home/kitmcgregor/public_html/brewhound/includes/userLikedBeers.php on line 94 and defined in /home/kitmcgregor/public_html/brewhound/includes/userLikedBeers.php on line 30
+[21-Dec-2015 12:52:46 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 12:52:56 Pacific/Auckland] PHP Warning:  Missing argument 1 for UserLikedBeers::load(), called in /home/kitmcgregor/public_html/brewhound/includes/userLikedBeers.php on line 94 and defined in /home/kitmcgregor/public_html/brewhound/includes/userLikedBeers.php on line 30
+[21-Dec-2015 12:52:56 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[21-Dec-2015 12:52:58 Pacific/Auckland] PHP Warning:  Missing argument 1 for UserLikedBeers::load(), called in /home/kitmcgregor/public_html/brewhound/includes/userLikedBeers.php on line 94 and defined in /home/kitmcgregor/public_html/brewhound/includes/userLikedBeers.php on line 30
+[21-Dec-2015 12:52:58 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32
+[18-Jan-2016 09:26:36 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhoundv2/includes/connection.php on line 32
+[19-Jan-2016 09:31:36 Pacific/Auckland] PHP Warning:  Missing argument 1 for Likes::loadLikedBeers(), called in /home/kitmcgregor/public_html/brewhoundv2/includes/likemanager.php on line 81 and defined in /home/kitmcgregor/public_html/brewhoundv2/includes/likemanager.php on line 33
+[19-Jan-2016 09:31:36 Pacific/Auckland] PHP Fatal error:  Class 'Beer' not found in /home/kitmcgregor/public_html/brewhoundv2/includes/likemanager.php on line 47
+[19-Jan-2016 09:31:49 Pacific/Auckland] PHP Fatal error:  Class 'Beer' not found in /home/kitmcgregor/public_html/brewhoundv2/includes/likemanager.php on line 47
+[19-Jan-2016 10:03:54 Pacific/Auckland] PHP Fatal error:  Call to a member function load() on a non-object in /home/kitmcgregor/public_html/brewhoundv2/includes/beer.php on line 205
+[19-Jan-2016 10:05:26 Pacific/Auckland] PHP Fatal error:  Call to a member function load() on a non-object in /home/kitmcgregor/public_html/brewhoundv2/includes/beer.php on line 205
+[20-Jan-2016 11:33:17 Pacific/Auckland] PHP Fatal error:  Call to a member function fetch_array() on a non-object in /home/kitmcgregor/public_html/brewhound/includes/connection.php on line 32

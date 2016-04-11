@@ -1,0 +1,7 @@
+php_flag display_errors 1
+php_value error_reporting 30719
+php_value date.timezone 'Pacific/Auckland'
+
+RewriteEngine on
+RewriteRule    ^liberty-alpha-dog/?$    viewbeer.php?beerID=605    [NC,L]    # Handle requests for "liberty-alpha-dog"
+RewriteRule    ^([A-Za-z0-9-]+)/?$    viewbeer.php?beerID=$1    [NC,L]    # Process all products
