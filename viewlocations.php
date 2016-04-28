@@ -25,7 +25,7 @@
 -->
 
 <?php
-	function renderLocationTabs($suburb){
+	function renderLocationTabs($suburb,$domain){
 		
 		$sHTML = '<div class="wrapper clearfix">';
 			$sHTML .= '<input id="locationSearch" placeholder="Quick search" value=""> <a class="btn btn-primary" role="button" data-toggle="collapse" href="#filters" aria-expanded="false" aria-controls="collapseExample">Filter Locations</a>';
@@ -35,41 +35,41 @@
 				$sHTML .= '<div class="collapse" id="filters">';
 
 				$sHTML .= '<h5>Auckland</h5>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Auckland%20Central" class="btn btn-default">Auckland Central</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Birkenhead" class="btn btn-default">Birkenhead</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Browns%20Bay" class="btn btn-default">Browns Bay</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Eden%20Terrace" class="btn btn-default">Eden Terrace</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Forrest%20Hill" class="btn btn-default">Forrest Hill</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Henderson" class="btn btn-default">Henderson</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Howick" class="btn btn-default">Howick</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Kingsland" class="btn btn-default">Kingsland</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Kumeu" class="btn btn-default">Kumeu</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Morningside" class="btn btn-default">Morningside</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Mt%20Eden" class="btn btn-default">Mt Eden</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Newmarket" class="btn btn-default">Newmarket</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Onehunga" class="btn btn-default">Onehunga</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Ponsonby" class="btn btn-default">Ponsonby GreyLynn</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Rosedale" class="btn btn-default">Rosedale</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Takapuna" class="btn btn-default">Takapuna</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Titirangi" class="btn btn-default">Titirangi</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Waiheke" class="btn btn-default">Waiheke</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Westlynn" class="btn btn-default">Westlynn</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Westmere" class="btn btn-default">Westmere</a>';
-				
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Auckland%20Central" class="btn btn-default">Auckland Central</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Birkenhead" class="btn btn-default">Birkenhead</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Browns%20Bay" class="btn btn-default">Browns Bay</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Eden%20Terrace" class="btn btn-default">Eden Terrace</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Forrest%20Hill" class="btn btn-default">Forrest Hill</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Henderson" class="btn btn-default">Henderson</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Howick" class="btn btn-default">Howick</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Kingsland" class="btn btn-default">Kingsland</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Kumeu" class="btn btn-default">Kumeu</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Morningside" class="btn btn-default">Morningside</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Mt%20Eden" class="btn btn-default">Mt Eden</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Newmarket" class="btn btn-default">Newmarket</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Onehunga" class="btn btn-default">Onehunga</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Ponsonby" class="btn btn-default">Ponsonby GreyLynn</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Rosedale" class="btn btn-default">Rosedale</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Takapuna" class="btn btn-default">Takapuna</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Titirangi" class="btn btn-default">Titirangi</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Waiheke" class="btn btn-default">Waiheke</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Westlynn" class="btn btn-default">Westlynn</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Westmere" class="btn btn-default">Westmere</a>';
+
 				$sHTML .= '<h5>Rest of NZ</h5>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Christchurch" class="btn btn-default">Christchurch</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Hamilton" class="btn btn-default">Hamilton</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Leigh" class="btn btn-default">Leigh</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Mangawhai" class="btn btn-default">Mangawhai</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Matakana" class="btn btn-default">Matakana</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Mt%20Maunganui" class="btn btn-default">Mt Maunganui</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Nelson" class="btn btn-default">Nelson</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Rotorua" class="btn btn-default">Rotorua</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Tauranga" class="btn btn-default">Tauranga</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Waihi%20Beach" class="btn btn-default">Waihi Beach</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Waipu" class="btn btn-default">Waipu</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Warkworth" class="btn btn-default">Warkworth</a>';
-				$sHTML .= '<a href="viewlocations.php?suburb=Wellington" class="btn btn-default">Wellington</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Christchurch" class="btn btn-default">Christchurch</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Hamilton" class="btn btn-default">Hamilton</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Leigh" class="btn btn-default">Leigh</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Mangawhai" class="btn btn-default">Mangawhai</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Matakana" class="btn btn-default">Matakana</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Mt%20Maunganui" class="btn btn-default">Mt Maunganui</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Nelson" class="btn btn-default">Nelson</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Rotorua" class="btn btn-default">Rotorua</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Tauranga" class="btn btn-default">Tauranga</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Waihi%20Beach" class="btn btn-default">Waihi Beach</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Waipu" class="btn btn-default">Waipu</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Warkworth" class="btn btn-default">Warkworth</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Wellington" class="btn btn-default">Wellington</a>';
 
 			$sHTML .= '</div>';
 			
@@ -81,9 +81,9 @@
 <?php
 	
 	//echo View::renderLocationTabs($suburb);
-	echo renderLocationTabs($suburb);
+	echo renderLocationTabs($suburb,$domain);
 	
-	echo View::renderAllLocations($aLocations);
+	echo View::renderAllLocations($aLocations,$domain);
 
 
 /*
@@ -105,7 +105,7 @@
 $('#locationSearch').autocomplete({
   	source: function( request, response ) {
   		$.ajax({
-  			url : 'listLocations.php',
+  			url : '<?php echo $domain ?>listLocations.php',
   			dataType: "json",
   			type: 'Get',
   			data: {term: request.term},
@@ -127,7 +127,7 @@ $('#locationSearch').autocomplete({
   	},
   	select: function(event, ui) {  
 	  	console.log(ui);
-               location.href="viewlocation.php?locationID=" + ui.item.value;
+               location.href="<?php echo $domain ?>viewlocation.php?locationID=" + ui.item.value;
         } 	
 });	
 	

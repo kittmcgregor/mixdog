@@ -70,13 +70,27 @@
 			
 			// set values;
 			$oNewProduct->title = $_POST["Title"];
+			$oNewProduct->breweryID = $_POST["BreweryID"];
+			
+				if($oNewProduct->breweryID<2){
+					$brewery = strtolower(str_replace(array('&','+','.',"'",'(',')'),"",str_replace(' ','-',$oBeer->brewery)));
+				} else {
+					$breweryID = new Brewery();
+					$breweryID->load($oNewProduct->breweryID);
+				
+				$brewery = strtolower(str_replace(array('&','+','.',"'",'(',')'),"",str_replace(' ','-',$breweryID->breweryname)));
+				}
+				$title = strtolower(str_replace(array(':','+','&','!','#','.',"'",'(',')'),"",str_replace(' ','-',$oNewProduct->title)));
+				$createslug = $brewery.'-'.$title;
+			$oNewProduct->slug = $createslug;
 			$oNewProduct->description = $_POST["Description"];
 			$oNewProduct->newstyle = $_POST["NewStyle"];
 			$oNewProduct->styleID = $_POST["StyleID"];
-			$oNewProduct->breweryID = $_POST["BreweryID"];
 			$oNewProduct->brewery = $_POST["Brewery"];
 			$oNewProduct->alcohol = $_POST["Alcohol"];
 			$oNewProduct->active = 1;
+			$oNewProduct->exclusive = $_POST["Exclusive"];
+			$oNewProduct->freshhop = $_POST["FreshHop"];
 			if($_SESSION["LocationManagerID"]>0){
 				$_POST["NewLocation"]=0;
 			}
@@ -91,7 +105,7 @@
 			$oBrewery = new Brewery();
 			$oBrewery->load($_POST["BreweryID"]);
 			$oNewProduct->breweryname = $oBrewery->breweryname;
-			
+		
 			$oNewProduct->save();
 			$newBeerID = $oNewProduct->beerID;
 			$pageTitle = $_POST["Title"];
@@ -167,13 +181,17 @@ $message .= "</body></html>";
 	//$oForm->makeSelectInput("Location","LocationID",Location::lists());
 	//$oForm->makeCheckboxInput("Status","Active","1");
 	
+	$oForm->makeCheckboxInput("Exclusive","Exclusive","1","Tap Only");
+	$oForm->makeCheckboxInput("Special Edition","FreshHop","1","Fresh Hop");
+	
 	if($_SESSION["LocationManagerID"]>0){
 
 	} else {
 	 	$oForm->makeTextInput("Add new Location","NewLocation","New location Name");
 	 	$oForm->makeCheckboxInputSet("Available at:","Locations",Location::lists());
 	}
-		
+
+	
 	$oForm->makeSubmit("Add Brew","submit");
 ?>
 

@@ -6,7 +6,7 @@
 	} else {
 	// not logged in
 	}
-		
+	$domain = 'http://'.$_SERVER['HTTP_HOST'].'/';
 	// Report simple running errors
 	
 /*
@@ -28,7 +28,8 @@
 	require_once 'includes/beer.php';
 	require_once 'includes/allBeers.php';
 	require_once 'includes/user.php';
-
+	
+	require_once 'includes/statusupdates.php';
 	require_once 'includes/like.php';
 	require_once 'includes/likemanager.php';
 
@@ -65,20 +66,36 @@
 			echo '<meta property="og:title" content="'.$oNews->newstitle.'" />';
 			echo '<meta property="og:description" content="'.$oNews->newsexcerpt.'" />';
 			//echo '<meta property="og:description" content="Brewhound - An independent Craft Beer Directory based in Auckland, New Zealand. List your bar, brewery or shop for free."/>';
-			} else {
+			} elseif(isset($_GET["name"])){
+			$oBeer = new Beer();
+			$oBeer->loadByName($_GET["name"]);
+			echo '<meta property="og:site_name" content="Brewhound" />';
+			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/'.$oBeer->photo.'" />';
+				if($oBeer->breweryID<2){
+					$brewery = $oBeer->brewery;
+				} else {
+					$breweryID = new Brewery();
+					$breweryID->load($oBeer->breweryID);
+					$brewery = $breweryID->breweryname;
+				}
+			echo '<meta property="og:title" content="'.$brewery.' '.$oBeer->title.' - Brewhound" />';
+			echo '<meta property="og:url" content="http://brewhound.nz/'.$oBeer->slug.'" />';
+			echo '<meta property="og:description" content="'.$oBeer->description.'"/>';
+			}	else {
+			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/brewhound-og.png" />';
 			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/brewhound-og.png" />';
 			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/brewhound-og-hound-solo.png" />';
 			echo '<meta property="og:title" content="Brewhound" />';
 			echo '<meta property="og:type" content="website" />';
 			echo '<meta property="og:url" content="http://brewhound.nz" />';
-			echo '<meta property="description" content="An independent Craft Beer Directory based in Auckland, New Zealand. List your bar, brewery or shop for free."/>';
+			echo '<meta property="og:description" content="An independent Craft Beer Tap Directory based in Auckland, New Zealand. List your bar, brewery or shop for free."/>';
 			}
 		?>
 		
-	<link rel='stylesheet' href="assets/css/bootstrap.min.css">
+	<link rel='stylesheet' href="<?php echo $domain ?>assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
-	<link rel='stylesheet' href="assets/css/style.css">
+	<link rel='stylesheet' href="<?php echo $domain ?>assets/css/style.css">
 	</head>
 	
 	<body>
@@ -89,24 +106,24 @@
 		
 				<ul id="mainNav">
 <!-- 					<li><a href=""><i class="fa fa-search fa-lg"></i></a></li> -->
-					<li><a href="search.php"><i class="fa fa-search fa-lg"></i></a></li>
+					<li><a href="<?php echo $domain ?>search.php"><i class="fa fa-search fa-lg"></i></a></li>
 					<li class="dropdown">
-				        <a href="#"<i class="fa fa-bars dropdown-toggle"></i> browse</a>
+				        <a href="#"><i class="fa fa-bars dropdown-toggle"></i>browse</a>
 				        <ul class="dropdown-menu">
-							<li><a href="viewlocations.php">locations</a></li>
-							<li><a href="viewbreweries.php">breweries</a></li>
-							<li><a href="brews.php">brews by name</a></li>
+							<li><a href="<?php echo $domain ?>locations/">locations</a></li>
+							<li><a href="<?php echo $domain ?>breweries/">breweries</a></li>
+							<li><a href="<?php echo $domain ?>brews/">brews by name</a></li>
 				    	</ul>
 				    </li>
 					<li class="dropdown">
-				        <a href="#"<i class="fa fa-bars dropdown-toggle"></i> add listing</a>
+				        <a href="#"><i class="fa fa-bars dropdown-toggle"></i>add listing</a>
 				        <ul class="dropdown-menu">
-							<li><a href="addbeer.php">new brew</a></li>
-							<li><a href="viewbreweries.php">select from brewery</a></li>
-							<li><a href="search.php">find/search</a></li>
-							<li><a href="addstyle.php">new style</a></li>
-							<li><a href="addlocation.php">new location</a></li>
-							<li><a href="addbrewery.php">new brewery</a></li>
+							<li><a href="<?php echo $domain ?>addbeer.php">new brew</a></li>
+							<li><a href="<?php echo $domain ?>viewbreweries.php">select from brewery</a></li>
+							<li><a href="<?php echo $domain ?>search.php">find/search</a></li>
+							<li><a href="<?php echo $domain ?>addstyle.php">new style</a></li>
+							<li><a href="<?php echo $domain ?>addlocation.php">new location</a></li>
+							<li><a href="<?php echo $domain ?>addbrewery.php">new brewery</a></li>
 				    	</ul>
 				    </li>
 
@@ -114,13 +131,13 @@
 					<!-- <li><a href="#">plans & pricing</a></li> -->
 					<?php 
 					if(isset($_SESSION["UserID"])){
-						echo '<li><a href="logout.php">logout <i class="fa fa-sign-out"></i></a></li>';
+						echo '<li><a href="'.$domain.'logout">logout <i class="fa fa-sign-out"></i></a></li>';
 					} else {
-						echo '<li><a href="login.php">login <i class="fa fa-sign-in"></i></a></li>';
+						echo '<li><a href="'.$domain.'login">login <i class="fa fa-sign-in"></i></a></li>';
 					}
 					?>
-					<li><a href="register.php">sign up <i class="fa fa-pencil-square-o"></i></a></li>
-					<li><a href="viewuseradmin.php"><img src="assets/images/dogbowl-20.png"/></a></li>
+					<li><a href="<?php echo $domain ?>register">sign up <i class="fa fa-pencil-square-o"></i></a></li>
+					<li><a href="<?php echo $domain ?>viewuseradmin"><img src="<?php echo $domain ?>assets/images/dogbowl-20.png"/></a></li>
 				</ul>
 				
 				<div id="mobileNavContainer">
@@ -129,30 +146,30 @@
 					        
 					        <ul class="mobileNav">
 						        <li class="navTitle"><i class="fa fa-eye"></i></li>
-								<li><a href="viewlocations.php">browse locations</a></li>
-								<li><a href="viewbreweries.php">browse breweries</a></li>
-								<li><a href="searchmobile.php"><i class="fa fa-search fa-lg"></i></a></li>
+								<li><a href="<?php echo $domain ?>viewlocations.php">browse locations</a></li>
+								<li><a href="<?php echo $domain ?>viewbreweries.php">browse breweries</a></li>
+								<li><a href="<?php echo $domain ?>searchmobile.php"><i class="fa fa-search fa-lg"></i></a></li>
 								<div class="clear"></div>
 							<div class="line"></div>
 							<li class="navTitle"><i class="fa fa-plus"></i></li>
-								<li><a href="addbeer.php">new brew</a></li>
-								<li><a href="viewbreweries.php">from brewery</a></li>
-								<li><a href="searchmobile.php">find/search</a></li>
-								<li><a href="addstyle.php">new style</a></li>
-								<li><a href="addlocation.php">new location</a></li>
-								<li><a href="addbrewery.php">new brewery</a></li>
+								<li><a href="<?php echo $domain ?>addbeer.php">new brew</a></li>
+								<li><a href="<?php echo $domain ?>viewbreweries.php">from brewery</a></li>
+								<li><a href="<?php echo $domain ?>searchmobile.php">find/search</a></li>
+								<li><a href="<?php echo $domain ?>addstyle.php">new style</a></li>
+								<li><a href="<?php echo $domain ?>addlocation.php">new location</a></li>
+								<li><a href="<?php echo $domain ?>addbrewery.php">new brewery</a></li>
 								<div class="clear"></div>
 							<div class="line"></div>
 							<li class="navTitle"><i class="fa fa-user"></i></li>
 								<?php 
 								if(isset($_SESSION["UserID"])){
-									echo '<li><a href="logout.php">logout <i class="fa fa-sign-out"></i></a></li>';
+									echo '<li><a href="'.$domain.'logout">logout <i class="fa fa-sign-out"></i></a></li>';
 								} else {
-									echo '<li><a href="login.php">login <i class="fa fa-sign-in"></i></a></li>';
+									echo '<li><a href="'.$domain.'login">login <i class="fa fa-sign-in"></i></a></li>';
 								}
 								?>
-								<li><a href="register.php">sign up <i class="fa fa-pencil-square-o"></i></a></li>
-								<li><a href="viewuseradmin.php"><img src="assets/images/dogbowl-20.png"/></a></li>
+								<li><a href="<?php echo $domain ?>register">sign up <i class="fa fa-pencil-square-o"></i></a></li>
+								<li><a href="<?php echo $domain ?>viewuseradmin"><img src="<?php echo $domain ?>assets/images/dogbowl-20.png"/></a></li>
 								<div class="clear"></div>
 					    	</ul>
 					    </div>

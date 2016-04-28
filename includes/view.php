@@ -1,5 +1,85 @@
  <?php
 
+function make_thumb($src, $dest, $desired_width) {
+
+	/* read the source image */
+	$source_image = imagecreatefromjpeg($src);
+	$width = imagesx($source_image);
+	$height = imagesy($source_image);
+	
+	/* find the "desired height" of this thumbnail, relative to the desired width  */
+	$desired_height = floor($height * ($desired_width / $width));
+	
+	/* create a new, "virtual" image */
+	$virtual_image = imagecreatetruecolor($desired_width, $desired_height);
+	
+	/* copy source image at a resized size */
+	imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $desired_width, $desired_height, $width, $height);
+	
+	/* create the physical thumbnail image to its destination */
+	imagejpeg($virtual_image, $dest);
+}
+
+function createslugs($beers) {
+	$i = 1;
+	
+	foreach($beers as $beer) {
+		
+		$oBeer = new Beer();
+		$oBeer->load($beer);
+		
+		
+		if($oBeer->breweryID<2){
+			$brewery = strtolower(str_replace(array('&','+','.',"'",'(',')'),"",str_replace(' ','-',$oBeer->brewery)));
+		} else {
+			$breweryID = new Brewery();
+			$breweryID->load($oBeer->breweryID);
+			
+			$brewery = strtolower(str_replace(array('&','+','.',"'",'(',')'),"",str_replace(' ','-',$breweryID->breweryname)));
+			//$brewery = strtolower(str_replace(' ','-',$brew->brewery()->BreweryName));
+		}
+		$title = strtolower(str_replace(array(':','+','&','!','#','.',"'",'(',')'),"",str_replace(' ','-',$oBeer->title)));
+		$createslug = $brewery.'-'.$title;
+		//echo $createslug.' '.$oBeer->beerid.'<br/>';
+		$oBeer->slug = $createslug;
+		$oBeer->updateslugs();
+		$i++;
+	}
+}
+
+function createLocationSlugs($locations) {
+	$i = 1;
+	
+	foreach($locations as $location) {
+		
+		$oLocation = new Location();
+		$oLocation->load($location);
+
+		$locationSlug = strtolower(str_replace(array('/','.',",",'&','!',"'",'(',')'),"",str_replace(' ','-',$oLocation->locationname)));
+
+		//echo $locationSlug.' '.$oLocation->locationID.'<br/>';
+		$oLocation->slug = $locationSlug;
+		$oLocation->updateLocationSlugs();
+		$i++;
+	}
+}
+
+function createBrewerySlugs($breweries) {
+	$i = 1;
+	
+	foreach($breweries as $brewery) {
+		
+		$oBrewery = new Brewery();
+		$oBrewery->load($brewery);
+
+		$brewerySlug = strtolower(str_replace(array('.',",",'&','!',"'",'(',')'),"",str_replace(' ','-',$oBrewery->breweryname)));
+
+		//echo $locationSlug.' '.$oLocation->locationID.'<br/>';
+		$oBrewery->slug = $brewerySlug;
+		$oBrewery->updateBrewerySlugs();
+		$i++;
+	}
+}
 
 function time2str($ts) {
     if(!ctype_digit($ts)) {
@@ -42,8 +122,148 @@ function time2str($ts) {
 }
 
 class View{
+	
+	
+	static public function renderCheckins($aStatusUpdates,$beerID,$domain){
+		
+		$averageRating = 0;
+		$averageRating = Status::averageRating($beerID);
+		
+		$sHTML = '';
+		
+		if(count($aStatusUpdates)!=0&&$averageRating!=0){
+			$sHTML .= '<h4>Average Rating '.$averageRating.'</h4>';
+		}
+		
+				
+		for($iCount=0;$iCount<count($aStatusUpdates);$iCount++){
+			$oStatus = new Status();
+			$oStatus->load($aStatusUpdates[$iCount]);
+			
+			$photo = "";
+			if($oStatus->photo){
+				$photo = $oStatus->photo;
+			}
+			
+			$rating = $oStatus->rating;
+			$starsHTML = "";
+			
+			for($i=0;$i<$rating;$i++){
+				$starsHTML .= '<i class="fa fa-star" aria-hidden="true"></i> ';
+			}
+			$blankstarsHTML = "";
+			$addblank = 5-$rating;
+			for($i=0;$i<$addblank;$i++){
+				$blankstarsHTML .= '<i class="fa fa-star-o" aria-hidden="true"></i> ';
+			}
+			
+			
+			
+			$oUser = new User();
+			$oUser->load($oStatus->userid);
+			
+			$oLocation = new Location();
+			$oLocation->load($oStatus->locationid);
+			
+			$sHTML .= '<div class="sideitem">';
+				$sHTML .= '<div class="sideitemText">';
+				if($rating!=0){
+					$sHTML .=	'<span class="stars">'.$starsHTML.$blankstarsHTML.'</span>';
+				}
+				
 
-	static public function renderLikeStream($aLikeStream,$getlimit){
+				$sHTML .= ' by '.$oUser->username.' at <a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a>';
+				$sHTML .= ' '.time2str($oStatus->created_at).' ';
+				
+				if($oStatus->photo||$oStatus->review){
+					$sHTML .= '<a role="button" data-toggle="collapse" href="#details'.$iCount.'" aria-expanded="false" aria-controls="collapseExample">';
+					//icons
+						if($oStatus->photo){
+							$sHTML .= ' <i class="fa fa-picture-o fa-2x" aria-hidden="true"></i> ';
+						}
+						if($oStatus->review){
+							$sHTML .= ' <i class="fa fa-pencil fa-2x" aria-hidden="true"></i> ';
+						}
+					$sHTML .= '</a>';
+					}
+					
+				
+							
+				//$sHTML .= '<div class="clearfix"></div>';
+				
+
+				$sHTML .= '</div>';
+				
+				$sHTML .= '<div class="collapse" id="details'.$iCount.'">';
+				$sHTML .= '<h4>Review/Comments</h4>';			
+				$sHTML .= '<p>'.$oStatus->review.'</p>';
+				if($oStatus->photo){
+					$sHTML .= '<img style="max-width:100%" src="http://brewhound.nz/assets/images/'.$photo.'"/>';	
+				}
+			
+				$sHTML .= '</div>';	
+				
+				
+			$sHTML .= '</div>';
+			
+			
+			}
+		
+		$sHTML .= '';
+		return $sHTML;	
+	}
+	
+	static public function renderStatusUpdates($aStatusUpdates,$domain){
+		
+		$sHTML = '';
+				
+		for($iCount=0;$iCount<5;$iCount++){
+			$oStatus = new Status();
+			$oStatus->load($aStatusUpdates[$iCount]);
+		
+			$oBeer = new Beer();
+			$oBeer->load($oStatus->beerid);
+			
+			$oBrewery = new Brewery();
+			$oBrewery->load($oBeer->breweryID);
+			
+			if($oBeer->photo){
+				$logo = $oBeer->photo;
+			} else {
+				$logo = $oBrewery->breweryphoto;
+			}
+
+			$oUser = new User();
+			$oUser->load($oStatus->userid);
+			
+			$oLocation = new Location();
+			$oLocation->load($oStatus->locationid);
+			
+			$sHTML .= '<div class="sideitem">';
+				$sHTML .= '<div class="sideitemLogo">
+							<a href="'.$domain.$oBeer->slug.'">
+							<img class="minilogo" src="assets/images/'.$logo.'"/>
+							</a></div>';
+				$sHTML .= '<div class="sideitemText">'.$oUser->username.' 
+							checked in <a href="'.$domain.$oBeer->slug.'">'.$oBeer->breweryname.' '.$oBeer->title.'</a> 
+							at <a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a> '.time2str($oStatus->created_at).' 
+							<a href="'.$domain.$oBeer->slug.'">details <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+							</div>';
+				$sHTML .= '<div class="clearfix"></div>';
+			$sHTML .= '</div>';
+			}
+		
+		$sHTML .= '';
+		return $sHTML;	
+	}
+	
+	static public function renderActivityStream($aLikeStream,$getlimit,$domain){
+			$sHTML = '<div>';
+			
+			
+		}
+	
+	static public function renderLikeStream($aLikeStream,$getlimit,$domain){
 		
 			$sHTML = '<div>';
 			$sHTML .= "<h4>Recently Liked</h4>";
@@ -70,42 +290,42 @@ class View{
 			$oBrewery->load($oBeer->breweryID);
 			
 			$beerphoto = "";
-			$breweryphoto = "assets/images/hound.png";
+			$breweryphoto = $domain."assets/images/hound.png";
 
 				if(isset($oBrewery->breweryphoto)){
 					$breweryphoto = $oBrewery->breweryphoto;
 				}
 				
 				if ($oBeer->photo){
-					$beerphoto = "assets/images/".$oBeer->photo;
+					$beerphoto = $domain."assets/images/".$oBeer->photo;
 				} else {
-					$photo = "assets/images/hound.png";
+					$photo = $domain."assets/images/hound.png";
 				}
 				
 				if($oBeer->breweryID>1){
-					$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+					$breweryphoto = $domain."assets/images/".$oBrewery->breweryphoto;
 				}
 
 			$sHTML .= '<p class="commentFormat">';
 			
 				//Show Beer Logo
 				if($oBeer->photo!=""){
-					$sHTML .= '<a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$beerphoto.'"/> </a>';
+					$sHTML .= '<a href="'.$domain.$oBeer->slug.'"><img src="'.$beerphoto.'"/> </a>';
 				} else {
-					$sHTML .= '<a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img class="breweryphoto" src="'.$breweryphoto.'"/> </a>';
+					$sHTML .= '<a href="'.$domain.$oBeer->slug.'"><img class="breweryphoto" src="'.$breweryphoto.'"/> </a>';
 				}
 			
 			$sHTML .= '<a href="viewuser.php?viewUserID='.$oUser->userID.'">'.$oUser->username.'</a>
 			 liked ';
 			
 			if($oBeer->breweryID>1){
-				$sHTML .= ' <a href="viewbrewery.php?breweryID='.$oBrewery->breweryID.'">'.$oBrewery->breweryname.' </a>';
+				$sHTML .= ' <a href="'.$domain.$oBrewery->slug.'">'.$oBrewery->breweryname.' </a>';
 			} else {
 				$sHTML .= ' '.$oBeer->brewery.' ';
 			}
 			
 			
-			$sHTML .= '<a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a><br/>'.$timedate.'';
+			$sHTML .= '<a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a><br/>'.$timedate.'';
 			$sHTML .= '</p>';
 
 		}
@@ -122,9 +342,9 @@ static public function renderActivity($aAvIDs,$getlimit){
 */	
 		$loggedin = 0;
 		//$sHTML = '<div>';
-		$sHTML = "<h4>Fresh Taps</h4>";
+
 		
-		$sHTML .= '<ul id="listings">';
+		$sHTML = '<ul id="listings">';
 
 					
 		if(count($aAvIDs)<5){
@@ -146,6 +366,7 @@ static public function renderActivity($aAvIDs,$getlimit){
 			$oBeer = new Beer();
 			$oBeer->load($oAvail->beerID);
 
+			
 /*
 			// Get Style Names
 			$oStyle = new Style();
@@ -241,27 +462,29 @@ static public function renderActivity($aAvIDs,$getlimit){
 		$sHTML .= '<li>';
 			$sHTML .= '<div class="row">';
 
-						$sHTML .='<div class="col itemLogo default"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$beerphoto.'"/></a></div>';
+						$sHTML .='<div class="col itemLogo default"><a href="'.$oBeer->slug.'"><img src="'.$beerphoto.'"/></a></div>';
+
+						//$sHTML .='<div class="col itemLogo default"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$beerphoto.'"/></a></div>';
 
 
 						$sHTML .= '<div class="col itemTitleCol">';
 						
 						if($oBeer->breweryID<2){
-						$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
-						$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';	
+						$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
+						$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';	
 						}
 						if($oBeer->breweryID>1){
-						$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
-						$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';	
+						$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
+						$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';	
 						}
 						
-						$sHTML .= '<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+						$sHTML .= '<div class="itemTitle"><a href="'.$oBeer->slug.'">'.$oBeer->title.'</a></div>';
 						$sHTML .= '</div>';
 										
 						$sHTML .='<div class="col itemAlcohol">tapped '.$timedate.'</div>';
 						
-						$sHTML .= '<div class="col itemLocationCol itemBrewery desktopVisible"><a href="viewlocation.php?locationID='.$oLocation->locationID.'">'.$oLocation->locationname.'</a></div>';
-						$sHTML .= '<div class="col phoneCol phoneVisible"><a href="viewlocation.php?locationID='.$oLocation->locationID.'">'.$oLocation->locationname.'</a></div>';
+						$sHTML .= '<div class="col itemLocationCol itemBrewery desktopVisible"><a href="location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a></div>';
+						$sHTML .= '<div class="col phoneCol phoneVisible"><a href="location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a></div>';
 						//$sHTML .= '<div class="col itemAlcohol"><a href="viewlocation.php?locationID='.$oLocation->locationID.'">'.$oLocation->locationname.'</a></div>';
 										//<div class="col item-edit">'.$edit.'</div>
 /*
@@ -511,7 +734,7 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 						$sHTML .= '<div class="brewinfo">';
 						if($oBeer->breweryID>1){
 							//$sHTML .= '<div class="breweryphoto"><a href="viewbrewery.php?breweryID='.$oBeer->breweryID.'"><img class="breweryphoto" src="'.$breweryphoto.'"/></a></div>';
-							$sHTML .= '<div class="itemBrewery"><h4><a href="viewbrewery.php?breweryID='.$oBrewery->breweryID.'">'.$oBrewery->breweryname.'</a></h4></div>';
+							$sHTML .= '<div class="itemBrewery"><h4><a href="brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a></h4></div>';
 						} else {
 							$sHTML .= '<div class="itemBrewery"><h4>'.$oBeer->brewery.'</h4></div>';
 						}
@@ -520,6 +743,9 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 							$sHTML .= '<ul class="specs">';
 							if($oBeer->exclusive==1){
 								$sHTML .= '<li class="tapOnly"><a href="/exclusive.php">Tap only</a></li>';
+							}
+							if($oBeer->freshhop==1){
+								$sHTML .= '<li class="tapOnly"><a href="/freshhop">Fresh Hop</a></li>';
 							}
 							if($oBeer->styleID!=1){
 								$sHTML .= '<li> Style: '.$oStyle->stylename.' </li>';	
@@ -549,7 +775,7 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 						
 						$oFormLocAv = new Form();
 						
-						$oFormLocAv->makeLocAvButtons("Available at:","Locations",Location::lists(),$aBeerlocations,$iBreweryID);
+						$oFormLocAv->makeLocAvButtons("Available at:","Locations",Location::lists(),$aBeerlocations,$iBreweryID,$oBeer->beerid);
 						
 						$oFormLocAv->makeSubmit("Add Location","submit");
 						
@@ -613,7 +839,7 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 					return $sHTML;	
 		}
 
-	static public function renderAllBeers($oAllBeers,$loggedin,$userID,$iBeersPerPage,$currentpage){
+	static public function renderAllBeers($oAllBeers,$loggedin,$userID,$iBeersPerPage,$currentpage,$domain){
 
 				$oUser = new User();
 				$oUser->load($userID);
@@ -655,15 +881,18 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 				
 				$beerphoto = "assets/images/hound.png";
 				$breweryphoto = "assets/images/hound.png";
-				if($oBrewery->breweryphoto){
-					$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+
+				
+				if ($oBeer->photo){
+					$beerphoto = $domain."assets/images/".$oBeer->photo;
+				} elseif ($oBrewery->breweryphoto){
+					$breweryphoto = $domain."assets/images/".$oBrewery->breweryphoto;
+				} else {
+					$beerphoto = $domain."assets/images/hound.png";
 				}
 				
-				if ($oBeer->photo!=""){
-					$beerphoto = "assets/images/".$oBeer->photo;
-				} else {
-					$beerphoto = "assets/images/hound.png";
-				}
+
+				
 				
 /*
 				// check login
@@ -704,23 +933,23 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 					
 					
 				if($beerphoto=="assets/images/hound.png"){
-				$sHTML .='<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$breweryphoto.'"/></a></div>';
+				$sHTML .='<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
 				} else {
-				$sHTML .='<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$beerphoto.'"/></a></div>';
+				$sHTML .='<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$beerphoto.'"/></a></div>';
 				}
 
 								$sHTML .= '<div class="col itemTitleCol">';
 								
 								if($oBeer->breweryID<2){
-								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
-								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';	
+								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
+								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';	
 								}
 								if($oBeer->breweryID>1){
-								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
-								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';	
+								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
+								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';	
 								}
 								
-								$sHTML .= '<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+								$sHTML .= '<div class="itemTitle"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a></div>';
 								$sHTML .= '</div>';
 										
 				if($oBeer->styleID!=1){
@@ -769,7 +998,120 @@ static public function renderBeerTest($oBeer,$likeStatus,$userID,$aBeerlocations
 			return $sHTML;
 		}
 
-static public function renderExclusiveBeers($aExclusive,$iBeersPerPage,$pagination){
+
+static public function renderFreshHopBeers($aFreshHop,$iBeersPerPage,$pagination,$domain){
+	
+	if ($pagination==1){
+				$iPage = 1;
+				
+				if(isset($_GET["page"])){
+					$iPage	= $_GET["page"];
+				}
+				
+				$iTotalPages = ceil(count($aFreshHop) / $iBeersPerPage);
+				$iStartIndex = ($iPage - 1) * $iBeersPerPage ;
+				
+				$iEndIndex = $iStartIndex + $iBeersPerPage;
+				if($iEndIndex > count($aFreshHop)){
+					$iEndIndex = count($aFreshHop);
+				}
+	} else {
+		$iStartIndex = 0;
+		$iEndIndex = $iBeersPerPage;
+	}
+	
+	$sHTML = '<div id="Exclusive">';
+	for($iCount=$iStartIndex;$iCount<$iEndIndex;$iCount++){
+		$oBeerID = $aFreshHop[$iCount];
+		$oBeer = new Beer();
+		$oBeer->load($oBeerID);
+		
+		// Get Meta
+			$oStyle = new Style();
+			$oStyle->load($oBeer->styleID);
+				$iBreweryID = $oBeer->breweryID;
+				$oBrewery = new Brewery();
+				$oBrewery->load($iBreweryID);
+					$beerphoto = "assets/images/hound.png";
+					$breweryphoto = "";
+					$breweryphoto = $oBrewery->breweryphoto;
+					if($breweryphoto==""){} 
+					if ($oBeer->photo!=""){$beerphoto = "assets/images/".$oBeer->photo;} else {$beerphoto = "assets/images/hound.png";}
+					if($oBeer->breweryID!=0){$breweryphoto = "assets/images/".$oBrewery->breweryphoto;}
+				
+				
+				$av = count(Availability::loadLocationIDs($oBeerID));
+				
+				
+				$sHTML .= '<li>
+								<div class="row">';
+					
+					
+				if($beerphoto=="assets/images/hound.png"){
+				$sHTML .='<div class="col itemLogo"><a href="'.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
+				} else {
+				$sHTML .='<div class="col itemLogo"><a href="'.$oBeer->slug.'"><img src="'.$beerphoto.'"/></a></div>';
+				}
+
+								$sHTML .= '<div class="col itemTitleCol desktopVisible">';
+								
+									if($oBeer->breweryID<2){
+									$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';	
+									}
+									if($oBeer->breweryID>1){
+									$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';	
+									}
+									
+									$sHTML .= '<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+								$sHTML .= '</div>';
+								
+								$sHTML .= '<div class="col itemTitleColWide phoneVisible">';
+								
+									if($oBeer->breweryID<2){
+									$sHTML .= '<div class="itemBrewery"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';	
+									}
+									if($oBeer->breweryID>1){
+									$sHTML .= '<div class="itemBrewery"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';	
+									}
+									
+									$sHTML .= '<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+									
+								$sHTML .= '</div>';
+								
+								$sHTML .= '<div class="col item phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$av.' Taps';
+								$sHTML .= '</a></div>';
+										
+				if($oBeer->styleID!=1){
+					$sHTML .= '<div class="desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oStyle->stylename.'</a></div>';	
+				}
+										
+				$sHTML .= 				'<div class="col itemAlcohol">'.$oBeer->alcohol.'% ABV</div>
+								</div>
+							</li>';
+		
+		}
+		if ($pagination==1){
+				$sHTML .= '<p>Page '.$iPage.' of '.$iTotalPages.'<p>';
+				$iNext =  $iPage + 1;
+				$iPrev = $iPage - 1;
+				$sHTML .= '<p>';
+				if($iPage>1){
+				$sHTML .= '<a href="'.'freshhop.php?page='.$iPrev.'"'.' class="btn btn-default">prev</a> ';	
+				}
+				if($iPage<$iTotalPages){
+				$sHTML .= ' <a href="'.'freshhop.php?page='.$iNext.'"'.' class="btn btn-default">next</a>';
+				}
+				$sHTML .= '</p>';
+		}
+	$sHTML .= '</div>';
+	return $sHTML;
+	
+	}
+
+
+
+
+static public function renderExclusiveBeers($aExclusive,$iBeersPerPage,$pagination,$domain){
 	
 	if ($pagination==1){
 				$iPage = 1;
@@ -818,9 +1160,9 @@ static public function renderExclusiveBeers($aExclusive,$iBeersPerPage,$paginati
 					
 					
 				if($beerphoto=="assets/images/hound.png"){
-				$sHTML .='<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$breweryphoto.'"/></a></div>';
+				$sHTML .='<div class="col itemLogo"><a href="'.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
 				} else {
-				$sHTML .='<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$beerphoto.'"/></a></div>';
+				$sHTML .='<div class="col itemLogo"><a href="'.$oBeer->slug.'"><img src="'.$beerphoto.'"/></a></div>';
 				}
 
 								$sHTML .= '<div class="col itemTitleCol desktopVisible">';
@@ -1043,10 +1385,14 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 				$sHTML .= '<div class="col-md-8">';
 				$sHTML .= '
 					<div class="itemTitle"><h2>username: '.$oUser->username.'</h2></div>
-					<div class="">First Name: '.$oUser->firstname.'</div>
-					<div class="">Last Name: '.$oUser->lastname.'</div>';
+					<p class="">First Name: '.$oUser->firstname.'</p>
+					<p class="">Last Name: '.$oUser->lastname.'</p>';
 					// <div class=""><a href="">Email: '.$oUser->email.'</a></div>'
-			$sHTML .= '<div class=""><a href="edituser.php" class="btn btn-default">edit profile</a></div>';
+			$sHTML .= '<p class=""><a href="edituser.php" class="btn btn-default">edit profile</a></p>';
+			$sHTML .= '<p class="quicklinks">
+<a class="btn btn-success" href="addstatusupdate">Check In <i class="fa fa-check-square" aria-hidden="true"></i></a> <a class="btn btn-info" href="addstatusupdate">Rate <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i></a> <a class="btn btn-warning" href="addstatusupdate">Review <i class="fa fa-pencil" aria-hidden="true"></i></a> <a type="button" class="btn btn-primary" href="addstatusupdate"><i class="fa fa-picture-o" aria-hidden="true"></i> Upload Photo</a>
+</p>';
+			
 			//$sHTML .= '<div class=""><a href="viewuser.php?viewUserID='.$oUser->userID.'" class="btn btn-default">view public profile</a></div>';
 			$sHTML .= '</div>';
 /*
@@ -1078,7 +1424,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 		return $sHTML;
 		}
 		
-		static public function renderSearchResults($aBeers,$loggedin,$userID){
+		static public function renderSearchResults($aBeers,$loggedin,$userID,$domain){
 			
 			
 				$oUser = new User();
@@ -1146,25 +1492,25 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 								<div class="row">';
 								
 				if($oBeer->photo){
-				$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$beerphoto.'"/></a></div>';
+				$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$beerphoto.'"/></a></div>';
 				}	else {
-					$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$breweryphoto.'"/></a></div>';
+					$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
 				}
 										
 								$sHTML .= '<div class="col itemTitleCol">';
 																		
 								if($oBeer->breweryID<2){
-								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
-								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';	
+								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
+								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';	
 								}
 								if($oBeer->breweryID>1){
-								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
-								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';	
+								$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
+								$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';	
 								}
 
 								//$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
 								//$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
-								$sHTML .= '<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+								$sHTML .= '<div class="itemTitle"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a></div>';
 									$sHTML .= '	</div>';
 				if($oBeer->styleID!=1){
 				$sHTML .= 				'<div class="desktopVisible"><a href="">'.$oStyle->stylename.'</a></div>';	
@@ -1188,7 +1534,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 		
 	
 	
-	static public function rendermostLiked($oAllBeers,$show){
+	static public function rendermostLiked($oAllBeers,$show,$domain){
 			
 			$limit = $show;
 			$aBeers = $oAllBeers->allBeers;
@@ -1204,25 +1550,25 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 				// Photo Path
 				$breweryphoto = $oBrewery->breweryphoto;
 				if ($oBeer->photo){
-					$photo = "assets/images/".$oBeer->photo;
+					$photo = $domain."assets/images/".$oBeer->photo;
 				} else {
-					$breweryphoto = "assets/images/$breweryphoto";
+					$breweryphoto = $domain."assets/images/$breweryphoto";
 				}
 				$sHTML .= '<li>
 								<div class="row">';
 										
 					if($oBeer->photo){
-						$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$photo.'"/></a></div>';
+						$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$photo.'"/></a></div>';
 					} else {
-						$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$breweryphoto.'"/></a></div>';
+						$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
 					}
 					
 										
 										
 					$sHTML .= '				<div class="col itemTitleColSmall">
-											<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>
-											<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>
-											<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>
+											<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>
+											<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>
+											<div class="itemTitle"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a></div>
 										</div>
 										<div class="col"><i class="fa fa-heart"> ('.count($oBeer->likes).')</i></div>
 								</div>
@@ -1316,7 +1662,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 		}
 
 	
-	static public function renderAvailability($aExistinglocations){
+	static public function renderAvailability($aExistinglocations,$domain){
 		//$sHTML = '<div class="wrapper clearfix">';
 		
 		
@@ -1329,8 +1675,8 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 			//$oLocation = $aExistinglocations[$iCount];
 			$sHTML .= '<li>
 				<div class="row">
-					<div class="col itemTitle desktopVisible"><a href="viewlocation.php?locationID='.$oLocation->locationID.'"><b>'.$oLocation->locationname.'</b></div>
-					<div class="phoneFullWidth phoneVisible"><a href="viewlocation.php?locationID='.$oLocation->locationID.'"><b>'.$oLocation->locationname.'</b></div>
+					<div class="col itemTitle desktopVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>
+					<div class="phoneFullWidth phoneVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>
 					<div class="col item-brewery desktopVisible">'.$oLocation->locationsuburb.', '.$oLocation->locationregion.'</a></div>
 					
 				</div>
@@ -1342,6 +1688,8 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 	}
 	
 	static public function renderLocation($oLocation){
+		
+		
 		$sHTML = '<div class="wrapper clearfix locationDetails">';
 		$sHTML .= '<h3>'.$oLocation->locationname.'</h3>';
 		$sHTML .= '<div class="solidline"></div>';
@@ -1468,7 +1816,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 	}
 */
 	
-	static public function renderBrewery($oBrewery){
+	static public function renderBrewery($oBrewery,$domain){
 		
 /*
 		echo "<pre>";
@@ -1483,9 +1831,9 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 			// LOGO
 			$sHTML .= '<div class="col-md-2">';
 			if ($oBrewery->breweryphoto){
-				$photo = "assets/images/".$oBrewery->breweryphoto;
+				$photo = $domain."assets/images/".$oBrewery->breweryphoto;
 				} else {
-				$photo = "assets/images/hound.png";
+				$photo = $domain."assets/images/hound.png";
 				}
 			
 			$sHTML .= '<div class="breweryimage"><img src="'.$photo.'"/></div>';
@@ -1582,7 +1930,7 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 		return $sHTML;
 		}
 
-	static public function renderAllLocations($aLocations){
+	static public function renderAllLocations($aLocations,$domain){
 		
 		// Pagination
 		$iPage = 1;
@@ -1620,7 +1968,7 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 		
 			$taps = count($aBeersAvailable);
 			
-			$sHTML .= '<a href="viewlocation.php?locationID='.$oLocation->locationID.'"><li><div class="row">';
+			$sHTML .= '<a href="'.$domain.'location/'.$oLocation->slug.'"><li><div class="row">';
 // 				$sHTML .= '<div class="col item-logo"></div>';
 				$sHTML .= '<div class="col itemTitle desktopVisible"><h3>'.$oLocation->locationname.'</h3></div>';
 				$sHTML .= '<div class="col itemTitleCol phoneVisible"><h3>'.$oLocation->locationname.'</h3></div>';
@@ -1639,10 +1987,10 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 			$sHTML .= '<p>Page '.$iPage.' of '.$iTotalPages.'<p>';	
 			$sHTML .= '<p>';
 			if($iPage!=1){
-			$sHTML .= '<a href="'.'viewlocations.php?page='.$iPrev.'"'.' class="btn btn-default">prev</a> ';
+			$sHTML .= '<a href="'.$domain.'viewlocations.php?page='.$iPrev.'"'.' class="btn btn-default">prev</a> ';
 			}
 			if($iPage!=$iTotalPages){
-			$sHTML .= ' <a href="'.'viewlocations.php?page='.$iNext.'"'.' class="btn btn-default">next</a>';
+			$sHTML .= ' <a href="'.$domain.'viewlocations.php?page='.$iNext.'"'.' class="btn btn-default">next</a>';
 			}
 			$sHTML .= '</p>';
 		}
@@ -1651,7 +1999,7 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 		return $sHTML;
 	}
 
-	static public function renderAllBreweries($aBreweries){
+	static public function renderAllBreweries($aBreweries,$domain){
 		
 		$iTotalBreweries = count($aBreweries);
 		// Pagination
@@ -1679,7 +2027,7 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 		$sHTML = '<div class="wrapper clearfix">';
 		
 		$sHTML .= "<p>We're indexing more breweries every day - so far we've got $iTotalBreweries</p>";
-		$sHTML .= '<p>If you\'re the owner of a Brewery and want to manage your listings please contact us <a class="btn btn-default" href="about.php">contact</a></p>';
+		$sHTML .= '<p>If you\'re the owner of a Brewery and want to manage your listings please contact us <a class="btn btn-default" href="../about.php">contact</a></p>';
 		
 		$sHTML .= '<ul id="listings" class="locations">';
 		for($iCount=0;$iCount<count($aBreweries);$iCount++){
@@ -1700,11 +2048,10 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 				//$taps = count($aBeersAvailable);
 				
 				$sHTML .= '<li><div class="row">';
-	// 				$sHTML .= '<div class="col item-logo"></div>';
-					$sHTML .='<div class="col itemLogo"><a href="viewbrewery.php?breweryID='.$oBrewery->breweryID.'"><img src="'.$breweryphoto.'"/></a></div>';
+					$sHTML .='<div class="col itemLogo"><a href="'.$domain.'brewery/'.$oBrewery->slug.'"><img src="'.$domain.$breweryphoto.'"/></a></div>';
 	
-					$sHTML .= '<div class="col itemTitle desktopVisible"><h3><a href="viewbrewery.php?breweryID='.$oBrewery->breweryID.'">'.$oBrewery->breweryname.'</a></h3></div>';
-					$sHTML .= '<div class="col itemTitleCol phoneFullWidth phoneVisible"><h3><a href="viewbrewery.php?breweryID='.$oBrewery->breweryID.'">'.$oBrewery->breweryname.'</a></h3></div>';
+					$sHTML .= '<div class="col itemTitle desktopVisible"><h3><a href="'.$domain.'brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a></h3></div>';
+					$sHTML .= '<div class="col itemTitleCol phoneFullWidth phoneVisible"><h3><a href="'.$domain.'brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a></h3></div>';
 					//$sHTML .= '<div class="col responsive desktopVisible">'.$oBrewery->locationsuburb.'</div>';
 					//$sHTML .= '<div class="col responsive desktopVisible">'.$oBrewery->locationregion.'</div>';
 					$sHTML .= '<div class="col itemTitle desktopVisible">'.$iTotalAvaial.' Brews Available</div>';
@@ -1916,7 +2263,7 @@ static public function renderBeersAvailable($aBeersAvailable){
 		return $sHTML;
 	}
 
-static public function renderBeersByBrewery($aBeersAvailable){
+static public function renderBeersByBrewery($aBeersAvailable,$domain){
 	
 /*
 	echo "<pre>";
@@ -1951,7 +2298,7 @@ static public function renderBeersByBrewery($aBeersAvailable){
 				$iBreweryID = $oBeer->breweryID;
 				$oBrewery = new Brewery();
 				$oBrewery->load($iBreweryID);
-				$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+				$breweryphoto = $domain."assets/images/".$oBrewery->breweryphoto;
 			}
 
 			$oStyle = new Style();
@@ -1961,34 +2308,34 @@ static public function renderBeersByBrewery($aBeersAvailable){
 			$iTotalTaps = Availability::totalBreweryTaps($iBeerID);
 			
 			if ($oBeer->photo){
-					$photo = "assets/images/".$oBeer->photo;
+					$photo = $domain."assets/images/".$oBeer->photo;
 				} else {
-					$photo = "assets/images/hound.png";
+					$photo = $domain."assets/images/hound.png";
 				}
 		$sHTML .= '<li>
 				<div class="row">';
 		
 		if($oBeer->photo){
-			$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$photo.'"/></a></div>';
+			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$photo.'"/></a></div>';
 		} else {
-			$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$breweryphoto.'"/></a></div>';
+			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
 		}
 
 		$sHTML .= '<div class="col itemTitleCol">';
 		if($oBeer->breweryID!=1){
-			$sHTML .= '								<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
-			$sHTML .= '							<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
+			$sHTML .= '								<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
+			$sHTML .= '							<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
 		} else	{
-			$sHTML .= '								<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
-			$sHTML .= '							<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
+			$sHTML .= '								<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
+			$sHTML .= '							<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
 		}								
 											
-		$sHTML .= '								<div class="itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+		$sHTML .= '								<div class="itemTitle"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a></div>';
 		$sHTML .= '							</div>';
 		
 				
 // 		$sHTML .= '<div class="col itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
-					if($oBeer->styleID!=1){$sHTML .= '<div class="col itemAlcohol"><a href="">'.$oStyle->stylename.'</a></div>';}
+					if($oBeer->styleID!=1){$sHTML .= '<div class="col itemAlcohol">'.$oStyle->stylename.'</div>';}
 				$sHTML .='<div class="col itemAlcohol">'.$oBeer->alcohol.'%</a></div>';
 				$sHTML .='<div class="col desktopVisible">'.$iTotalTaps.' Taps</a></div>';
 			
@@ -2000,9 +2347,9 @@ static public function renderBeersByBrewery($aBeersAvailable){
 					//$edit = '<a class="btn btn-default" href="editbeer.php?beerID='.$oBeer->beerID.'">edit</a>';
 					if($iLocationManagerID>1){
 						if (in_array($iBeerID, $aBeersAvLoc)) {
-						$addremove = '<a class="btn btn-danger remove" href="removeLocAv.php?userID='.$userID.'&locationID='.$iLocationID.'&beerID='.$iBeerID.'"><i class="fa fa-times"></i></a>';
+						$addremove = '<a class="btn btn-danger remove" href="'.$domain.'removeLocAv.php?userID='.$userID.'&locationID='.$iLocationID.'&beerID='.$iBeerID.'"><i class="fa fa-times"></i></a>';
 						} else {
-						$addremove = '<a class="btn btn-success remove" href="addLocAv.php?beerID='.$oBeer->beerID.'&locationID='.$iLocationID.'&userID='.$userID.'&breweryID='.$iBreweryID.'"><i class="fa fa-plus"></i></a>';	
+						$addremove = '<a class="btn btn-success remove" href="'.$domain.'addLocAv.php?beerID='.$oBeer->beerID.'&locationID='.$iLocationID.'&userID='.$userID.'&breweryID='.$iBreweryID.'"><i class="fa fa-plus"></i></a>';	
 						}
 					} else {
 					$add = "";
@@ -2026,7 +2373,7 @@ static public function renderBeersByBrewery($aBeersAvailable){
 
 
 
-static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimstatus){
+static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimstatus,$domain){
 
 /*
 	echo "<pre>";
@@ -2056,9 +2403,9 @@ static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimsta
 		$sHTML = '<div class="wrapper clearfix">';
 		
 			if(isset($_GET['orderbybrewery'])){
-	$sHTML .= 'Sorted by Brewery <a class="btn btn-default right" href="viewlocation.php?locationID='.$iLocationID.'">Sort by Freshness</a>  * these breweries are not yet indexed';
+	$sHTML .= 'Sorted by Brewery <a class="btn btn-default right" href="'.$domain.'viewlocation.php?locationID='.$iLocationID.'">Sort by Freshness</a>  * these breweries are not yet indexed';
 	} else {
-	$sHTML .= 'Sorted by Freshness <a class="btn btn-default" href="viewlocation.php?locationID='.$iLocationID.'&orderbybrewery=1">Sort by Brewery</a>';
+	$sHTML .= 'Sorted by Freshness <a class="btn btn-default" href="'.$domain.'viewlocation.php?locationID='.$iLocationID.'&orderbybrewery=1">Sort by Brewery</a>';
 	}
 
 			
@@ -2117,22 +2464,22 @@ static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimsta
 		}
 			
 		if($oBeer->photo){
-			$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$photo.'"/></a></div>';
+			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$domain.$photo.'"/></a></div>';
 		} else {
-			$sHTML .= '<div class="col itemLogo"><a href="viewbeer.php?beerID='.$oBeer->beerID.'"><img src="'.$breweryphoto.'"/></a></div>';
+			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$domain.$breweryphoto.'"/></a></div>';
 		} 
 
 		$sHTML .= '<div class="col itemTitleCol locationData">';
 		if($oBeer->breweryID<2){
-			$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
-			$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->brewery.'</a></div>';
+			$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
+			$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->brewery.'</a></div>';
 		} else	{
-			$sHTML .= '<div class="itemBrewery desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
-			$sHTML .= '<div class="itemBrewery phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBrewery->breweryname.'</a></div>';
+			$sHTML .= '<div class="itemBrewery desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
+			$sHTML .= '<div class="itemBrewery phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBrewery->breweryname.'</a></div>';
 		}								
 											
-		$sHTML .= '<div class="itemTitle desktopVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
-		$sHTML .= '<div class="itemTitle phoneVisible"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
+		$sHTML .= '<div class="itemTitle desktopVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a></div>';
+		$sHTML .= '<div class="itemTitle phoneVisible"><a href="'.$domain.$oBeer->slug.'">'.$oBeer->title.'</a></div>';
 		
 		$sHTML .= '</div>';
 /*
@@ -2155,16 +2502,16 @@ static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimsta
 		
 		if($loggedin==1) {
 			if($residentStatus==0){
-				$sHTML .='<div class="col desktopVisible"><a href="addResident.php?availableID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-success"><i class="fa fa-home"></i></a></div>';
-				$sHTML .='<div class="col phoneVisible phoneCol adminButton"><a href="addResident.php?beerID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-success"><i class="fa fa-home"></i></a></div>';
+				$sHTML .='<div class="col desktopVisible"><a href="'.$domain.'addResident.php?availableID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-success"><i class="fa fa-home"></i></a></div>';
+				$sHTML .='<div class="col phoneVisible phoneCol adminButton"><a href="'.$domain.'addResident.php?beerID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-success"><i class="fa fa-home"></i></a></div>';
 			} else {
-				$sHTML .='<div class="col desktopVisible"><a href="removeResident.php?availableID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-danger"><i class="fa fa-home"></i></a></div>';
-				$sHTML .='<div class="col phoneVisible phoneCol adminButton"><a href="removeResident.php?availableID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-danger"><i class="fa fa-home"></i></a></div>';
+				$sHTML .='<div class="col desktopVisible"><a href="'.$domain.'removeResident.php?availableID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-danger"><i class="fa fa-home"></i></a></div>';
+				$sHTML .='<div class="col phoneVisible phoneCol adminButton"><a href="'.$domain.'removeResident.php?availableID='.$iAvailableID.'&locationID='.$iLocationID.'" class="btn btn-danger"><i class="fa fa-home"></i></a></div>';
 			}
 		}
 		
 // 		$sHTML .= '<div class="col itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
-		if($oBeer->styleID!=1){$sHTML .= '<div class="col itemAlcohol"><a href="">'.$oStyle->stylename.'</a></div>';}
+		if($oBeer->styleID!=1){$sHTML .= '<div class="col itemAlcohol">'.$oStyle->stylename.'</div>';}
 			$sHTML .='<div class="col itemAlcohol">'.$oBeer->alcohol.'%</a></div>';
 		
 		
@@ -2185,9 +2532,9 @@ static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimsta
 				//$edit = '<a class="btn btn-default" href="editbeer.php?beerID='.$oBeer->beerID.'">edit</a>';
 				if($iLocationManagerID>1){
 					if (in_array($iBeerID, $aBeersAvLoc)) {
-						$addremove = '<a class="btn btn-danger remove" href="removeLocAv.php?userID='.$userID.'&availableID='.$iAvailableID.'"><i class="fa fa-times"></i></a>';		
+						$addremove = '<a class="btn btn-danger remove" href="'.$domain.'removeLocAv.php?userID='.$userID.'&availableID='.$iAvailableID.'"><i class="fa fa-times"></i></a>';		
 							} else {
-							$addremove = '<a class="btn btn-success remove" href="addLocAv.php?userID='.$userID.'&availableID='.$iAvailableID.'"><i class="fa fa-plus"></i></a>';	
+							$addremove = '<a class="btn btn-success remove" href="'.$domain.'addLocAv.php?userID='.$userID.'&availableID='.$iAvailableID.'"><i class="fa fa-plus"></i></a>';	
 					}
 				} else {
 				$add = "";

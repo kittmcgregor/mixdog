@@ -28,7 +28,7 @@
 	$aBreweries = Brewery::all();
 	//echo View::renderLocationTabs($suburb);
 
-	echo View::renderAllBreweries($aBreweries);
+	echo View::renderAllBreweries($aBreweries,$domain);
 
 
 /*
@@ -51,7 +51,7 @@
 $('#brewerySearch').autocomplete({
   	source: function( request, response ) {
   		$.ajax({
-  			url : 'listBreweries.php',
+  			url : '<?php echo $domain ?>listBreweries.php',
   			dataType: "json",
   			type: 'Get',
   			data: {term: request.term},
@@ -73,7 +73,7 @@ $('#brewerySearch').autocomplete({
   	},
   	select: function(event, ui) {  
 	  	console.log(ui);
-               location.href="viewbrewery.php?breweryID=" + ui.item.value;
+               location.href="<?php echo $domain ?>viewbrewery.php?breweryID=" + ui.item.value;
         } 	
 });	
 	

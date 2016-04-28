@@ -88,7 +88,7 @@ if(isset($_POST["keyword"])){
 							echo "</pre>";
 */
 							
-							echo View::renderSearchResults($aBeers,$loggedin,$userID);
+							echo View::renderSearchResults($aBeers,$loggedin,$userID,$domain);
 							
 					?>
 

@@ -1,4 +1,50 @@
 /* HEADER NAV LOGO */
+/* .stars {float: right;} */
+.transparent{
+	opacity: 0;
+}
+.loading {
+	background: url(../images/ajax-loader.gif) no-repeat right;
+	width: 100%;
+	height: 2em;;
+}	
+
+.rating input{
+	margin: 0 .5em;
+}
+.sideitem {
+	padding: .5em;
+	margin-bottom: 1em;
+}
+.sideitemLogo {
+	width: 60px;
+	float: left;
+}
+.sideitemtext {
+	float: left;
+}
+.helptip {
+	opacity: 0;
+	position: absolute;
+	top: 5px;
+	right: 30px;
+	background: #eee;
+	padding: 1em;
+/*
+	-webkit-box-shadow: -3px 3px 3px 3px rgba(0,0,0,0.2);
+	box-shadow: -3px 3px 3px 3px rgba(0,0,0,0.2);
+*/
+	}
+#help-locationselect {
+
+	}
+.sideitem {
+	background: #eee;
+}
+.minilogo{
+    max-width: 50px;
+    max-height: 40px;
+}
 .stat {
 	font-size: 2em;
 }
@@ -425,6 +471,9 @@ p {
  	margin-bottom: 0.5em;
 }
 .clear {
+	clear: both;
+}
+.clearfix {
 	clear: both;
 }
 .filter {

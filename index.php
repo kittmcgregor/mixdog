@@ -30,25 +30,32 @@
 						
 						<p>New Zealand's craft beer tap guide <a class="btn btn-link" href="about.php">read more...</a></p>
 <!-- 						<div class="solidline"></div> -->
+
 						<?php	$totalTaps = Availability::totalTaps();
 								$totalBrews = Beer::allBeers();
 								$totalLoc = Location::all();
 								$totalLocExcl = Beer::exclusive();
-							echo '<p class="quicklinks"><a class="btn btn-default" href="brews.php">'.$totalTaps.' taps </a> <a class="btn btn-default" href="viewlocations.php">'.count($totalLoc).' Locations</a> <a class="btn btn-default" href="viewbreweries.php">'.count(Brewery::all()).' Breweries </a> <a class="btn btn-default" href="exclusive.php">'.count($totalLocExcl).' tap exclusives </a></p>'; 
+								$aFreshHop = Beer::FreshHop();
+							echo '<p class="quicklinks"><a class="btn btn-default" href="brews">'.$totalTaps.' taps </a> <a class="btn btn-default" href="locations">'.count($totalLoc).' Locations</a> <a class="btn btn-default" href="breweries">'.count(Brewery::all()).' Breweries </a> <a class="btn btn-default" href="exclusive">'.count($totalLocExcl).' tap exclusives </a> <a class="btn btn-default" href="freshhop"> '.count($aFreshHop).' Fresh Hop</a> </p>'; 
 						
 
 						?>
+						<p class="quicklinks">
+<a class="btn btn-success" href="addstatusupdate">Check In <i class="fa fa-check-square" aria-hidden="true"></i></a> <a class="btn btn-info" href="addstatusupdate">Rate <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i></a> <a class="btn btn-warning" href="addstatusupdate">Review <i class="fa fa-pencil" aria-hidden="true"></i></a> <a type="button" class="btn btn-primary" href="addstatusupdate">Upload Photo <i class="fa fa-picture-o" aria-hidden="true"></i></a>
+</p>
 						<?php
 							
 							// LOCATION ACTIVITY
 					$aAvIDs = Availability::all();
 					
 
-					
+					echo "<h4>Recently Tapped</h4>";
 					
 					$limit = 5;
 					echo View::renderActivity($aAvIDs,$limit);
 							
+							
+									
 							echo '<p class="quicklinks"><a class="btn btn-default" href="taps.php"> more fresh taps</a></p>';
 							
 							//pagination();
@@ -79,13 +86,31 @@
 
 	
 						?>
+						
+						<h4>Fresh Hop Brews</h4>
+							<ul id="listings">
+								<?php
+								
+								if(count($aFreshHop)<6){
+									$xpp = count($aFreshHop);
+								} else {
+									$xpp = 5;
+								}
+								$paginate = 0;
+								echo View::renderFreshHopBeers($aFreshHop,$xpp,$paginate,$domain);
+								?>
+							</ul>
+							<?php echo '<p><a class="btn btn-default" href="freshhop">View all Fresh Hop Brews </a></p>'; ?>
+						
+
+						<div class="spacer clearfix"></div>
 						<h4>Exclusively on Tap</h4>
 							<ul id="listings">
 								<?php
 								$aExclusive = Beer::exclusive();
 								$xpp = 5;
 								$paginate = 0;
-								echo View::renderExclusiveBeers($aExclusive,$xpp,$paginate);
+								echo View::renderExclusiveBeers($aExclusive,$xpp,$paginate,$domain);
 								?>
 							</ul>
 							<?php echo '<p><a class="btn btn-default" href="exclusive.php">View all exclusive taps </a></p>'; ?>
@@ -134,20 +159,29 @@
 							</div>
 							
 							<div class="mostliked">
-							<h4>Most Likes</h4>
-							<?php
-							$show = 5;
-							$oAllBeers = new AllBeers();
-							$oAllBeers->loadMostLikes();
-							echo View::rendermostLiked($oAllBeers,$show);
-							?>
+								<h4>Activity</h4>
+								<?php
+									$aStatusUpdates = Status::latest();
+									echo view::renderStatusUpdates($aStatusUpdates,$domain);
+								?>
+							
+							</div>
+								
+							<div class="mostliked">
+								<h4>Most Likes</h4>
+								<?php
+								$show = 5;
+								$oAllBeers = new AllBeers();
+								$oAllBeers->loadMostLikes();
+								echo View::rendermostLiked($oAllBeers,$show,$domain);
+								?>
 							
 							<div>
-							<?php
-							$likestreamlimit = 5;
-							$aLikeStream = Likes::getRecentLikeActivity();
-							echo View::renderLikeStream($aLikeStream,$likestreamlimit);
-							?>
+								<?php
+								$likestreamlimit = 5;
+								$aLikeStream = Likes::getRecentLikeActivity();
+								echo View::renderLikeStream($aLikeStream,$likestreamlimit,$domain);
+								?>
 							</div>
 
 

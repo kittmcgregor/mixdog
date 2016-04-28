@@ -46,6 +46,8 @@
 			}
 			$oNewBrewery->breweryname = $_POST["BreweryName"];
 			$oNewBrewery->fullbreweryname = $_POST["FullBreweryName"];
+				$createslug = strtolower(str_replace(array('&','+','.',"'",'(',')'),"",str_replace(' ','-',$oNewBrewery->breweryname)));
+			$oNewBrewery->slug = $createslug;
 			$oNewBrewery->brewerywebsite = $clensedurl;
 			$oNewBrewery->breweryaddress = $_POST["BreweryAddress"];
 				

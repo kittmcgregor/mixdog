@@ -28,7 +28,7 @@
 	$oBrewery = new Brewery();
 	$oBrewery->load($iBreweryID);
 					
-	echo View::renderBrewery($oBrewery);
+	echo View::renderBrewery($oBrewery,$domain);
 
 
 	// Load Beers related to location
@@ -36,7 +36,7 @@
 
 	$aBeers = Beer::loadIDsByBrewery($iBreweryID);
 	
-	echo View::renderBeersByBrewery($aBeers);
+	echo View::renderBeersByBrewery($aBeers,$domain);
 
 /*
 	$aBeersAvailable = Availability::loadBrewery($iBreweryID);

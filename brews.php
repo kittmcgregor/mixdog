@@ -12,7 +12,7 @@
 
 			
 			<div id="searchForm">
-				<form id="homeSearchForm" action="search.php" method="post" enctype="multipart/form-data">
+				<form id="homeSearchForm" action="<?php echo $domain ?>search.php" method="post" enctype="multipart/form-data">
 					<div class="form-group clearfix">
 						<div class="col-md-8"><input type="text" class="form-control" id="searchKeywords" name="keyword" placeholder="search keywords..." value=""/></div>
 						<div class="col-md-4"><input type="submit" id="submit" value="release the hounds" class="btn"></div>
@@ -31,7 +31,8 @@
 						<?php	$totalTaps = Availability::totalTaps();
 								$totalLoc = Location::all();
 								$totalLocExcl = Beer::exclusive();
-							echo '<p><a class="btn btn-default" href="viewlocations.php">View '.count($totalLoc).' Locations</a> <a class="btn btn-default" href="exclusive.php">View '.count($totalLocExcl).' tap only brews </a></p>'; ?>
+								$aFreshHop = Beer::FreshHop();
+							echo '<p><a class="btn btn-default" href="viewlocations.php">'.count($totalLoc).' Locations</a> <a class="btn btn-default" href="viewbreweries.php">'.count(Brewery::all()).' Breweries </a> <a class="btn btn-default" href="exclusive.php">'.count($totalLocExcl).' tap only brews </a> <a class="btn btn-default" href="freshhop"> '.count($aFreshHop).' Fresh Hop</a></p>'; ?>
 						
 						<?php
 							
@@ -60,7 +61,7 @@
 							echo '<h4>All Brews</h4>';
 							$iBeersPerPage = 20;
 							$currentpage = "brews";
-							echo View::renderAllBeers($oAllBeers,$loggedin,$userID,$iBeersPerPage,$currentpage);
+							echo View::renderAllBeers($oAllBeers,$loggedin,$userID,$iBeersPerPage,$currentpage,$domain);
 							
 							// Fresh
 /*
@@ -79,15 +80,15 @@
 								<p class="claimleft padtop1em">
 								Breweries, Bars & Shops can claim ownership and manage their brews.</p>
 								<a href="about.php" class="btn btn-default claimleft">claim</a>
-								<a href="about.php"><img class="imgspace" src="<?php echo $imgpath; ?>promoadd.png"/></a>
-								<a href="about.php"><img class="imgspace" src="<?php echo $imgpath; ?>promoremove.png"/></a>
+								<a href="about.php"><img class="imgspace" src="<?php echo $domain.$imgpath; ?>promoadd.png"/></a>
+								<a href="about.php"><img class="imgspace" src="<?php echo $domain.$imgpath; ?>promoremove.png"/></a>
 							</div>
 							
 							<div>
 							<?php
 							$likestreamlimit = 5;
 							$aLikeStream = Likes::getRecentLikeActivity();
-							echo View::renderLikeStream($aLikeStream,$likestreamlimit);
+							echo View::renderLikeStream($aLikeStream,$likestreamlimit,$domain);
 							?>
 							</div>
 
@@ -97,7 +98,7 @@
 							$show = 5;
 							$oAllBeers = new AllBeers();
 							$oAllBeers->loadMostLikes();
-							echo View::rendermostLiked($oAllBeers,$show);
+							echo View::rendermostLiked($oAllBeers,$show,$domain);
 							?>
 <!-- 						<a href="stats.php" class="">view all</a> -->
 							</div>							

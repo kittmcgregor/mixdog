@@ -1,6 +1,8 @@
 <?php 
 	require_once("connection.php");
 	require_once("location.php");
+	require_once("beer.php");
+	require_once("brewery.php");
 	
 class Availability{
 		private $iAvailabilityID;
@@ -28,7 +30,7 @@ class Availability{
 		$oCon = new Connection();
 
 		//2 create query
-		$sSql = "SELECT availabilityID, date, breweryID, beerID, locationID FROM `availability` WHERE locationID=$locationID AND archive=0 ORDER BY date DESC";
+		$sSql = "SELECT availabilityID FROM `availability` WHERE locationID=$locationID AND archive=0 ORDER BY date DESC";
 
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -50,7 +52,7 @@ class Availability{
 		$oCon = new Connection();
 
 		//2 create query
-		$sSql = "SELECT availabilityID, date, breweryID, beerID, locationID FROM `availability` WHERE locationID=$locationID ORDER BY date DESC";
+		$sSql = "SELECT availabilityID FROM `availability` WHERE locationID=$locationID ORDER BY date DESC";
 
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -195,12 +197,49 @@ static public function lastWeek($iLocationID){
 		
 		return $aAvIDs;
 		}
+		
+	static public function listall(){
+		$oCon = new Connection();
+		$sSql = "SELECT availabilityID FROM `availability` WHERE archive = 0 ORDER BY date DESC LIMIT 0 , 10";
+		
+		$aAvOs = array();
+		
+		$oResultSet = $oCon->query($sSql);
+		// load all subjects and add to array
+		while($aRow = $oCon->fetchArray($oResultSet)){
+		$aAvID = $aRow["availabilityID"];
+		$oAvial = new Availability();
+		$oAvial->load($aAvID);
+		$date = $oAvial->date;
+		
+
+		
+		$oBeer = new Beer();
+		$oBeer->load($oAvial->beerID);
+		$beername = $oBeer->title;
+		$beerphoto = $oBeer->photo;
+		$beerID = $oBeer->beerID;
+		
+		$oBrewery = new Brewery();
+		$oBrewery->load($oBeer->breweryID);
+		$breweryphoto = $oBrewery->breweryphoto;
+		
+		$oLoc = new Location();
+		$oLoc->load($oAvial->locationID);
+		$locname = $oLoc->locationname;
+
+		$aAvOs[] = array('Brewid'=>$beerID,'Date'=>$date,'Brew'=>$beername,'Location'=>$locname,'BeerPhoto'=>$beerphoto,'BreweryPhoto'=>$breweryphoto,);
+		}
+		//5 close connection
+		$oCon->close();
+		
+		return $aAvOs;
+		}
 	
 	static public function loadLocationIDs($beerID){
-	//return a list of all likes
 	$aLocationIDs = array();
 				
-	// query all subject IDs
+	// query 
 	$oCon = new Connection();
 	$sSql = "SELECT `locationID` FROM `availability` WHERE archive = 0 AND beerID=$beerID";
 	

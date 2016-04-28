@@ -15,6 +15,7 @@ class Location{
 	private $sLocationEvents;
 	private $iOldLocationManagerID;
 	private $iNewLocationManagerID;
+	private $sSlug;
 	
 	public  function __construct(){
 		$this->iLocationID = 0;
@@ -29,15 +30,16 @@ class Location{
 		$this->sLocationEvents = "";
 		$this->iOldLocationManagerID = 0;
 		$this->iNewLocationManagerID = 0;
+		$this->sSlug = "";
 	}
-	
-	public function load($locationID){
+
+	public function loadByName($locationName){
 		
 			//1 make connection
 			$oCon = new Connection();
 			
 			//2 create query
-			$sSql = "SELECT locationID, ClaimStatus, locationName, locationAddress, locationSuburb, locationRegion, locationContact, locationWebsite, locationInfo, locationEvents FROM `location` WHERE locationID =".$locationID;
+			$sSql = "SELECT locationID, slug, ClaimStatus, locationName, locationAddress, locationSuburb, locationRegion, locationContact, locationWebsite, locationInfo, locationEvents FROM `location` WHERE slug ='$locationName'";
 			
 			//3 execute query
 			$oResultSet = $oCon->query($sSql);
@@ -45,6 +47,41 @@ class Location{
 			//4 fetch data
 			$aRow = $oCon->fetchArray($oResultSet);
 			$this->iLocationID = $aRow["locationID"];
+			$this->sSlug = $aRow["slug"];
+			$this->iClaimStatus = $aRow["ClaimStatus"];
+			$this->sLocationName = $aRow["locationName"];
+			$this->sLocationAddress = $aRow["locationAddress"];
+			$this->sLocationSuburb = $aRow["locationSuburb"];
+			$this->sLocationRegion = $aRow["locationRegion"];
+			$this->sLocationContact = $aRow["locationContact"];
+			$this->sLocationWebsite = $aRow["locationWebsite"];
+			$this->sLocationInfo = $aRow["locationInfo"];
+			$this->sLocationEvents = $aRow["locationEvents"];
+			
+			$sSql = "SELECT UserID FROM user WHERE locationID ='".$oCon->escape($this->iLocationID)."'";
+			$oResultSet = $oCon->query($sSql);
+			$aRow = $oCon->fetchArray($oResultSet);
+			$this->iOldLocationManagerID = $aRow["UserID"];
+			//5 close connection
+			$oCon->close();
+		
+	}
+
+	public function load($locationID){
+		
+			//1 make connection
+			$oCon = new Connection();
+			
+			//2 create query
+			$sSql = "SELECT locationID, slug, ClaimStatus, locationName, locationAddress, locationSuburb, locationRegion, locationContact, locationWebsite, locationInfo, locationEvents FROM `location` WHERE locationID =".$locationID;
+			
+			//3 execute query
+			$oResultSet = $oCon->query($sSql);
+			
+			//4 fetch data
+			$aRow = $oCon->fetchArray($oResultSet);
+			$this->iLocationID = $aRow["locationID"];
+			$this->sSlug = $aRow["slug"];
 			$this->iClaimStatus = $aRow["ClaimStatus"];
 			$this->sLocationName = $aRow["locationName"];
 			$this->sLocationAddress = $aRow["locationAddress"];
@@ -71,9 +108,10 @@ class Location{
 	
 		if($this->locationID==0){
 		// beer does not exist - do insert
-		$sSql = "INSERT INTO `location` (`locationName`, `locationAddress`, `locationSuburb`, `locationRegion`, `locationContact`, `locationWebsite`, `locationInfo`, `locationEvents`) 
+		$sSql = "INSERT INTO `location` (`locationName`,`slug`, `locationAddress`, `locationSuburb`, `locationRegion`, `locationContact`, `locationWebsite`, `locationInfo`, `locationEvents`) 
 			VALUES ('".$oCon->escape($this->
 					sLocationName)."', '".$oCon->escape($this->
+					sSlug)."', '".$oCon->escape($this->
 					sLocationAddress)."', '".$oCon->escape($this->
 					sLocationSuburb)."', '".$oCon->escape($this->
 					sLocationRegion)."', '".$oCon->escape($this->
@@ -188,7 +226,24 @@ class Location{
 		$oCon->close();
 		}
 
+public function updateLocationSlugs(){
+	// update product
+	$oCon = new Connection();
+	
+	$sSql = "UPDATE location SET 
+		slug = '".$oCon->escape($this->
+				sSlug)."' WHERE locationID = ".$this->iLocationID;	
+		
+		echo $sSql;
+		
+		$bResult = $oCon->query($sSql);
+		if($bResult==false){
+			die($sSql."did not run");
+		}
 
+	
+	$oCon->close();
+	}
 
 		
 	static public function all(){
@@ -298,13 +353,72 @@ class Location{
 		return $aLocations;
 
 	}
+	
 
+	static public function listAjaxLocations(){
+		//1 make connection
+		$oCon = new Connection();
+		$aLocations = array();
+		
+		// exclude WHERE ClaimStatus=0
+		
+		//2 create query
+		$sSql = "SELECT locationID FROM location ORDER BY locationName";
+	
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+
+		//4 fetch data
+			while($aRow=$oCon->fetchArray($oResultSet)){
+			
+				$iLocationID = $aRow["locationID"];
+				$oLocation = new Location();
+				$oLocation->load($iLocationID);
+				$aLocations['-'.$iLocationID] = $oLocation->locationname; // add to array
+			}
+
+		//5 close connection
+		$oCon->close();
+
+		return $aLocations;
+
+	}
+
+	static public function locationIDs(){
+		//1 make connection
+		$oCon = new Connection();
+		$aLocations = array();
+		
+		// exclude WHERE ClaimStatus=0
+		
+		//2 create query
+		$sSql = "SELECT locationID FROM location";
+	
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+
+		//4 fetch data
+			while($aRow=$oCon->fetchArray($oResultSet)){
+			
+				$iLocationID = $aRow["locationID"];
+				$aLocations[] = $iLocationID; // add to array
+			}
+
+		//5 close connection
+		$oCon->close();
+
+		return $aLocations;
+
+	}
 	
 	// getter method
 	public function __get($var){
 		switch ($var){
 		case 'locationID';
 			return $this->iLocationID;
+			break;
+		case 'slug';
+			return $this->sSlug;
 			break;
 		case 'oldlocationmanagerID';
 			return $this->iOldLocationManagerID;
@@ -354,6 +468,9 @@ class Location{
 		switch ($var){
 		case 'locationID';
 			$this->sLocationID = $value;
+			break;
+		case 'slug';
+			$this->sSlug = $value;
 			break;
 		case 'oldlocationmanagerID';
 			$this->iOldLocationManagerID = $value;

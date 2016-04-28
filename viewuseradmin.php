@@ -15,7 +15,7 @@ echo "</pre>";
 
 	$oUser = new User();
 	$oUser->load($iUserID);
-			
+	
 	echo View::renderUserAdmin($oUser);
 
 	//echo View::renderActivity($iUserID);
@@ -54,7 +54,8 @@ echo '<div id="tabs-2" class="clearfix">';
 	
 		// Show followers like activity
 
-		echo View::renderLikeStream($aLikeStream,5);
+		
+		echo View::renderLikeStream($aLikeStream,5,$domain);
 
 
 	}
@@ -179,7 +180,7 @@ echo '</div>'; // close wrapper
 */
 		
 		$aAvailableIDs = Availability::loadIDs($locationID);
-		echo View::renderAvailableData($aAvailableIDs,$locationID,$claimstatus);
+		echo View::renderAvailableData($aAvailableIDs,$locationID,$claimstatus,$domain);
 		
 		
 	}

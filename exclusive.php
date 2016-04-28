@@ -63,7 +63,7 @@
 							$currentpage = "brews";
 							//echo View::renderAllBeers($oAllBeers,$loggedin,$userID,$iBeersPerPage,$currentpage);
 							echo '<ul id="listings">';
-							echo View::renderExclusiveBeers($aExclusive,$iBeersPerPage,1);
+							echo View::renderExclusiveBeers($aExclusive,$iBeersPerPage,1,$domain);
 							echo '<ul id="listings">';
 							
 					// FRESHEST TAPS

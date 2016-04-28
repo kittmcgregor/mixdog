@@ -16,11 +16,7 @@
 	$oExistingBeer = new Beer();
 	$oExistingBeer->load($beerID);
 	
-/*
-	echo "<pre>";
-	print_r($oExistingBeer);
-	echo "</pre>";
-*/
+
 	
 	$aExistingData = array();
 	//$aExistingData["BeerID"] = $oExistingBeer->beerID;
@@ -36,7 +32,14 @@
 	$aExistingData["Alcohol"] = $oExistingBeer->alcohol;
 	$aExistingData["Active"] = $oExistingBeer->active;
 	$aExistingData["Exclusive"] = $oExistingBeer->exclusive;
+	$aExistingData["FreshHop"] = $oExistingBeer->freshhop;
 	$aExistingData["Photo"] = $oExistingBeer->photo;
+	
+/*
+	echo "<pre>";
+	print_r($oExistingBeer);
+	echo "</pre>";
+*/
 	
 	$aLocationIDs = array();
 	foreach($oExistingBeer->locations as $location){
@@ -110,6 +113,7 @@
 			$oExistingBeer->alcohol = $_POST["Alcohol"];
 			//$oExistingBeer->active = $_POST["Active"];
 			$oExistingBeer->exclusive = $_POST["Exclusive"];
+			$oExistingBeer->freshhop = $_POST["FreshHop"];
 			if(isset($_POST["Locations"])){
 				$oExistingBeer->locations = $_POST["Locations"];
 				$aLocations = $_POST["Locations"];
@@ -123,6 +127,9 @@
 				$oBrewery->load($_POST["BreweryID"]);
 				$oExistingBeer->breweryname = $oBrewery->breweryname;
 			}
+
+
+
 
 			$oExistingBeer->update();
 			
@@ -155,7 +162,8 @@
 	$oForm->makeSelectInput("Style","StyleID",Style::stylelist());
 
 	$oForm->makeTextInput("Alcohol %","Alcohol","");
-	$oForm->makeCheckboxInput("Exclusive","Exclusive","1");
+	$oForm->makeCheckboxInput("Exclusive","Exclusive","1","Tap Only");
+	$oForm->makeCheckboxInput("Special Edition","FreshHop","1","Fresh Hop");
 	//$oForm->makeCheckboxResident("Resident","Resident","1");
 	//$oForm->makeSelectInput("Location","LocationID",Location::lists());
 	//$oForm->makeTextInput("Available at:","Location","multiple locations allowed");

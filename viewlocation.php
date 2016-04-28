@@ -41,7 +41,7 @@
 	
 	//$aBeersAvailable = Availability::loadBeers($locationID);
 	//echo View::renderBeersAvailable($aBeersAvailable);
-	echo View::renderAvailableData($aAvailableIDs,$locationID,$claimstatus);
+	echo View::renderAvailableData($aAvailableIDs,$locationID,$claimstatus,$domain);
 	
 			
 /*

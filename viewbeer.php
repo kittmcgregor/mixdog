@@ -6,10 +6,13 @@
 	
 	// Create form object
 	$oForm = new Form();
-
-
 	
 	$beerID = $_GET["beerID"];
+	
+	$oBeer = new Beer();
+	$oBeer->load($beerID);
+	$beerName = $oBeer->slug;
+	
 	
 	$userID = 0;
 	$likeStatus = "";
@@ -139,20 +142,33 @@ $message .= "</body></html>";
 		
 	// VIEW LOCATIONS
 	
-		echo View::renderAvailability($aBeerlocations);
+
+		echo View::renderAvailability($aBeerlocations,$domain);
 		echo '<p>Please note: Freshness is a good indication of availability, although popular kegs often only last a matter of days. If a location is unclaimed then listings are crowd sourced and may not be current. If you\'d like to contribute then please <a href="/register.php" class="btn btn-default nomargin">sign up</a> and do so - cheers! </p>';
 
 		echo "</div>";
 	
-// VIEW COMMENTS
+	echo '<div class="col-md-6">';
+// VIEW CHECKINS
+	
+	
+	echo '<p class="quicklinks">
+<a class="btn btn-success" href="addstatusupdate?brew='.$beerID.'&name='.$beerName.'">Check In <i class="fa fa-check-square" aria-hidden="true"></i></a> <a class="btn btn-info" href="addstatusupdate">Rate <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i></a> <a class="btn btn-warning" href="addstatusupdate">Review <i class="fa fa-pencil" aria-hidden="true"></i></a> <a type="button" class="btn btn-primary" href="addstatusupdate">Photo <i class="fa fa-picture-o" aria-hidden="true"></i></a>
+</p>';
 
+	
+	
+	$checkins = Status::loadbybeer($beerID);
+	echo view::renderCheckins($checkins,$beerID,$domain);
+	
 	// Load commentID array
 	$oCommentIDs = CommentIDs::loadCommentIDs($beerID);
 	
 	// Load comments
 
-		echo '<div class="col-md-6">';
+
 	
+/*
 		echo View::renderComments($oCommentIDs);
 		
 	
@@ -165,6 +181,7 @@ $message .= "</body></html>";
 			$oForm->makeTextArea("Add Review","Comment","you must be logged in to add a review");
 		}
 		echo View::renderCommentForm($oForm);
+*/
 		//echo $uri;
 		//echo View::renderLoginRegister();
 		echo '</div>';

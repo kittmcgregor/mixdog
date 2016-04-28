@@ -9,6 +9,7 @@ class Brewery{
 		private $sBreweryWebsite;
 		private $sAddress;
 		private $sPhoto;
+		private $sSlug;
 		
 		public  function __construct(){
 		$this->iBreweryID = 0;
@@ -18,15 +19,16 @@ class Brewery{
 		$this->sBreweryWebsite = "";
 		$this->sAddress = "";
 		$this->sPhoto = "";
+		$this->sSlug = "";
 		}
 		
-		public function load($iBreweryID){
+	public function load($iBreweryID){
 			
 		//1 make connection
 		$oCon = new Connection();
 		
 		//2 create query
-		$sSql = "SELECT  BreweryID, ClaimStatus, BreweryName, FullName, BreweryWebsite, BreweryAddress, BreweryPhoto FROM  BreweryTable WHERE  BreweryID =".$iBreweryID;
+		$sSql = "SELECT  BreweryID, slug, ClaimStatus, BreweryName, FullName, BreweryWebsite, BreweryAddress, BreweryPhoto FROM  BreweryTable WHERE  BreweryID =".$iBreweryID;
 		
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -34,6 +36,7 @@ class Brewery{
 		//4 fetch data
 		$aRow = $oCon->fetchArray($oResultSet);
 		$this->iBreweryID = $aRow["BreweryID"];
+		$this->sSlug = $aRow["slug"];
 		$this->iClaimStatus = $aRow["ClaimStatus"];		
 		$this->sName = $aRow["BreweryName"];
 		$this->sFullName = $aRow["FullName"];
@@ -45,7 +48,35 @@ class Brewery{
 		$oCon->close();
 		}
 
-		static public function all(){
+
+	public function loadBySlug($slug){
+			
+		//1 make connection
+		$oCon = new Connection();
+		
+		//2 create query
+		$sSql = "SELECT  BreweryID, slug, ClaimStatus, BreweryName, FullName, BreweryWebsite, BreweryAddress, BreweryPhoto FROM  BreweryTable WHERE  slug ='$slug'";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$this->iBreweryID = $aRow["BreweryID"];
+		$this->sSlug = $aRow["slug"];
+		$this->iClaimStatus = $aRow["ClaimStatus"];		
+		$this->sName = $aRow["BreweryName"];
+		$this->sFullName = $aRow["FullName"];
+		$this->sBreweryWebsite = $aRow["BreweryWebsite"];
+		$this->sAddress = $aRow["BreweryAddress"];
+		$this->sPhoto = $aRow["BreweryPhoto"];
+		
+		//5 close connection
+		$oCon->close();
+		}
+
+
+	static public function all(){
 		//1 make connection
 		$oCon = new Connection();
 		$aBreweries = array();
@@ -76,10 +107,11 @@ class Brewery{
 		
 			if($this->breweryID==0){
 			// beer does not exist - do insert
-			$sSql = "INSERT INTO BreweryTable (BreweryName, FullName, BreweryWebsite, BreweryAddress, BreweryPhoto) 
+			$sSql = "INSERT INTO BreweryTable (BreweryName, FullName, slug, BreweryWebsite, BreweryAddress, BreweryPhoto) 
 			VALUES ('".$oCon->escape($this->
 					sName)."', '".$oCon->escape($this->
-					sFullName)."', '".$oCon->escape($this->
+					sFullName)."','".$oCon->escape($this->
+					sSlug)."', '".$oCon->escape($this->
 					sBreweryWebsite)."', '".$oCon->escape($this->
 					sAddress)."', '".$oCon->escape($this->
 					sPhoto)."')";
@@ -163,6 +195,48 @@ class Brewery{
 
 	}
 
+	static public function breweryIDlist(){
+		//1 make connection
+		$oCon = new Connection();
+		$aBreweryList = array();
+		
+		//2 create query
+		$sSql = "SELECT breweryID FROM BreweryTable ORDER BY BreweryName";
+	
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+
+		//4 fetch data
+			while($aRow=$oCon->fetchArray($oResultSet)){
+				$iBreweryID = $aRow["breweryID"];
+				$aBreweryList[] = $iBreweryID; // add to array
+			}
+
+		//5 close connection
+		$oCon->close();
+		return $aBreweryList;
+
+	}
+
+public function updateBrewerySlugs(){
+	// update product
+	$oCon = new Connection();
+	
+	$sSql = "UPDATE BreweryTable SET 
+		slug = '".$oCon->escape($this->
+				sSlug)."' WHERE BreweryID = ".$this->iBreweryID;	
+		
+		echo $sSql;
+		
+		$bResult = $oCon->query($sSql);
+		if($bResult==false){
+			die($sSql."did not run");
+		}
+
+	
+	$oCon->close();
+	}
+	
 static public function brewerylistoffset(){
 		//1 make connection
 		$oCon = new Connection();
@@ -199,6 +273,9 @@ static public function brewerylistoffset(){
 		case 'breweryID';
 			return $this->iBreweryID;
 			break;
+		case 'slug';
+			return $this->sSlug;
+			break;
 		case 'claimstatus';
 			return $this->iClaimStatus;
 			break;	
@@ -227,6 +304,9 @@ static public function brewerylistoffset(){
 		switch ($var){
 		case 'breweryID';
 			$this->iBreweryID = $value;
+			break;
+		case 'slug';
+			$this->sSlug = $value;
 			break;
 		case 'breweryname';
 			$this->sName = $value;
