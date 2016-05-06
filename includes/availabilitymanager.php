@@ -45,6 +45,29 @@ class Availability{
 		return $aAvIDs;
 		}
 
+	static public function loadlatestID($locationID){
+		
+		//1 make connection
+		$oCon = new Connection();
+
+		//2 create query
+		$sSql = "SELECT availabilityID FROM `availability` WHERE locationID=$locationID AND archive=0 ORDER BY date DESC LIMIT 1";
+
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$aAvID= $aRow["availabilityID"];
+
+		
+		
+		//5 close connection
+		$oCon->close();
+		
+		return $aAvID;
+		}
+		
 	static public function loadAllIDs($locationID){
 		
 		$aAvIDs = array();
@@ -343,14 +366,141 @@ static public function loadBeerIDs($locationID){
 	return $iTotal;
 	}
 	
+	static public function listBrewTaps($BeerID){
+		//return a list of all likes
+					
+		// query 
+		$oCon = new Connection();
+		//$sSql = "SELECT `beerID` FROM `availability` WHERE locationID='$locationID' ORDER BY beerID DESC";
+		$sSql = "SELECT locationID FROM availability WHERE archive=0 AND beerID=$BeerID";
+	
+		$oResultSet = $oCon->query($sSql);
+			
+		// load all subjects and add to array
+/*
+		$aRow = $oCon->fetchArray($oResultSet);
+		$iTotal = $aRow["COUNT(*)"];
+*/
+		
+		$aMarkers = array();
+			
+		// load all subjects and add to array
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$iLocationID = $aRow["locationID"];
+			
+			$oBeer = new Beer();
+			$oBeer->load($BeerID);
+			$brewname = $oBeer->title;
+			
+			$oBrewery = new Brewery();
+			$oBrewery->load($oBeer->breweryID);
+			$breweryname = $oBrewery->breweryname;
+			
+			$oLocation = new Location();
+			$oLocation->load($iLocationID);
+			
+			if(($oLocation->lat != 0) && ($oLocation->lng!=0) ){
+					
+				if($oBeer->breweryID>1){
+					$breweryphoto = $oBrewery->breweryphoto;
+				}
+				
+				if ($oBeer->photo!=""){
+					$iconfile = $oBeer->photo;
+					//$iconimage = 'http://brewhound.nz/thumbs/25x25/images/'.$iconfile;
+					
+				} elseif ($oBeer->breweryID>1){
+					$iconfile = $breweryphoto;
+					//$iconimage = 'http://brewhound.nz/thumbs/25x25/images/'.$iconfile;
+				} 
+				else {
+					$iconimage = 'http://brewhound.nz/assets/images/hound.png';
+				} 
+				
+				
+				$aMarkers[] = array( 'id'=>$iLocationID,'markername' => $oLocation->locationname, 'link' => $oLocation->slug, 'latest' => $breweryname.' '.$brewname, 'image' => $iconfile, array('lat' => floatval($oLocation->lat),'lng' => floatval($oLocation->lng)));
+				
+			}
+		}
+		
+		$oCon->close();
+	return $aMarkers;
+	}
+
+	static public function listBreweryTaps($BreweryID){
+		//return a list of all likes
+					
+		// query 
+		$oCon = new Connection();
+		//$sSql = "SELECT `beerID` FROM `availability` WHERE locationID='$locationID' ORDER BY beerID DESC";
+		$sSql = "SELECT availabilityID FROM availability WHERE archive=0 AND breweryID=$BreweryID";
+
+		$oResultSet = $oCon->query($sSql);
+			
+		// load all subjects and add to array
+/*
+		$aRow = $oCon->fetchArray($oResultSet);
+		$iTotal = $aRow["COUNT(*)"];
+*/
+
+		$aMarkers = array();
+			
+		// load all subjects and add to array
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			
+			$iAvID = $aRow["availabilityID"];
+			$oAvail = new Availability();
+			$oAvail->load($iAvID);
+			
+			$oLocation = new Location();
+			$oLocation->load($oAvail->locationID);
+		
+			$oBrewery = new Brewery();
+			$oBrewery->load($oAvail->breweryID);
+			$breweryname = $oBrewery->breweryname;
+
+			
+			$oBeer = new Beer();
+			$oBeer->load($oAvail->beerID);
+			$brewname = $oBeer->title;
+
+
+			if(($oLocation->lat != 0) && ($oLocation->lng!=0)){
+
+					if($oBeer->breweryID>1){
+						$breweryphoto = $oBrewery->breweryphoto;
+					}
+					
+					if ($oBeer->photo!=""){
+						$iconfile = $oBeer->photo;
+						//$iconimage = 'http://brewhound.nz/thumbs/25x25/images/'.$iconfile;
+						
+					} elseif ($oBeer->breweryID>1){
+						$iconfile = $breweryphoto;
+						//$iconimage = 'http://brewhound.nz/thumbs/25x25/images/'.$iconfile;
+					} 
+					else {
+						$iconimage = 'http://brewhound.nz/assets/images/hound.png';
+					}
+	
+					$aMarkers[] = array( 'id'=>$oAvail->locationID,'markername' => $oLocation->locationname, 'link' => $oLocation->slug, 'latest' => $breweryname.' '.$brewname, 'image' => $iconfile, array('lat' => floatval($oLocation->lat),'lng' => floatval($oLocation->lng)));
+				
+			} 
+		}
+		
+		$oCon->close();
+		return $aMarkers;
+	}
+		
 	static public function loadBrewery($breweryID){
 	//return a list of all likes
 	$aBeers = array();
 				
 	// query 
 	$oCon = new Connection();
-	$sSql = "SELECT DISTINCT `beerID` FROM `availability` WHERE breweryID='$breweryID' ORDER BY beerID DESC";
-
+	//$sSql = "SELECT DISTINCT `beerID` FROM `availability` WHERE breweryID='$breweryID' ORDER BY beerID DESC";
+	$sSql = "SELECT DISTINCT `beerID` FROM `availability` WHERE breweryID='$breweryID' AND archive='0' ORDER BY beerID DESC";
+	
 	$oResultSet = $oCon->query($sSql);
 	$aBeers = array();
 		

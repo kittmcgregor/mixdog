@@ -1,14 +1,118 @@
 /* HEADER NAV LOGO */
 /* .stars {float: right;} */
-.transparent{
+
+/*
+.desktopmap {
+	display: block;
+	}
+.responsivemap{
+		display: none;
+	}	
+*/
+#searchhover:hover {
+	background: rgba(1,1,1,.5);
+	color: #FFF;
+}
+.fa-globe {
+	padding-top: .5em;
+}
+
+.fullheightmap {
+	height: 80vh;
+}
+.tinymap {
+	height: 150px;
+}
+.smallmap {
+	height: 250px;
+}
+.tallmap {
+	height: 500px;
+	}
+#map{
+	
+}
+.small-btn{
+	background-color: red;
+	padding: 2px;
+}
+.small-btn i {
+	color: #fff;
+}
+li form {
+		line-height: 1em;
+		position: relative;
+}
+#qs {
+	color: #fff;
+	padding: 1em;
+	}
+
+input#quicksearchinput[type="text"]{
+	color: #000;
+	z-index: 3;
+	display: inline-block;
+	margin-top: 1em;
+	padding-right: 0;
+	position: absolute;
+	width: 4em;
+	top:0;
+	right:0;
+	transition: width .4s cubic-bezier(0.000, 0.795, 0.000, 1.000), opacity 0.1s ease 0.1s;
+	cursor: pointer;
 	opacity: 0;
 }
+	
+input#quicksearchinput[type="text"]:focus {
+  z-index: 1;
+  width: 10em;
+  border-bottom: 1px solid #BBB;
+  cursor: text;
+  opacity: 1;
+  border: none;
+  outline: none;
+}
+	
+input#quicksearchinput[type="submit"]{
+	z-index: 2;
+	display: inline-block;
+	padding-top: 1em;
+	width: 1em;
+	text-indent: -10000px;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.imgwrap {
+	width: 3em;
+	}
+.brewtextwrap {
+	margin-left: 1em;
+}
+.ui-img {
+    width: auto;
+    max-width: 30px;
+    max-height: 20px;
+}
+.QSloading {
+	z-index: 400;
+	position: relative;
+	display: block;
+	top: -30px;
+	right: -30px;
+	background: url(../images/ajax-loader.gif) no-repeat right;
+	width: 16px;
+	height: 16px;
+}	
+
 .loading {
 	background: url(../images/ajax-loader.gif) no-repeat right;
 	width: 100%;
-	height: 2em;;
+	height: 2em;
 }	
-
+.transparent{
+	opacity: 0;
+}
 .rating input{
 	margin: 0 .5em;
 }
@@ -123,9 +227,7 @@ aside {
 	display: none;
 	}
 .mobileNav li {
-	width: 50%;
-	display: inline-block;
-	float: left;
+	display: block;
 	}
 .mobileNav li:hover {
 		background: #EEE;
@@ -213,6 +315,7 @@ flex: 1;
 	background: #eee;
 	padding: 0 1em 1em 1em;
 	margin-bottom: 1em;
+	min-height: 450px;
 	}
 
 .padtop1em{
@@ -666,6 +769,19 @@ footer {
 	#mainNav li a {
 		padding: 1.5em .5em; 
 	}
+	.brewdetails{
+		min-height: 200px;
+	}
+		
+/*
+	.desktopmap{
+		display: none;
+	}
+	.responsivemap{
+		display: block;
+		margin-bottom: 2em;
+	}
+*/
 }
 @media (max-width: 600px) {
 }

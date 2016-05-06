@@ -61,6 +61,7 @@ $('#brewerySearch').autocomplete({
 						label: item,
 						value: i
 					}
+					console.log(item);
 				}));
 			//call the filter here
             response($.ui.autocomplete.filter(array, request.term));

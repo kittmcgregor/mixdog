@@ -66,6 +66,45 @@ class User{
 		$oCon->close();
 	}
 	
+	public function loadUserNameProfile($username){
+				//1 make connection
+		$oCon = new Connection();
+
+		//2 create query
+		$sSql = "SELECT UserID, BreweryID, LocationID, UserName, FirstName, LastName, Email, Password FROM  user WHERE  UserName = '$username'";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$this->iUserID = $aRow["UserID"];
+		$this->iBreweryID = $aRow["BreweryID"];
+		$this->iLocationID = $aRow["LocationID"];
+		$this->sUsername = $aRow["UserName"];
+		$this->sFirstname = $aRow["FirstName"];
+		$this->sLastname = $aRow["LastName"];
+		$this->sEmail = $aRow["Email"];
+		$this->sPassword = $aRow["Password"];
+		
+		//load liked beers
+/*
+		$sSql = "SELECT likeID, beerID FROM `like` WHERE UserID =".$iUserID;
+		$oResultSet = $oCon->query($sSql);
+*/
+			
+			//4 fetch data
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$oLike = new Like();
+			$oLike->load($aRow["likeID"]);
+			$this->aLikes[] = $oLike; // add to array
+		}
+		
+		//5 close connection
+		$oCon->close();
+	}
+	
+	
 public function save(){
 		// insert a new page - for now
 		$oCon = new Connection();
@@ -93,7 +132,6 @@ public function save(){
 		}
 
 public function update(){
-		// update product
 		$oCon = new Connection();
 		
 		$sSql = "UPDATE user SET 
@@ -114,6 +152,38 @@ public function update(){
 		$oCon->close();
 		}
 
+static public function checktoken($token,$email){
+	$oCon = new Connection();
+	$sSql = "SELECT token FROM password_resets WHERE token='$token' AND email='$email'";
+	
+	$resultSet = $oCon->query($sSql);
+	
+	$row = $oCon->fetchArray($resultSet);
+	
+	if($row == false){
+		return false;
+	}else{
+		return true;
+	}
+	
+		
+	$oCon->close();
+	}
+
+public function updatepassword(){
+		$oCon = new Connection();
+		
+		$sSql = "UPDATE user SET 
+			Password = '".$oCon->escape($this->
+					sPassword)."' WHERE UserID = ".$this->
+					iUserID;
+		$bResult = $oCon->query($sSql);
+			if($bResult==false){
+				die($sSql."did not run");
+			}
+		
+		$oCon->close();
+		}
 
 public function loadByUserName($sUsername){
 	
@@ -143,6 +213,95 @@ public function loadByUserName($sUsername){
 		
 	$oCon->close();
 }
+
+public function CheckEmailExists($email){
+	
+
+	//1 make connection
+	$oCon = new Connection();
+	
+	//2 create query
+	$sSql = "SELECT UserID FROM user WHERE Email ='".$oCon->escape($email)."'";
+
+	//3 execute query
+	$oResultSet = $oCon->query($sSql);
+	
+	//4 fetch data
+	$aRow = $oCon->fetchArray($oResultSet);
+
+	
+	if ($aRow  == true){
+		
+		$iUserID = $aRow["UserID"];
+		$this->load($iUserID);
+		return true;
+		//return $aRow; $this->iUserID
+	} else {
+		return false;
+	}
+		
+	$oCon->close();
+}
+
+public function loadByUserEmail($email){
+	
+
+	//1 make connection
+	$oCon = new Connection();
+	
+	//2 create query
+	$sSql = "SELECT UserID FROM user WHERE Email ='".$oCon->escape($email)."'";
+
+	//3 execute query
+	$oResultSet = $oCon->query($sSql);
+	
+	//4 fetch data
+	$aRow = $oCon->fetchArray($oResultSet);
+
+	
+	if ($aRow  == true){
+		
+		$iUserID = $aRow["UserID"];
+		$this->load($iUserID);
+		return true;
+		//return $aRow; $this->iUserID
+	} else {
+		return false;
+	}
+		
+	$oCon->close();
+}
+
+public function loadByUserByToken(){
+	
+	$token = $_GET['token'];
+
+	//1 make connection
+	$oCon = new Connection();
+	
+	//2 create query
+	$sSql = "SELECT email FROM password_resets WHERE token =$token";
+
+	//3 execute query
+	$oResultSet = $oCon->query($sSql);
+	
+	//4 fetch data
+	$aRow = $oCon->fetchArray($oResultSet);
+
+	
+	if ($aRow  == true){
+		
+		$iUserEmail = $aRow["email"];
+		$this->loadByUserEmail($iUserEmail);
+		return true;
+		//return $aRow; $this->iUserID
+	} else {
+		return false;
+	}
+		
+	$oCon->close();
+}
+
 
 	static public function all(){
 		//1 make connection
@@ -199,6 +358,18 @@ public function loadByUserName($sUsername){
 
 	}
 
+	static public function token($email,$token){
+		
+		$oCon = new Connection();
+		$sSql = "INSERT INTO password_resets (email, token) VALUES ('".$email."','".$token."')";
+		
+		$bResult = $oCon->query($sSql);
+			if($bResult==false){
+				die($sSql."did not run");
+			}
+		$oCon->close();
+	}
+	
 		
 	// getter method
 	public function __get($var){

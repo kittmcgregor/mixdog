@@ -92,12 +92,14 @@
 	$oForm->makeTextInput("location Website (remove the http:// - we'll add it)","locationWebsite","");
 	$oForm->makeTextArea("location Info","locationInfo","");	
 	$oForm->makeTextArea("location Events","locationEvents","");
+/*
 	if(isset($_SESSION["UserID"])){
 		if ($_SESSION["UserID"]==1) {
 			
 			$oForm->makeSelectInput("User","newLocationManagerID",User::userlist(),"");
 		}
 	}
+*/
 	
 	$oForm->makeSubmit("Update","submit");
 ?>

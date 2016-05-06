@@ -166,13 +166,13 @@ $message .= "</body></html>";
 	
 
 	
-	$oForm->makeTextInput("Brew Name","Title","");
+	$oForm->makeTextInput("Brew Name","Title","start typing to search existing brews...");
 	$oForm->makeTextArea("Description","Description","optional");
-	$oForm->makeSelectInput("Brewery","BreweryID",Brewery::brewerylist());
-	$oForm->makeTextInput('New Brewery - just for this beer? if not then go here: <a class="btn btn-default" href="http://brewhound.nz/addbrewery.php">add brewery</a>',"Brewery","");
+	$oForm->makeSelectBreweryInput("Brewery","BreweryID",Brewery::brewerylist());
+	//$oForm->makeTextInput('New Brewery - just for this beer? if not then go here: <a class="btn btn-default" href="http://brewhound.nz/addbrewery.php">add brewery</a>',"Brewery","");
 	$oForm->makeFileInput("Brew image (Optional)<br/><span class='small'>If not added the existing Brewery image will be used if available.</span>","photo");
-	$oForm->makeSelectInput("Style","StyleID",Style::stylelist());
-	$oForm->makeTextInput('New style - just for this beer? if not then go here: <a class="btn btn-default" href="http://brewhound.nz/addstyle.php">add style</a>',"NewStyle","");
+	$oForm->makeSelectStyleInput("Style","StyleID",Style::stylelist());
+	//$oForm->makeTextInput('New style - just for this beer? if not then go here: <a class="btn btn-default" href="http://brewhound.nz/addstyle.php">add style</a>',"NewStyle","");
 
 	//$oForm->makeTextInput("Brewery ID","BreweryID","");
 
@@ -187,8 +187,8 @@ $message .= "</body></html>";
 	if($_SESSION["LocationManagerID"]>0){
 
 	} else {
-	 	$oForm->makeTextInput("Add new Location","NewLocation","New location Name");
-	 	$oForm->makeCheckboxInputSet("Available at:","Locations",Location::lists());
+	 	//$oForm->makeTextInput("Add new Location","NewLocation","New location Name");
+	 	$oForm->makeCheckboxInputSet('Select available locations: or <a class="btn btn-default" href="http://brewhound.nz/addlocation.php">add location</a>',"Locations",Location::lists());
 	}
 
 	
@@ -215,6 +215,7 @@ $message .= "</body></html>";
     });
 $('#Title').autocomplete({
   	source: function( request, response ) {
+	  	$('#Title').addClass('loading');
   		$.ajax({
   			url : 'listBrews.php',
   			sortResults: false,
@@ -222,6 +223,7 @@ $('#Title').autocomplete({
   			type: 'Get',
   			data: {term: request.term},
 			success: function( data ) {
+				$('#Title').removeClass('loading');
 				 var array = ( $.map( data, function( item,i ) {
 					return {
 						label: item,

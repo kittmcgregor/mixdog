@@ -44,6 +44,7 @@
 	}
 
 	Availability::addAvLoc($beerID,$breweryID,$locationID,$userID);
+	Location::activty($locationID,date('Y-m-d H:i:s'));
 	
 	if(isset($_GET["quickadd"])){
 		header("location:viewbeer.php?beerID=$beerID&addAvLoc=true");

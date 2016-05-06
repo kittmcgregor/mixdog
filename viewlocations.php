@@ -78,14 +78,22 @@
 	}
 ?>
 
+<?php	//echo View::renderLocationTabs($suburb);
+	echo renderLocationTabs($suburb,$domain); ?>
+
+<div class="wrapper clearfix">
+	
+	<div class="col-md-8">
+	<?php	echo View::renderAllLocations($aLocations,$domain); ?>
+	</div>
+	
+	<div class="col-md-4 desktopmap">
+		<div id="map" class="tallmap"></div>
+		<a href="/map">View larger map</a>
+	</div>
+</div>
+
 <?php
-	
-	//echo View::renderLocationTabs($suburb);
-	echo renderLocationTabs($suburb,$domain);
-	
-	echo View::renderAllLocations($aLocations,$domain);
-
-
 /*
 	// Load Beers related to location
 
@@ -95,6 +103,13 @@
 
 
 	include_once'includes/footer.php';
+	$url = 'http://brewhound.nz/listLocationMarkers.php';
+	$lat_long = file_get_contents($url);
+/*
+	echo "<pre>";
+	print_r($lat_long);
+	echo "</pre>";
+*/
 ?>
 <script>
 	
@@ -102,39 +117,96 @@
     function(){
         $(this).val('');
     });
-$('#locationSearch').autocomplete({
-  	source: function( request, response ) {
-  		$.ajax({
-  			url : '<?php echo $domain ?>listLocations.php',
-  			dataType: "json",
-  			type: 'Get',
-  			data: {term: request.term},
-			success: function( data ) {
-				 var array = ( $.map( data, function( item,i ) {
-					return {
-						label: item,
-						value: i
-					}
-				}));
-			//call the filter here
-            response($.ui.autocomplete.filter(array, request.term));
-			console.log(request.term);
-			},
-			error: function() {
-		         $('.searcherror').html('<p>An error has occurred</p>');
-		    }
-  		});
-  	},
-  	select: function(event, ui) {  
-	  	console.log(ui);
-               location.href="<?php echo $domain ?>viewlocation.php?locationID=" + ui.item.value;
-        } 	
-});	
-	
-/*
-  	autoFocus: true,
-  	minLength: 0,
-*/
-
+	$('#locationSearch').autocomplete({
+	  	source: function( request, response ) {
+	  		$.ajax({
+	  			url : '<?php echo $domain ?>listLocations.php',
+	  			dataType: "json",
+	  			type: 'Get',
+	  			data: {term: request.term},
+				success: function( data ) {
+					 var array = ( $.map( data, function( item,i ) {
+						return {
+							label: item,
+							value: i
+						}
+					}));
+				//call the filter here
+	            response($.ui.autocomplete.filter(array, request.term));
+				console.log(request.term);
+				},
+				error: function() {
+			         $('.searcherror').html('<p>An error has occurred</p>');
+			    }
+	  		});
+	  	},
+	  	select: function(event, ui) {  
+			console.log(ui);
+			location.href="<?php echo $domain ?>viewlocation.php?locationID=" + ui.item.value;
+	    } 	
+	});
 </script>
 
+
+
+<script>	
+	var map;
+	function initMap() {
+		    map = new google.maps.Map(document.getElementById('map'), {
+		      center: {lat:-36.865367, lng: 174.761234},
+		      mapTypeControl: false,
+		      streetViewControl: false,
+		      zoom: 13
+		    });
+			
+		    var markers = <?php echo $lat_long; ?>;
+		    
+		    //console.log(markers[0].markername);
+		    		    
+		    for (var i = 0; i < markers.length; i++) {
+
+			    var latlng = markers[i][0];
+			    var markername = markers[i].markername;
+				var link = markers[i].link;
+				var latest = markers[i].latest;
+				var image = markers[i].image;
+				var size = '50x50';
+				var url = 'http://brewhound.nz/thumbs/' + size + '/images/' + image;
+				console.log(image);
+				
+			    marker = new google.maps.Marker({
+					position: latlng,
+					map: map,
+					icon: url,
+					zIndex: i, 
+					title: markername
+				});
+				
+				marker.info = new google.maps.InfoWindow({
+				  content: latest + ' @ <a href="http://brewhound.nz/location/' + link + '">' + markername + '</a>'
+				});
+
+				//console.log(markername);
+				 
+				google.maps.event.addListener(marker, 'click', function() {  
+				    var marker_map = this.getMap();
+				    this.info.open(marker_map, this);
+				    // Note: If you call open() without passing a marker, the InfoWindow will use the position specified upon construction through the InfoWindowOptions object literal.
+				});
+				 
+			}		
+						
+		    var bounds = new google.maps.LatLngBounds();
+			
+			for (var i = 0; i < markers.length; i++) {
+			 		//  And increase the bounds to take this point
+				  bounds.extend (new google.maps.LatLng (markers[i][0].lat,markers[i][0].lng));
+			}
+			
+			map.fitBounds(bounds);
+	
+  	}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEwC6wpxW99D8hw95lEoBjCV1a_qVvcrs&callback=initMap"
+    async defer>
+</script>

@@ -91,12 +91,14 @@
 							</div>
 							
 							<div>
+<!--
 							<?php
 							$likestreamlimit = 5;
 							$aLikeStream = Likes::getRecentLikeActivity();
 							echo View::renderLikeStream($aLikeStream,$likestreamlimit);
 							?>
 							</div>
+-->
 
 							<div class="mostliked">
 							<h4>Most Liked</h4>
@@ -104,7 +106,7 @@
 							$show = 5;
 							$oAllBeers = new AllBeers();
 							$oAllBeers->loadMostLikes();
-							echo View::rendermostLiked($oAllBeers,$show);
+							echo View::rendermostLiked($oAllBeers,$show,$domain);
 							?>
 <!-- 						<a href="stats.php" class="">view all</a> -->
 							</div>							

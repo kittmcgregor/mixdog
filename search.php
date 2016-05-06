@@ -99,3 +99,48 @@ if(isset($_POST["keyword"])){
 	
 	
 	 include_once'includes/footer.php'; ?>
+	 
+<script>
+	
+	$('input#searchKeywords').focus(
+    function(){
+        $(this).val('');
+    });
+$('#searchKeywords').autocomplete({
+  	source: function( request, response ) {
+	  	$('#searchKeywords').addClass('loading');
+  		$.ajax({
+  			url : 'listBrews.php',
+  			sortResults: false,
+  			dataType: "json",
+  			type: 'Get',
+  			data: {term: request.term},
+			success: function( data ) {
+				$('#searchKeywords').removeClass('loading');
+				 var array = ( $.map( data, function( item,i ) {
+					return {
+						label: item,
+						value: i
+					}
+				}));
+			//call the filter here
+            response($.ui.autocomplete.filter(array, request.term));
+			console.log(request.term);
+			},
+			error: function() {
+		         $('.searcherror').html('<p>An error has occurred</p>');
+		    }
+  		});
+  	},
+  	select: function(event, ui) {  
+	  	console.log(ui);
+               location.href="viewbeer.php?beerID=" + ui.item.value.replace('-', '');
+        } 	
+});	
+	
+/*
+  	autoFocus: true,
+  	minLength: 0,
+*/
+
+</script>

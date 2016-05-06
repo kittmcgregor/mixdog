@@ -22,6 +22,7 @@
 	unset($_SESSION["last_page"]);
 	unset($_SESSION["current_page"]);
 */
+	require_once 'phpThumb/phpThumb.config.php';
 	
 	require_once 'includes/view.php';
 	require_once 'includes/form.php';
@@ -105,8 +106,14 @@
 				<div id="branding" style="cursor: pointer;" onclick="window.location='http://brewhound.nz/';"><span class="beta phoneVisible">beta</span> <span class="logotext">brew hound</span> <span class="beta hidePhone">beta</span></div> 
 		
 				<ul id="mainNav">
-<!-- 					<li><a href=""><i class="fa fa-search fa-lg"></i></a></li> -->
-					<li><a href="<?php echo $domain ?>search.php"><i class="fa fa-search fa-lg"></i></a></li>
+					<li><a href="/map"><i class="fa fa-globe fa-2x" aria-hidden="true"></i></a></li>
+					<li id="searchhover"><form id="QSform" action="">
+							<input id="quicksearchinput" name="search" type="text" placeholder="Start typing...">
+							<i id="qs" class="fa fa-search fa-lg"></i>
+				  		</form>
+				  		</li>
+					
+<!-- 					<a href="<?php echo $domain ?>search.php"><i id="quicksearch" class="fa fa-search fa-lg"></i></a></li> -->
 					<li class="dropdown">
 				        <a href="#"><i class="fa fa-bars dropdown-toggle"></i>browse</a>
 				        <ul class="dropdown-menu">
@@ -145,22 +152,23 @@
 				        <div class="collapse" id="mobileToggle">
 					        
 					        <ul class="mobileNav">
-						        <li class="navTitle"><i class="fa fa-eye"></i></li>
-								<li><a href="<?php echo $domain ?>viewlocations.php">browse locations</a></li>
-								<li><a href="<?php echo $domain ?>viewbreweries.php">browse breweries</a></li>
-								<li><a href="<?php echo $domain ?>searchmobile.php"><i class="fa fa-search fa-lg"></i></a></li>
+						        <?php if(isset($_SESSION["UserID"])){
+									echo '<li><a href="'.$domain.'viewuseradmin">my account <i class="fa fa-sign-in"></i></a></li>';
+								} ?>
+								<li><a href="<?php echo $domain ?>viewlocations.php">locations <i class="fa fa-map-marker" aria-hidden="true"></i></a></li>
+								<li><a href="<?php echo $domain ?>viewbreweries.php">breweries <i class="fa fa-beer" aria-hidden="true"></i></a></li>
+								<li><a href="<?php echo $domain ?>map">map <i class="fa fa-globe fa-lg"></i></a></li>
+								<li><a href="<?php echo $domain ?>searchmobile.php">Search <i class="fa fa-search fa-lg"></i></a></li>
 								<div class="clear"></div>
 							<div class="line"></div>
-							<li class="navTitle"><i class="fa fa-plus"></i></li>
-								<li><a href="<?php echo $domain ?>addbeer.php">new brew</a></li>
-								<li><a href="<?php echo $domain ?>viewbreweries.php">from brewery</a></li>
-								<li><a href="<?php echo $domain ?>searchmobile.php">find/search</a></li>
-								<li><a href="<?php echo $domain ?>addstyle.php">new style</a></li>
-								<li><a href="<?php echo $domain ?>addlocation.php">new location</a></li>
-								<li><a href="<?php echo $domain ?>addbrewery.php">new brewery</a></li>
+							<li class="navTitle"><i class="fa fa-plus"></i> add new</li>
+								<li><a href="<?php echo $domain ?>addbeer.php">brew <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
+								<li><a href="<?php echo $domain ?>addstyle.php">style <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
+								<li><a href="<?php echo $domain ?>addlocation.php">location <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
+								<li><a href="<?php echo $domain ?>addbrewery.php">brewery <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
 								<div class="clear"></div>
 							<div class="line"></div>
-							<li class="navTitle"><i class="fa fa-user"></i></li>
+							<li class="navTitle"><i class="fa fa-user"></i> account</li>
 								<?php 
 								if(isset($_SESSION["UserID"])){
 									echo '<li><a href="'.$domain.'logout">logout <i class="fa fa-sign-out"></i></a></li>';
@@ -169,7 +177,7 @@
 								}
 								?>
 								<li><a href="<?php echo $domain ?>register">sign up <i class="fa fa-pencil-square-o"></i></a></li>
-								<li><a href="<?php echo $domain ?>viewuseradmin"><img src="<?php echo $domain ?>assets/images/dogbowl-20.png"/></a></li>
+								<li><a href="<?php echo $domain ?>viewuseradmin">my account <img src="<?php echo $domain ?>assets/images/dogbowl-20.png"/></a></li>
 								<div class="clear"></div>
 					    	</ul>
 					    </div>

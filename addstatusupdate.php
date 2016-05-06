@@ -6,6 +6,11 @@
 		header("location:login.php?requirelogin=true");
 	}
 	
+	
+	$oUsername = new User();
+	$oUsername->load($_SESSION["UserID"]);
+	$username = $oUsername->username;
+	
 /*
 		echo "<pre>";
 		print_r($_GET);
@@ -72,9 +77,16 @@
 			$oNewStatusUpdate->review = $_POST["review"];
 			
 			$oNewStatusUpdate->save();
-	
+			
+			$redirectSlug = $_GET["name"];
+			
+			if($_GET["name"]){
+				header("location:http://brewhound.nz/$redirectSlug");
+				exit;
+			}
+			
 			// redirect to success page
-			header("location:addstatusupdate.php?success=true");
+			header("location:$domain/user/$username?success=true");
 			exit;
 
 		}
@@ -82,10 +94,10 @@
 		
 	}
 
-	$oForm->makeTextInput("Select Brew:","beerselect","Type keyword to search");
+	$oForm->makeTextInput("Select Brew:","beerselect","Start typing keyword to search");
 	$oForm->makeHiddenSelectInput("#beerid ","beerid","");
 
-	$oForm->makeTextInput("Select Location","locationselect","Type keyword to search");
+	$oForm->makeTextInput("Select Location","locationselect","Start typing keyword to search");
 	$oForm->makeHiddenSelectInput("#locationid ","locationid","");
 	
 	//$oForm->makeRatingSelectInput("Rating","rating","");

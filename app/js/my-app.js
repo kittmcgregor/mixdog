@@ -51,7 +51,7 @@ var personHTML = Template7.templates.personTemplate({
 	        //console.log(value);
 	    });
 	    	$$('.create-brew').on('click', function () {
-		    	console.log($$(this).data('id'));
+		    	//console.log($$(this).data('id'));
 		    	
 				createBrewPage($$(this).data('id'));
     		});

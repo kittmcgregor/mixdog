@@ -40,7 +40,7 @@
 	
 			// set values;
 			$oNewLocation->locationname = $_POST["LocationName"];
-			$createslug = strtolower(str_replace(array('&','+','.',"'",'(',')'),"",str_replace(' ','-',$oNewLocation->locationname)));
+			$createslug = strtolower(str_replace(array(',','&','+','.',"'",'(',')'),"",str_replace(' ','-',$oNewLocation->locationname)));
 			$oNewLocation->slug = $createslug;
 			$oNewLocation->locationaddress = $_POST["LocationAddress"];
 			$oNewLocation->locationsuburb = $_POST["LocationSuburb"];

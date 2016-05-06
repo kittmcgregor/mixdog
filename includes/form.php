@@ -84,7 +84,71 @@
 			$this->sHTML .=	$sError;
 			//$this->sHTML .= $sCustomError;
 		}
-	
+
+public function makeSelectBreweryInput($sControlLabel,$sControlName,$aOptions){
+			
+			$sControlData = "";
+			if(isset($this->aData[$sControlName])==true){
+				$sControlData = $this->aData[$sControlName];
+			}
+			$sError = "";
+			
+			if(isset($this->aErrors[$sControlName])==true){
+				$sError = '<p>'.$this->aErrors[$sControlName].'</p>';
+			}
+			$this->sHTML .= '<div class="form-group">';
+			$this->sHTML .= '<label for="'.$sControlName.'">'.$sControlLabel.'</label>';
+			$this->sHTML .=	'<select name="'.$sControlName.'" class="formValue">';
+			
+			// Build select drop menu list
+			foreach ( $aOptions as $optionValue=>$optionName ) {
+				if ($sControlData  == $optionValue) {
+					$selected = 'selected="selected" ';
+				} else {
+					$selected = '';
+				}
+			  $this->sHTML .= '<option value="'.$optionValue.'" name="'.$optionName.'" '.$selected.'>'.$optionName.'</option>';
+			 }
+
+			$this->sHTML .=	'</select>';
+			$this->sHTML .=	 ' or <a class="btn btn-default" href="http://brewhound.nz/addbrewery.php">add brewery</a>';
+			$this->sHTML .= '</div>';
+			$this->sHTML .=	$sError;
+			//$this->sHTML .= $sCustomError;
+		}
+
+public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
+			
+			$sControlData = "";
+			if(isset($this->aData[$sControlName])==true){
+				$sControlData = $this->aData[$sControlName];
+			}
+			$sError = "";
+			
+			if(isset($this->aErrors[$sControlName])==true){
+				$sError = '<p>'.$this->aErrors[$sControlName].'</p>';
+			}
+			$this->sHTML .= '<div class="form-group">';
+			$this->sHTML .= '<label for="'.$sControlName.'">'.$sControlLabel.'</label>';
+			$this->sHTML .=	'<select name="'.$sControlName.'" class="formValue">';
+			
+			// Build select drop menu list
+			foreach ( $aOptions as $optionValue=>$optionName ) {
+				if ($sControlData  == $optionValue) {
+					$selected = 'selected="selected" ';
+				} else {
+					$selected = '';
+				}
+			  $this->sHTML .= '<option value="'.$optionValue.'" name="'.$optionName.'" '.$selected.'>'.$optionName.'</option>';
+			 }
+
+			$this->sHTML .=	'</select>';
+			$this->sHTML .=	 ' or <a class="btn btn-default" href="http://brewhound.nz/addstyle.php">add style</a>';
+			$this->sHTML .= '</div>';
+			$this->sHTML .=	$sError;
+			//$this->sHTML .= $sCustomError;
+		}
+
 	public function makeRatingSelectInput($sControlLabel,$sControlName){
 			
 			$optionName = "rating";
@@ -241,6 +305,7 @@
 
 			$this->sHTML .= '<div class="form-group">';
 			//$this->sHTML .= '<div>//under construction//</div>';
+			
 			$this->sHTML .= '<label for="'.$sControlName.'">'.$sControlLabel.'</label>';
 			
 /*

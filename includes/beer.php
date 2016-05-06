@@ -232,8 +232,49 @@ class Beer{
 					$breweryname = $oBeer->breweryname;
 					} else {
 					$breweryname = "";
-					}
+					}				
 				$aAllBrews['-'.$iBeerID] = $oBeer->title.' - '.$breweryname; // add to array
+			}
+
+		//5 close connection
+		$oCon->close();
+		return $aAllBrews;
+		
+		
+	}
+
+	public function	listBrewsMeta(){
+		//1 make connection
+		$oCon = new Connection();
+		$aAllBrews = array();
+		
+		//2 create query
+		$sSql = "SELECT BeerID FROM beer ORDER BY Title";
+	
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+
+		//4 fetch data
+			while($aRow=$oCon->fetchArray($oResultSet)){
+				$iBeerID = $aRow["BeerID"];
+				$oBeer = new Beer();
+				$oBeer->load($iBeerID);
+				if($oBeer->breweryID!=1){
+					$breweryname = $oBeer->breweryname;
+				} else {
+				$breweryname = "";
+				}
+				if($oBeer->photo){
+					$photo = $oBeer->photo;
+				} else {
+					$oBrewery = new Brewery();
+					$oBrewery->load($oBeer->breweryID);
+					$photo = $oBrewery->breweryphoto;
+				}
+				
+				$aAllBrews[$oBeer->slug] = array('brewtitle' => "$oBeer->title - $breweryname",'brewimg' => $photo);
+				
+				//$aAllBrews['-'.$iBeerID] = $oBeer->title.' - '.$breweryname; // add to array
 			}
 
 		//5 close connection

@@ -257,6 +257,7 @@ static public function brewerylistoffset(){
 					continue;
 				} else {
 					$aBreweryList[$iBreweryID] = $oBrewery->breweryname; // add to array
+					//$aBreweryList[$iBreweryID] = array('name'=>$oBrewery->breweryname,'slug'=>$oBrewery->slug);
 				}
 			}
 

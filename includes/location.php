@@ -1,9 +1,15 @@
 <?php 
 	require_once("connection.php"); 
-
+	require_once("availabilitymanager.php");
+	require_once("beer.php"); 
+	require_once("brewery.php");
+	require_once("phpThumb/phpThumb.config.php");
+		
 class Location{
 	
 	private $iLocationID;
+	private $sLng;
+	private $sLat;
 	private $iClaimStatus;	
 	private $sLocationName;
 	private $sLocationAddress;
@@ -19,6 +25,8 @@ class Location{
 	
 	public  function __construct(){
 		$this->iLocationID = 0;
+		$this->sLat = "";
+		$this->sLng = "";
 		$this->iClaimStatus = 0;
 		$this->sLocationName = "";
 		$this->sLocationAddress = "";
@@ -73,7 +81,7 @@ class Location{
 			$oCon = new Connection();
 			
 			//2 create query
-			$sSql = "SELECT locationID, slug, ClaimStatus, locationName, locationAddress, locationSuburb, locationRegion, locationContact, locationWebsite, locationInfo, locationEvents FROM `location` WHERE locationID =".$locationID;
+			$sSql = "SELECT locationID, lat, lng, slug, ClaimStatus, locationName, locationAddress, locationSuburb, locationRegion, locationContact, locationWebsite, locationInfo, locationEvents FROM `location` WHERE locationID =".$locationID;
 			
 			//3 execute query
 			$oResultSet = $oCon->query($sSql);
@@ -81,6 +89,8 @@ class Location{
 			//4 fetch data
 			$aRow = $oCon->fetchArray($oResultSet);
 			$this->iLocationID = $aRow["locationID"];
+			$this->sLat = $aRow["lat"];
+			$this->sLng = $aRow["lng"];
 			$this->sSlug = $aRow["slug"];
 			$this->iClaimStatus = $aRow["ClaimStatus"];
 			$this->sLocationName = $aRow["locationName"];
@@ -191,6 +201,7 @@ class Location{
 		}
 		
 		
+/*
 		if($_POST["newLocationManagerID"]!=0){
 			// set current user to 0
 			$sSql = "UPDATE user SET 
@@ -222,6 +233,7 @@ class Location{
 			}
 
 		}
+*/
 
 		$oCon->close();
 		}
@@ -325,6 +337,25 @@ public function updateLocationSlugs(){
 
 	}
 	
+	static public function listSingleLocation($id){
+			//1 make connection
+		$oCon = new Connection();
+		$sSql = "SELECT lat, lng FROM location WHERE locationID=$id";
+		
+		$aLocation = array();
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$lat = $aRow["lat"];
+		$lng = $aRow["lng"];
+		$aLocation [] = array('lat'=>floatval($lat), 'lng'=>floatval($lng));
+		if(($lat != 0) && ($lng != 0) ){
+		return $aLocation;
+		}
+	}
+	
 	static public function locationlist(){
 		//1 make connection
 		$oCon = new Connection();
@@ -354,6 +385,105 @@ public function updateLocationSlugs(){
 
 	}
 	
+	static public function locationMarkers(){
+		//1 make connection
+		$oCon = new Connection();
+		$aMarkers = array();
+		
+		// exclude WHERE ClaimStatus=0
+		
+		//2 create query
+		$sSql = "SELECT locationID FROM location";
+		//$sSql = "SELECT locationID FROM location ORDER BY lastactivity";
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+
+		//4 fetch data
+			while($aRow=$oCon->fetchArray($oResultSet)){
+			
+				$iLocationID = $aRow["locationID"];
+				
+				$oLocation = new Location();
+				$oLocation->load($iLocationID);		
+
+				if(($oLocation->lat != 0) && ($oLocation->lng != 0) ){
+					
+					$AvID = Availability::loadlatestID($iLocationID);
+/*
+					echo "<pre>";
+					echo $AvID;
+					echo "</pre>";
+*/
+					
+					$oAvail = new Availability();
+					$oAvail->load($AvID);
+					
+					$beerID = $oAvail->beerID;
+					
+					
+					$oBeer = new Beer();
+					$oBeer->load($beerID);
+					$brewname = $oBeer->title;
+					
+					$oBrewery = new Brewery();
+					$oBrewery->load($oBeer->breweryID);
+					$breweryname = $oBrewery->breweryname;
+					
+					
+					if($oBeer->breweryID>1){
+						$breweryphoto = $oBrewery->breweryphoto;
+					}
+					
+					if ($oBeer->photo!=""){
+						$iconfile = $oBeer->photo;
+						//$iconimage = 'http://brewhound.nz/thumbs/25x25/images/'.$iconfile;
+						
+					} elseif ($oBeer->breweryID>1){
+						$iconfile = $breweryphoto;
+						//$iconimage = 'http://brewhound.nz/thumbs/25x25/images/'.$iconfile;
+					} 
+					else {
+						$iconimage = 'http://brewhound.nz/assets/images/hound.png';
+					}
+					
+					
+/*
+					$oAvail = new Availability();
+					$latestBeer = $oAvail->load($latestAvID);
+					
+					$oBeer = new Beer();
+					$oBeer->load($latestBeer);
+					echo $oBeer->title;
+*/
+					
+					// 'latest' => $oBeer->title,
+
+					//$aMarkers[] = array( 'id'=>$iLocationID,'markername' => $oLocation->locationname, 'link' => $oLocation->slug, array('lat' => floatval($oLocation->lat),'lng' => floatval($oLocation->lng)));
+
+
+					$aMarkers[] = array( 'id'=>$iLocationID,'markername' => $oLocation->locationname, 'link' => $oLocation->slug, 'latest' => $breweryname.' '.$brewname, 'image' => $iconfile, array('lat' => floatval($oLocation->lat),'lng' => floatval($oLocation->lng)));
+					
+				}
+				
+			}
+
+		//5 close connection
+		$oCon->close();
+
+		return $aMarkers;
+
+	}
+
+	static public function activty($locationID,$date){
+		$oCon = new Connection();
+		
+		$sSql = "UPDATE location SET lastactivity = '$date' WHERE locationID = $locationID";
+		
+			$bResult = $oCon->query($sSql);
+			if($bResult==false){
+				die($sSql."did not run");
+			}
+	}
 
 	static public function listAjaxLocations(){
 		//1 make connection
@@ -416,6 +546,12 @@ public function updateLocationSlugs(){
 		switch ($var){
 		case 'locationID';
 			return $this->iLocationID;
+			break;
+		case 'lat';
+			return $this->sLat;
+			break;
+		case 'lng';
+			return $this->sLng;
 			break;
 		case 'slug';
 			return $this->sSlug;

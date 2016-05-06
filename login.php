@@ -100,7 +100,7 @@ echo "</pre>";
 			<p>
 				<ul class="loginExtras">
 					<li><button class="btn"><a href="register.php">sign up</a></button></li>
-					<li><button class="btn"><a href="forgot.php">recover login</a></button></li>
+					<li><button class="btn"><a href="forgot.php">recover login details</a></button></li>
 				</ul>
 			</p>
 			

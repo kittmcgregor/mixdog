@@ -8,8 +8,8 @@
 /*
 echo "<pre>";
 print_r($_SESSION);
-echo "</pre>";
-*/	
+echo "</pre>";	
+*/
 	
 	$iUserID = $_SESSION["UserID"];
 
@@ -18,32 +18,33 @@ echo "</pre>";
 	
 	echo View::renderUserAdmin($oUser);
 
-	//echo View::renderActivity($iUserID);
-
-	// list follow instances
 	
-	$aFollowingIDsList = FollowManager::getFollowingIDsList($iUserID);
-
+	
 echo '<div class="wrapper clearfix">';
 echo '<div id="tabs">
   <ul>
-    <li><a href="#tabs-1">Following</a></li>
-    <li><a href="#tabs-2">Activity</a></li>
+    <li><a href="#tabs-1">Activity</a></li>
+    <li><a href="#tabs-2">Following</a></li>
     <li><a href="#tabs-3">Your Likes</a></li>
     <li><a href="#tabs-4">Your Comments</a></li>
   </ul>';
   
 echo '<div id="tabs-1" class="clearfix">';
-    
-    	if(count($aFollowingIDsList)!=0){
-
-		View::renderFollowingList($aFollowingIDsList);
+		
+		//echo View::renderActivity($iUserID);
+		
+		$aFollowingIDsList = FollowManager::getFollowingIDsList($iUserID);
+		$limit = 10;
+		
+		if(!empty ($aFollowingIDsList)){
+			$aUserIDsOfFollowing = FollowManager::getFollowingUserIDsList($aFollowingIDsList);
+			$aStatusUpdates = Status::followinglatest($aUserIDsOfFollowing);
+			
+			echo View::renderStatusUpdates($aStatusUpdates,$domain,$limit);
 		}
-    
-echo '</div>';
-  
-echo '<div id="tabs-2" class="clearfix">';
-    if(count($aFollowingIDsList)!=0){
+
+/*
+        if(count($aFollowingIDsList)!=0){
 
 		//View::renderFollowingList($aFollowingIDsList);
 		
@@ -71,6 +72,19 @@ echo '<div id="tabs-2" class="clearfix">';
 		//echo View::renderLocationActivityStream($aLocationStream);
 		
 	}
+*/
+
+    
+echo '</div>';
+  
+echo '<div id="tabs-2" class="clearfix">';
+
+	
+	    	if(count($aFollowingIDsList)!=0){
+
+		View::renderFollowingList($aFollowingIDsList);
+		}
+		
 	echo '</div>';
 
     echo '<div id="tabs-3" class="clearfix">';
@@ -127,7 +141,7 @@ echo '</div>'; // close wrapper
 			echo '</div>';
 		echo '</div>';
 
-		echo View::renderBrewery($oBrewery);
+		echo View::renderBrewery($oBrewery,$domain);
 			
 		//echo View::renderBeersAvailable($aBeersAvailable);	
 		

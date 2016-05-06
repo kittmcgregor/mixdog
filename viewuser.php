@@ -16,7 +16,7 @@
 	$oUser = new User();
 	$oUser->load($viewUserID);
 					
-	echo View::renderUser($oUser);
+	echo View::renderUser($oUser,$domain);
 
 
 	echo '<div class="wrapper">';
