@@ -38,8 +38,11 @@ echo '<div id="tabs-1" class="clearfix">';
 		
 		if(!empty ($aFollowingIDsList)){
 			$aUserIDsOfFollowing = FollowManager::getFollowingUserIDsList($aFollowingIDsList);
+			$aUserLocationIDsOfFollowing = FollowManager::getFollowingLocationIDsList($aFollowingIDsList);
 			$aStatusUpdates = Status::followinglatest($aUserIDsOfFollowing);
 			
+			$aStatuses = Status::followinglatestKeys($aUserIDsOfFollowing);
+			$aAvails = Availability::followinglatest($aUserLocationIDsOfFollowing);
 			echo View::renderStatusUpdates($aStatusUpdates,$domain,$limit);
 		}
 
@@ -185,7 +188,7 @@ echo '</div>'; // close wrapper
 		$oLocation->load($oUser->locationID);
 		$locationID = $oLocation->locationID;
 		$claimstatus = $oLocation->claimstatus;			
-		echo View::renderLocation($oLocation);
+		echo View::renderLocation($oLocation,$domain);
 	
 		// Load Beers related to location
 /*
@@ -202,5 +205,34 @@ echo '</div>'; // close wrapper
 
 	
 	include_once'includes/footer.php';
+	
+/*
+echo "<pre>";
+print_r($aFollowingIDsList);
+echo "</pre>";
+*/
+	
+/*
+echo "<pre>";
+print_r($aStatuses);
+echo "</pre>";
+
+echo "<pre>";
+print_r($aAvails);
+echo "</pre>";
+
+$activity = $aStatuses + $aAvails;
+ksort($activity);
+
+$latestActivity = array();
+
+foreach ($activity as $key => $val) {
+    $latestActivity[$key] = $val;
+}
+
+echo "<pre>";
+print_r($latestActivity);
+echo "</pre>";
+*/
 
 ?>

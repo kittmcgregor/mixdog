@@ -136,6 +136,55 @@ class Status{
 		while($aRow = $oCon->fetchArray($oResultSet)){
 			$iStatusID = $aRow["id"];
 			$aUsersActivity[] = $iStatusID;
+		}
+		$oCon->close();
+	
+		return $aUsersActivity;
+		}
+
+
+	static public function followinglatestKeys($aUserIDsOfFollowing){
+		
+		$comma_separated = implode(",", $aUserIDsOfFollowing);
+		
+		//return a list of all likes
+		$aUsersActivity = array();
+		
+		// query all subject IDs
+		$oCon = new Connection();
+		$sSql = "SELECT id, created_at  FROM statusupdates WHERE userid IN ($comma_separated) ORDER BY created_at DESC LIMIT 0 , 10 ";
+		//echo $sSql;
+		
+		$oResultSet = $oCon->query($sSql);
+		
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$iStatusID = $aRow["id"];
+			$time = $aRow["created_at"];
+			$timestring = strtotime($time);
+			$aUsersActivity[$timestring] = $iStatusID;		
+		}
+		$oCon->close();
+	
+		return $aUsersActivity;
+		}
+
+	static public function BACKUPollowinglatest($aUserIDsOfFollowing){
+		
+		$comma_separated = implode(",", $aUserIDsOfFollowing);
+		
+		//return a list of all likes
+		$aUsersActivity = array();
+		
+		// query all subject IDs
+		$oCon = new Connection();
+		$sSql = "SELECT id, created_at  FROM statusupdates WHERE userid IN ($comma_separated) ORDER BY created_at DESC LIMIT 0 , 10 ";
+		//echo $sSql;
+		
+		$oResultSet = $oCon->query($sSql);
+		
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$iStatusID = $aRow["id"];
+			$aUsersActivity[] = $iStatusID;
 /*
 			$iLikeID = $aRow["likeID"];
 			$oLike = new Like();
@@ -147,7 +196,6 @@ class Status{
 	
 		return $aUsersActivity;
 		}
-
 
 	public static function latest(){
 		

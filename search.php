@@ -14,6 +14,10 @@ if(isset($_POST["keyword"])){
 	$sKeyword = mysql_escape_string($sRawKeyword);
 }
 
+if(isset($_GET["keyword"])){
+	$sRawKeyword = $_GET["keyword"];
+	$sKeyword = mysql_escape_string($sRawKeyword);
+}
 
 /*
 	echo "<pre>";

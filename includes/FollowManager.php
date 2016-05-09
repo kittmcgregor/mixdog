@@ -128,6 +128,30 @@ class FollowManager{
 		return $aFollowing;
 	}
 
+	static public function getFollowingLocationIDByUSer($userID,$locationID){
+		
+		//$comma_separated = implode(",", $aFollowingIDsList);
+		
+		//1 make connection
+		$oCon = new Connection();
+		
+		//2 create query
+		$sSql = "SELECT followID FROM FollowingTable
+	WHERE userID=$userID AND followLocationID=$locationID";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$followID = $aRow["followID"];
+		
+		//5 close connection
+		$oCon->close();
+
+		return $followID;
+	}
+
 }
 /*
 $aFollowing = FollowManager::loadFollowing(1);

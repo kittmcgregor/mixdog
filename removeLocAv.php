@@ -26,22 +26,27 @@
 	if(isset($_GET["locationID"])){
 		$locationID = $_GET["locationID"];
 	}
-		
+
+	if(isset($_GET["slug"])){
+		$slug = $_GET["slug"];
+	}
+			
 			echo "<pre>";
 			echo $iAvailableID;
 			echo "</pre>";
 		
 			echo 'remove AvLoc';
-		Availability::removeAvLoc($iAvailableID);
-		
-		
+		Availability::removeAvLoc($iAvailableID);	
 
 	if(isset($_GET["quickremove"])){
-		header("location:viewbeer.php?beerID=$beerID&removeAvLoc=true");
+		
+		header("location:$domain$slug?removedAvLoc=true");
+		//header("location:viewbeer.php?beerID=$beerID&removeAvLoc=true");
 		exit;
 	}
 
 	// redirect 
-	header("location:viewuseradmin.php?removedAvLoc=true&removedAvLocbeerID=$beerID"); 
 	
+	//header("location:viewuseradmin.php?removedAvLoc=true&removedAvLocbeerID=$beerID"); 
+	exit;
 	?>

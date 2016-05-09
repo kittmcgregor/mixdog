@@ -56,12 +56,14 @@ $('#brewerySearch').autocomplete({
   			type: 'Get',
   			data: {term: request.term},
 			success: function( data ) {
+				console.log(data);
 				 var array = ( $.map( data, function( item,i ) {
 					return {
-						label: item,
-						value: i
+						label: item.name,
+						value: i,
+						slug:item.slug
 					}
-					console.log(item);
+					//console.log(item);
 				}));
 			//call the filter here
             response($.ui.autocomplete.filter(array, request.term));
@@ -73,8 +75,10 @@ $('#brewerySearch').autocomplete({
   		});
   	},
   	select: function(event, ui) {  
-	  	console.log(ui);
-               location.href="<?php echo $domain ?>viewbrewery.php?breweryID=" + ui.item.value;
+	  	console.log(ui.item);
+	  	console.log(ui.item.slug);
+	  	location.href="<?php echo $domain ?>brewery/" + ui.item.slug;
+               //location.href="<?php echo $domain ?>viewbrewery.php?breweryID=" + ui.item.value;
         } 	
 });	
 	

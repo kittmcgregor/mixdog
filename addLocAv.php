@@ -17,14 +17,14 @@
 	}
 */
 	
-/*
 		echo "<pre>";
 		print_r($_GET);
 		echo "</pre>";
 	
-	exit;
-*/
-	
+
+	if(isset($_GET["slug"])){
+		$slug = $_GET["slug"];
+	}	
 	
 	if(isset($_GET["beerID"])){
 		$beerID = $_GET["beerID"];
@@ -43,15 +43,21 @@
 		$userID = $_SESSION["UserID"];
 	}
 
+
 	Availability::addAvLoc($beerID,$breweryID,$locationID,$userID);
 	Location::activty($locationID,date('Y-m-d H:i:s'));
 	
 	if(isset($_GET["quickadd"])){
-		header("location:viewbeer.php?beerID=$beerID&addAvLoc=true");
+		
+		//echo $domain.$slug.'?addAvLoc=true';
+		header("location:$domain$slug?addAvLoc=true");
+		//header("location:viewbeer.php?beerID=$beerID&addAvLoc=true");
 		exit;
 	}
 	
+
 	// redirect 
-	header("location:index.php?addAvLoc=true"); 
+	header("location:$domain$slug?addAvLoc=true");
+	//header("location:index.php?addAvLoc=true"); 
 	
 	?>

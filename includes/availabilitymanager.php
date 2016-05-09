@@ -145,7 +145,7 @@ class Availability{
 		$oCon = new Connection();
 
 		//2 create query
-		$sSql = "SELECT availabilityID FROM `availability` WHERE beerID=$iBeerID AND locationID=$iLocationID";
+		$sSql = "SELECT availabilityID FROM `availability` WHERE beerID=$iBeerID AND locationID=$iLocationID AND archive=0";
 
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -198,7 +198,32 @@ static public function lastWeek($iLocationID){
 		
 		return $aAvIDs;
 	}
+
+	static public function followinglatest($aLocationIDsOfFollowing){
+		
+		$comma_separated = implode(",", $aLocationIDsOfFollowing);
+		
+		//return a list of all likes
+		$aLocationActivity = array();
+		
+		// query all subject IDs
+		$oCon = new Connection();
+		$sSql = "SELECT availabilityID, date  FROM availability WHERE locationID IN ($comma_separated) ORDER BY date DESC LIMIT 0 , 10 ";
+		//echo $sSql;
+		
+		$oResultSet = $oCon->query($sSql);
+		
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$iAvID = $aRow["availabilityID"];
+			$time = $aRow["date"];
+			$timestring = strtotime($time);
+			$aLocationActivity[$timestring] = $iAvID;
+		}
+		$oCon->close();
 	
+		return $aLocationActivity;
+		}
+			
 	static public function all(){
 		$oCon = new Connection();
 		$sSql = "SELECT availabilityID FROM `availability` WHERE archive = 0 ORDER BY date DESC LIMIT 0 , 30";
@@ -722,11 +747,9 @@ static public function loadBeerIDs($locationID){
 		
 		$sSql = "UPDATE availability SET archive = '1' WHERE availabilityID =$iAvailableID";
 		
-/*
 			echo "<pre>";
 			echo "$sSql";
-			echo "</pre>";
-*/	
+			echo "</pre>";	
 		$oCon->query($sSql);
 		
 		// close connection

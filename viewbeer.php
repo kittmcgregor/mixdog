@@ -102,7 +102,7 @@ $message .= "</body></html>";
 
 	$oBeer = new Beer();
 	$oBeer->load($beerID);
-	
+	$slug = $oBeer->slug;
 /*
 	echo "<pre>";
 	print_r($oBeer);
@@ -119,7 +119,7 @@ $message .= "</body></html>";
 	$aExistingData = array();
 	$aExistingData["Locations"] = $aExistingLocations;
 	
-	echo View::renderBeer($oBeer,$likeStatus,$userID,$aBeerlocations,$aExistingData);
+	echo View::renderBeer($oBeer,$likeStatus,$userID,$aBeerlocations,$aExistingData,$domain,$slug);
 
 // Show list of users who like this beer 
 	$oLikers = Likes::loadLikers($beerID);

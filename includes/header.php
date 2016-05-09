@@ -216,6 +216,13 @@
 		echo "Beer updated successfully<br/>";
 		echo '</div>';
 	}
+
+// brewery
+	 if(isset($_GET["brewerysuccess"])){
+		echo '<div class="wrapper label-success fadeOut">';
+		echo "Brewery added successfully<br/>";
+		echo '</div>';
+		}	
 // style
 	 if(isset($_GET["stylesuccess"])){
 		echo '<div class="wrapper label-success fadeOut">';

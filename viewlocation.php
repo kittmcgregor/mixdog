@@ -16,7 +16,7 @@
 	$oLocation = new Location();
 	$oLocation->load($locationID);
 	$claimstatus = $oLocation->claimstatus;
-	echo View::renderLocation($oLocation);
+	echo View::renderLocation($oLocation,$domain);
 
 // superadmin edit
 	if(isset($_SESSION["UserID"])){

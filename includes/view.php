@@ -713,13 +713,17 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 		static public function renderBeer($oBeer,$likeStatus,$userID,$aBeerlocations,$aExistingData,$domain){
 				$iBeerID = $oBeer->beerid;
 				
-				if($_SESSION["UserID"]){
+				if(isset($_SESSION["UserID"])){
 					$userID=$_SESSION["UserID"];
 					$iLocationManagerID = $_SESSION["LocationManagerID"];
+					$iLocationID = $iLocationManagerID;		
+					$aBeersAvLoc = Availability::loadBeerIDs($iLocationID);
+					
+					$avid = Availability::findAvID($iBeerID,$iLocationID);
+					
 				}
 							
-				$iLocationID = $iLocationManagerID;		
-				$aBeersAvLoc = Availability::loadBeerIDs($iLocationID);				
+			$slug = $oBeer->slug;
 
 /*
 				echo "<pre>";
@@ -799,7 +803,7 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 						
 						$oFormLocAv = new Form();
 						
-						$oFormLocAv->makeLocAvButtons("Available at:","Locations",Location::lists(),$aBeerlocations,$iBreweryID,$oBeer->beerid);
+						$oFormLocAv->makeLocAvButtons("Available at:","Locations",Location::lists(),$aBeerlocations,$iBreweryID,$oBeer->beerid,$slug);
 						
 						//$oFormLocAv->makeSubmit("Add Location","submit");
 						
@@ -812,14 +816,15 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 							$sHTML .= '</div>';
 							$sHTML .= '<a class="btn btn-default" href="editbeer.php?beerID='.$oBeer->beerID.'">edit details</a>';
 							
-							if($iLocationManagerID==40) {
+							if($iLocationManagerID>1) {
 								$edit = "";
 								//$edit = '<a class="btn btn-default" href="editbeer.php?beerID='.$oBeer->beerID.'">edit</a>';
 								if($iLocationManagerID>1){
 									if (in_array($iBeerID, $aBeersAvLoc)) {
-									$addremove = '<a class="btn btn-danger remove" href="'.$domain.'removeLocAv.php?userID='.$userID.'&locationID='.$iLocationID.'&beerID='.$iBeerID.'"><i class="fa fa-times"></i></a>';
+									//$addremove = '<a class="btn btn-danger remove" href="'.$domain.'removeLocAv.php?userID='.$userID.'&locationID='.$iLocationID.'&beerID='.$iBeerID.'"><i class="fa fa-times"></i></a>';
+									$addremove = '<a class="btn btn-danger remove" href="'.$domain.'removeLocAv.php?userID='.$userID.'&locationID='.$iLocationID.'&beerID='.$iBeerID.'&slug='.$slug.'&availableID='.$avid.'&quickremove=true"><i class="fa fa-times"></i></a>';
 									} else {
-									$addremove = '<a class="btn btn-success remove" href="'.$domain.'addLocAv.php?beerID='.$oBeer->beerID.'&locationID='.$iLocationID.'&userID='.$userID.'&breweryID='.$iBreweryID.'"><i class="fa fa-plus"></i></a>';	
+									$addremove = '<a class="btn btn-success remove" href="'.$domain.'addLocAv.php?beerID='.$oBeer->beerID.'&locationID='.$iLocationID.'&userID='.$userID.'&breweryID='.$iBreweryID.'&slug='.$slug.'&quickadd=true"><i class="fa fa-plus"></i></a>';	
 									}
 								} else {
 								$add = "";
@@ -1734,7 +1739,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 		return $sHTML;
 	}
 	
-	static public function renderLocation($oLocation){
+	static public function renderLocation($oLocation,$domain){
 		
 		
 		$sHTML = '<div class="wrapper clearfix locationDetails">';
@@ -1790,7 +1795,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 					
 					// show follow button
 					$sHTML .= '<div class="">
-					<a class="btn btn-default" href="followupdate.php?addfollow=true&revl=true&fl='.$oUser->userID.'">
+					<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revl=true&fl='.$oUser->userID.'">
 					follow</a></div>';	
 					
 					} else {
@@ -1799,15 +1804,18 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 					
 					//check if user viewed is already on follow list
 					if(in_array($iLocationID, $aUserIDsCurrentlyFollowing)){
-						// match > show unfollow
+						// match > show unfollow - get follow id
+						
+						$followID = FollowManager::getFollowingLocationIDByUSer($oUser->userID,$oLocation->locationID);
+
 						$sHTML .= '<div class="">
 						<a class="btn btn-default" 
-						href="viewuseradmin.php">
+						href="'.$domain.'followupdate.php?removefollow=true&followID='.$followID.'">
 						unfollow</a></div>';
 					} else {
 						// no match show follow button
 						$sHTML .= '<div class="">
-						<a class="btn btn-default" href="followupdate.php?addfollow=true&revl=true&fl='.$oLocation->locationID.'">
+						<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revl=true&fl='.$oLocation->locationID.'">
 						follow</a></div>';	
 					}
 
@@ -2354,6 +2362,12 @@ static public function renderBeersByBrewery($aBeersAvailable,$domain){
 			
 			$iTotalTaps = Availability::totalBreweryTaps($iBeerID);
 			
+			if($iTotalTaps==1){
+				$taps = 'tap';
+			} else {
+				$taps = 'taps';
+			}
+			
 			if ($oBeer->photo){
 					$photo = $domain."thumbs/50x50/images/".$oBeer->photo;
 				} else {
@@ -2384,10 +2398,10 @@ static public function renderBeersByBrewery($aBeersAvailable,$domain){
 // 		$sHTML .= '<div class="col itemTitle"><a href="viewbeer.php?beerID='.$oBeer->beerID.'">'.$oBeer->title.'</a></div>';
 					if($oBeer->styleID!=1){$sHTML .= '<div class="col itemAlcohol">'.$oStyle->stylename.'</div>';}
 				$sHTML .='<div class="col itemAlcohol">'.$oBeer->alcohol.'%</a></div>';
-				$sHTML .='<div class="col desktopVisible">'.$iTotalTaps.' Taps</a></div>';
+				$sHTML .='<div class="col desktopVisible">'.$iTotalTaps.' '.$taps.'</a></div>';
 			
 				if($iLocationManagerID>1){}else{
-				$sHTML .='<div class="col phoneVisible">'.$iTotalTaps.' Taps</a></div>';}
+				$sHTML .='<div class="col phoneVisible">'.$iTotalTaps.' '.$taps.'</a></div>';}
 				// show admin buttons
 				if($loggedin==1) {
 					$edit = "";

@@ -129,8 +129,11 @@
 							
 							<div class="aside">
 								<h4>Fresh Taps</h4>
-								<div id="map" class="smallmap"></div>
+								<div id="map" class="smallmap margintop"></div>
 								<a href="/map">View larger map</a>
+								<div id="mapfilters">
+								<a href"#" class="btn btn-default" id="auckland">AKL</a> <a href"#" class="btn btn-default" id="wellington">WGTN</a> <a href"#" class="btn btn-default" id="chch">CHC</a> <a href"#" class="btn btn-default" id="reset">ALL</a>
+								</div>
 							</div>
 							
 <!--
@@ -221,7 +224,7 @@
 		    });
 			
 		    var markers = <?php echo $lat_long; ?>;
-		    
+		    var markerobjects = [];
 		    //console.log(markers[0].markername);
 		    		    
 		    for (var i = 0; i < markers.length; i++) {
@@ -233,7 +236,7 @@
 				var image = markers[i].image;
 				var size = '25x25';
 				var url = 'http://brewhound.nz/thumbs/' + size + '/images/' + image;
-				
+				var region = markers[i].region;
 				//console.log(image);
 				
 			    marker = new google.maps.Marker({
@@ -241,8 +244,11 @@
 					map: map,
 					icon: url,
 					zIndex: i,
-					title: markername
+					title: markername,
+					region: region
 				});
+				
+				markerobjects.push(marker);
 				
 				marker.info = new google.maps.InfoWindow({
 				  content: '<a href="http://brewhound.nz/location/' + link + '">' + latest + ' @ ' + markername + '</a>'
@@ -259,8 +265,77 @@
 				 
 			}		
 			
-			//console.log(markers[0][0].lat);
-			//console.log(markers[0][0].lng);
+
+$(document).on('click', '#reset', function(){
+				$.each(markerobjects, function(i, marker) {
+				marker.setVisible(true);
+				bounds.extend( marker.getPosition() );
+				});
+				map.fitBounds(bounds);
+			});
+
+			$(document).on('click', '#auckland', function(){
+				var bounds = new google.maps.LatLngBounds();
+				console.log(marker.region);
+				$.each(markerobjects, function(i, marker) {
+				    if( marker.region == 'Auckland' ){
+					    marker.setVisible(true);
+				        // extending bounds to contain this visible marker position
+						bounds.extend( marker.getPosition() );
+				    } else {
+					    marker.setVisible(false);
+				    }
+				});
+				map.fitBounds(bounds);
+			});
+
+			$(document).on('click', '#hawkesbay', function(){
+				var bounds = new google.maps.LatLngBounds();
+				console.log(marker.region);
+				$.each(markerobjects, function(i, marker) {
+				    if( marker.region == 'Hawkes Bay' ){
+					    marker.setVisible(true);
+				        // extending bounds to contain this visible marker position
+						bounds.extend( marker.getPosition() );
+				    } else {
+					    marker.setVisible(false);
+				    }
+				});
+				map.fitBounds(bounds);
+			});			
+
+			$(document).on('click', '#wellington', function(){
+				var bounds = new google.maps.LatLngBounds();
+				console.log(marker.region);
+				$.each(markerobjects, function(i, marker) {
+				    if( marker.region == 'Wellington' ){
+					    marker.setVisible(true);
+				        // extending bounds to contain this visible marker position
+						bounds.extend( marker.getPosition() );
+				    } else {
+					    marker.setVisible(false);
+				    }
+				});
+				map.fitBounds(bounds);
+			});	
+
+
+			$(document).on('click', '#chch', function(){
+				var bounds = new google.maps.LatLngBounds();
+				console.log(marker.region);
+				$.each(markerobjects, function(i, marker) {
+				    if( marker.region == 'Christchurch' ){
+					    marker.setVisible(true);
+				        // extending bounds to contain this visible marker position
+						bounds.extend( marker.getPosition() );
+				    } else {
+					    marker.setVisible(false);
+				    }
+				});
+				map.fitBounds(bounds);
+			});	
+
+
 						
 		    var bounds = new google.maps.LatLngBounds();
 			

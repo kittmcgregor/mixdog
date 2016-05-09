@@ -23,7 +23,7 @@ echo '	<style>
 	$oLocation = new Location();
 	$oLocation->load($locationID);
 	$claimstatus = $oLocation->claimstatus;
-	echo View::renderLocation($oLocation);
+	echo View::renderLocation($oLocation,$domain);
 
 
 	// Load Beers related to location

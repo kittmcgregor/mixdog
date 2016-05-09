@@ -336,7 +336,7 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			//$this->sHTML .= $sCustomError;
 		}
 		
-	public function makeLocAvButtons($sControlLabel,$sControlName,$aOptions,$aExistinglocations,$iBreweryID,$iBeerID){
+	public function makeLocAvButtons($sControlLabel,$sControlName,$aOptions,$aExistinglocations,$iBreweryID,$iBeerID,$slug){
 		
 /*
 			$aControlData = array();
@@ -375,10 +375,10 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 					
 					$iAvailableID = Availability::findAvID($iBeerID,$optionValue);
 					
-					$this->sHTML .= '<li><a href="removeLocAv.php?quickremove=true&beerID='.$iBeerID.'&availableID='.$iAvailableID.'" class="btn btn-danger" id="'.$sControlName.'" name="'.$sControlName.'[]" value="'.$optionValue.'" checked />'.$optionName.' <i class="fa fa-minus"></i></a></li>'."\n";
+					$this->sHTML .= '<li><a href="removeLocAv.php?quickremove=true&beerID='.$iBeerID.'&slug='.$slug.'&availableID='.$iAvailableID.'" class="btn btn-danger" id="'.$sControlName.'" name="'.$sControlName.'[]" value="'.$optionValue.'" checked />'.$optionName.' <i class="fa fa-minus"></i></a></li>'."\n";
 					
 				}else{
-					$this->sHTML .= '<li><a href="addLocAv.php?quickadd=true&beerID='.$iBeerID.'&locationID='.$optionValue.'&breweryID='.$iBreweryID.'" class="btn btn-success" id="'.$sControlName.'" name="'.$sControlName.'[]" value="'.$optionValue.'" />'.$optionName.' <i class="fa fa-plus"></i></a><input type="checkbox" class="checkbox" id="" name=""  checked value=""/></li>'."\n";
+					$this->sHTML .= '<li><a href="addLocAv.php?quickadd=true&beerID='.$iBeerID.'&slug='.$slug.'&locationID='.$optionValue.'&breweryID='.$iBreweryID.'" class="btn btn-success" id="'.$sControlName.'" name="'.$sControlName.'[]" value="'.$optionValue.'" />'.$optionName.' <i class="fa fa-plus"></i></a><input type="checkbox" class="checkbox" id="" name=""  checked value=""/></li>'."\n";
 					
 				}
 				

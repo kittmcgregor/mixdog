@@ -22,7 +22,7 @@
 	$locationID = $oLocation->locationID;
 	
 	$claimstatus = $oLocation->claimstatus;
-	echo View::renderLocation($oLocation);
+	echo View::renderLocation($oLocation,$domain);
 
 	
 // superadmin edit
