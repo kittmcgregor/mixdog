@@ -7,6 +7,7 @@ class Comment{
 	private $sDate;
 	private $iBeerID;
 	private $iUserID;
+	private $iStatusID;
 	private $sComment;
 		
 	public  function __construct(){
@@ -14,6 +15,7 @@ class Comment{
 	$this->sDate = "";
 	$this->iBeerID = 0;
 	$this->iUserID = 0;
+	$this->iStatusID = 0;
 	$this->sComment = "";
 	}
 	
@@ -47,10 +49,11 @@ public function save(){
 			$oCon = new Connection();
 			
 			// if like does not exist - do insert
-			$sSql = "INSERT INTO `commentTable`(beerID, userID, comment)
+			$sSql = "INSERT INTO `commentTable`(beerID, userID, statusID, comment)
 			VALUES ('".$oCon->escape($this->
 					iBeerID)."', '".$oCon->escape($this->
 					iUserID)."', '".$oCon->escape($this->
+					iStatusID)."', '".$oCon->escape($this->
 					sComment)."')";	
 			$bResult = $oCon->query($sSql);
 			
@@ -111,7 +114,10 @@ static public function remove($commentID){
 		case 'commentID';
 			$this->iCommentID = $value;
 			break;
-		case 'beerID';
+		case 'statusID';
+			$this->iStatusID = $value;
+			break;
+			case 'beerID';
 			$this->iBeerID = $value;
 			break;
 		case 'userID';

@@ -5,11 +5,11 @@
 	$uri = $_SERVER['REQUEST_URI'];
 	
 	// Create form object
-	$oForm = new Form();
+	//$oForm = new Form();
 
 /*
 echo "<pre>";
-print_r($_GET);
+print_r($_POST);
 echo "</pre>";
 */
 
@@ -36,20 +36,21 @@ echo "</pre>";
 	if(isset($_POST["submit"])){
 		// is it a post request?
 		if(!isset($_GET["success"])){
-			$oForm->data = $_POST;
-		}
-
-		$oForm->checkRequired("Comment");
-
-		if($oForm->valid==true){
-			// insert data to database to create new comment
 			$oNewComment = new Comment();
 			
 			// set values;
 			$oNewComment->beerID = $beerID;
 			$oNewComment->userID = $_SESSION["UserID"];
 			$oNewComment->comment = $_POST["Comment"];
+			$oNewComment->statusID = $_POST["status"];
 			$oNewComment->save();
+		}
+
+		//$oForm->checkRequired("Comment");
+
+		if($oForm->valid==true){
+			// insert data to database to create new comment
+
 	
 			$oUser = new User();
 			$oUser->load($_SESSION["UserID"]);
@@ -172,16 +173,20 @@ echo "</pre>";
 <a class="btn btn-success" href="addstatusupdate?brew='.$beerID.'&name='.$beerName.'">Check In <i class="fa fa-check-square" aria-hidden="true"></i></a> <a class="btn btn-info" href="addstatusupdate">Rate <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i></a> <a class="btn btn-warning" href="addstatusupdate">Review <i class="fa fa-pencil" aria-hidden="true"></i></a> <a type="button" class="btn btn-primary" href="addstatusupdate">Photo <i class="fa fa-picture-o" aria-hidden="true"></i></a>
 </p>';
 	
-			if (isset($_SESSION["UserID"])==true){
+/*
+		if (isset($_SESSION["UserID"])==true){
 			$oForm->makeTextArea("Add Comment","Comment","");
+			$oForm->makeTextInput("Checkin ID","id","");
 			$oForm->makeSubmit("Add Comment","submit");
+			
 		} else {
 			$oForm->makeTextArea("Add Comment","Comment","you must be logged in to add a Comment ");
 		}
+*/
 	
 	
 	$checkins = Status::loadbybeer($beerID);
-	echo view::renderCheckins($checkins,$beerID,$domain,$oForm);
+	echo view::renderCheckins($checkins,$beerID,$domain);
 	
 /*
 	// Load commentID array

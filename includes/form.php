@@ -89,6 +89,10 @@
 			$this->sHTML .=	'<input type="hidden" name="redirect" value="" />';
 		}
 		
+		public function makeHiddenInputValue($sControlLabel,$sControlName,$placeholder){
+			$this->sHTML .=	'<input type="hidden" name="status" value="'.$placeholder.'" />';
+		}
+		
 		public function makeHiddenSelectInput($sControlLabel,$sControlName,$placeholder){
 			$sError = "";
 			if(isset($this->aErrors[$sControlName])==true){

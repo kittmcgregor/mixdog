@@ -157,9 +157,7 @@ function time2str($ts) {
 class View{
 	
 	
-	static public function renderCheckins($aStatusUpdates,$beerID,$domain,$oForm){
-		
-		$sFormHTML = $oForm->html;
+	static public function renderCheckins($aStatusUpdates,$beerID,$domain){
 		
 		$averageRating = 0;
 		$averageRating = Status::averageRating($beerID);
@@ -262,7 +260,20 @@ class View{
 					$sHTML .= '<div>';
 						$sHTML .= '<a role="button" data-toggle="collapse" href="#commentform'.$iCount.'" aria-expanded="false" aria-controls="collapseExample">add comment</a>';
 						$sHTML .= '<div class="collapse" id="commentform'.$iCount.'">';
-						$sHTML .= "$sFormHTML";
+						//$sHTML .= "$sFormHTML";
+						$oForm = new Form();
+						
+						if (isset($_SESSION["UserID"])==true){
+							$oForm->makeTextArea("Add Comment","Comment","");
+							$oForm->makeHiddenInputValue("Checkin ID","id",$oStatus->id);
+							$oForm->makeSubmit("Add Comment","submit");
+							
+						} else {
+							$oForm->makeTextArea("Add Comment","Comment","you must be logged in to add a Comment ");
+						}
+		
+						$sHTML .= "$oForm->html";
+						
 						$sHTML .= '</div>';
 					$sHTML .= '</div>';
 					
