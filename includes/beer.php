@@ -14,6 +14,7 @@ class Beer{
 	private $iBreweryID;
 	private $sBreweryName;
 	private $sAlcohol;
+	private $sIBU;
 	private $bActive;
 	private $bExclusive;
 	private $bFreshHop;
@@ -34,6 +35,7 @@ class Beer{
 		$this->iBreweryID = 0;
 		$this->sBreweryName = "";
 		$this->sAlcohol = 0;
+		$this->sIBU = '';
 		$this->bActive = 1;
 		$this->bExclusive = 0;
 		$this->bFreshHop = 0;
@@ -52,7 +54,7 @@ class Beer{
 		$oCon = new Connection();
 		
 		//2 create query
-		$sSql = "SELECT  BeerID, slug, Title,  Description, StyleID, BreweryID, Brewery, BreweryName, Alcohol, Active, Exclusive, FreshHop, Photo FROM  beer WHERE  slug ='$beerName'";
+		$sSql = "SELECT  BeerID, slug, Title,  Description, StyleID, BreweryID, Brewery, BreweryName, Alcohol, IBU, Active, Exclusive, FreshHop, Photo FROM  beer WHERE  slug ='$beerName' AND active=1";
 
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -69,6 +71,7 @@ class Beer{
 		$this->sBrewery = $aRow["Brewery"];
 		$this->sBreweryName = $aRow["BreweryName"];
 		$this->sAlcohol = $aRow["Alcohol"];
+		$this->sIBU = $aRow["IBU"];
 		$this->bActive = $aRow["Active"];
 		$this->bExclusive = $aRow["Exclusive"];
 		$this->bFreshHop = $aRow["FreshHop"];
@@ -111,7 +114,7 @@ class Beer{
 		$oCon = new Connection();
 		
 		//2 create query
-		$sSql = "SELECT  BeerID, slug, Title,  Description, StyleID, BreweryID, Brewery, BreweryName, Alcohol, Active, Exclusive, FreshHop, Photo FROM  beer WHERE  BeerID =".$iBeerID;
+		$sSql = "SELECT  BeerID, slug, Title,  Description, StyleID, BreweryID, Brewery, BreweryName, Alcohol, IBU, Active, Exclusive, FreshHop, Photo FROM  beer WHERE  BeerID =".$iBeerID;
 		
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -128,6 +131,7 @@ class Beer{
 		$this->sBrewery = $aRow["Brewery"];
 		$this->sBreweryName = $aRow["BreweryName"];
 		$this->sAlcohol = $aRow["Alcohol"];
+		$this->sIBU = $aRow["IBU"];
 		$this->bActive = $aRow["Active"];
 		$this->bExclusive = $aRow["Exclusive"];
 		$this->bFreshHop = $aRow["FreshHop"];
@@ -168,7 +172,7 @@ class Beer{
 		$oCon = new Connection();
 		
 		//2 create query
-		$sSql = "SELECT  BeerID FROM  beer WHERE BreweryID =".$iBreweryID." ORDER BY Title";
+		$sSql = "SELECT  BeerID FROM  beer WHERE BreweryID =".$iBreweryID." AND active=1 ORDER BY Title";
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
 		
@@ -185,7 +189,23 @@ class Beer{
 		$oCon->close();
 	}
 
+	static public function totalBrews(){
+	//return a list of all likes
+				
+	// query 
+	$oCon = new Connection();
+	//$sSql = "SELECT `beerID` FROM `availability` WHERE locationID='$locationID' ORDER BY beerID DESC";
+	$sSql = "SELECT COUNT(*) FROM beer";
+
+	$oResultSet = $oCon->query($sSql);
+		
+	// load all subjects and add to array
+	$aRow = $oCon->fetchArray($oResultSet);
+	$iTotal = $aRow["COUNT(*)"];
 	
+	$oCon->close();
+	return $iTotal;
+	}
 	
 	
 	public function	allBeers(){
@@ -249,16 +269,21 @@ class Beer{
 		$aAllBrews = array();
 		
 		//2 create query
-		$sSql = "SELECT BeerID FROM beer ORDER BY Title";
+		$sSql = "SELECT slug, Title, BreweryName FROM beer ORDER BY Title";
 	
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
 
 		//4 fetch data
 			while($aRow=$oCon->fetchArray($oResultSet)){
-				$iBeerID = $aRow["BeerID"];
+				$slug = $aRow["slug"];
+				$title = $aRow["Title"];
+				$brewery = $aRow["BreweryName"];
+/*
 				$oBeer = new Beer();
 				$oBeer->load($iBeerID);
+*/
+/*
 				if($oBeer->breweryID!=1){
 					$breweryname = $oBeer->breweryname;
 				} else {
@@ -271,9 +296,11 @@ class Beer{
 					$oBrewery->load($oBeer->breweryID);
 					$photo = $oBrewery->breweryphoto;
 				}
+*/
 				
-				$aAllBrews[$oBeer->slug] = array('brewtitle' => "$oBeer->title - $breweryname",'brewimg' => $photo);
-				
+				//$aAllBrews[$oBeer->slug] = array('brewtitle' => "$oBeer->title - $breweryname",'brewimg' => $photo);
+				$aAllBrews[$slug] = $title.' - '.$brewery; // add to array
+				//$aAllBrews[$oBeer->slug] = $oBeer->title.' - '.$breweryname; // add to array
 				//$aAllBrews['-'.$iBeerID] = $oBeer->title.' - '.$breweryname; // add to array
 			}
 
@@ -305,7 +332,7 @@ class Beer{
 					} else {
 					$breweryname = "";
 					}
-				$aAllBrews['-'.$iBeerID] = $oBeer->title.' - '.$breweryname; // add to array
+				$aAllBrews[] = array('id'=>$iBeerID, 'name'=>"$oBeer->title - $breweryname"); // add to array
 			}
 
 		//5 close connection
@@ -360,7 +387,7 @@ public function	listBrewData($id){
 	
 		if($this->beerID==0){
 		// beer does not exist - do insert
-		$sSql = "INSERT INTO beer (Title, slug, Description, StyleID, NewStyle, BreweryID, Brewery, BreweryName, Alcohol, Exclusive, FreshHop, Active, NewLocation, Photo) 
+		$sSql = "INSERT INTO beer (Title, slug, Description, StyleID, NewStyle, BreweryID, Brewery, BreweryName, Alcohol, IBU, Exclusive, FreshHop, Active, NewLocation, Photo) 
 			VALUES ('".$oCon->escape($this->
 					sTitle)."','".$oCon->escape($this->
 					sSlug)."', '".$oCon->escape($this->
@@ -371,6 +398,7 @@ public function	listBrewData($id){
 					sBrewery)."', '".$oCon->escape($this->
 					sBreweryName)."', '".$oCon->escape($this->
 					sAlcohol)."', '".$oCon->escape($this->
+					sIBU)."', '".$oCon->escape($this->
 					bExclusive)."', '".$oCon->escape($this->
 					bFreshHop)."', '".$oCon->escape($this->
 					bActive)."', '".$oCon->escape($this->
@@ -450,6 +478,8 @@ public function updateslugs(){
 					sBreweryName)."', 
 			Alcohol = '".$oCon->escape($this->
 					sAlcohol)."', 
+			IBU = '".$oCon->escape($this->
+					sIBU)."',
 			Exclusive = '".$oCon->escape($this->
 					bExclusive)."', 
 			FreshHop = '".$oCon->escape($this->
@@ -718,6 +748,9 @@ public function updateslugs(){
 		case 'alcohol';
 			return $this->sAlcohol;
 			break;
+		case 'ibu';
+			return $this->sIBU;
+			break;
 		case 'active';
 			return $this->bActive;
 			break;
@@ -779,6 +812,9 @@ public function updateslugs(){
 			break;
 		case 'alcohol';
 			$this->sAlcohol = $value;
+			break;
+		case 'ibu';
+			$this->sIBU = $value;
 			break;
 		case 'active';
 			$this->bActive = $value;

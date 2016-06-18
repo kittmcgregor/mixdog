@@ -5,11 +5,7 @@
 	if (isset($_SESSION["UserID"])==false){
 		header("location:login.php");
 	}
-/*
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";	
-*/
+
 	
 	$iUserID = $_SESSION["UserID"];
 
@@ -17,33 +13,77 @@ echo "</pre>";
 	$oUser->load($iUserID);
 	
 	echo View::renderUserAdmin($oUser);
-
+	
+	$aExistingData = array();
+	$aExistingData["Settings"] = $oUser->settings;
+	
+	$oForm = new Form();
+	$oForm->data = $aExistingData;
 	
 	
-echo '<div class="wrapper clearfix">';
-echo '<div id="tabs">
-  <ul>
-    <li><a href="#tabs-1">Activity</a></li>
-    <li><a href="#tabs-2">Following</a></li>
-    <li><a href="#tabs-3">Your Likes</a></li>
-    <li><a href="#tabs-4">Your Comments</a></li>
-  </ul>';
-  
-echo '<div id="tabs-1" class="clearfix">';
+	if(isset($_POST["submit"])){
 		
-		//echo View::renderActivity($iUserID);
+		$oForm->data = $_POST;
 		
+		if(isset($_POST["Settings"])){
+					//Set values
+			$oUser->settings = $_POST["Settings"];
+	
+		} else {
+			$oUser->settings = "";
+		}
+		
+		$oUser->update();
+		
+	}
+	
+	
+	echo '<div class="wrapper clearfix">';
+	echo '<div id="tabs">
+	  <ul>
+	    <li><a href="#tabs-1">Checkins</a></li>
+	    <li><a href="#tabs-2">Tap Activity</a></li>
+	    <li><a href="#tabs-3">Following</a></li>
+	    <li><a href="#tabs-4">Followers</a></li>
+	    <li><a href="#tabs-5">Likes</a></li>
+	    <li><a href="#tabs-6">Settings</a></li>
+	  </ul>';
+	  
+	echo '<div id="tabs-1" class="clearfix">';
+	
+	//echo '<p>Temporarily Unavailable</p>';
+		// get all followIDs - each follow event
 		$aFollowingIDsList = FollowManager::getFollowingIDsList($iUserID);
-		$limit = 10;
+		$aFollowersIDsList = FollowManager::getFollowersIDsList($iUserID,'followUserID');
 		
+		// limit number of results
+		$limit = 5;
+
 		if(!empty ($aFollowingIDsList)){
+			// get user ids - user ids of those you are following
 			$aUserIDsOfFollowing = FollowManager::getFollowingUserIDsList($aFollowingIDsList);
-			$aUserLocationIDsOfFollowing = FollowManager::getFollowingLocationIDsList($aFollowingIDsList);
-			$aStatusUpdates = Status::followinglatest($aUserIDsOfFollowing);
 			
-			$aStatuses = Status::followinglatestKeys($aUserIDsOfFollowing);
-			$aAvails = Availability::followinglatest($aUserLocationIDsOfFollowing);
-			echo View::renderStatusUpdates($aStatusUpdates,$domain,$limit);
+			// get checkins of those you are following
+			
+			if(!empty ($aUserIDsOfFollowing)){
+						
+				$aStatusUpdates = Status::followinglatest($aUserIDsOfFollowing);
+				//$aStatusUpdatesLatest = Status::latest();
+						
+				
+				if(count($aStatusUpdates)<6){
+					$limit = count($aStatusUpdates);
+				}
+				
+				echo View::renderStatusUpdates($aStatusUpdates,$domain,$limit);
+				
+				// get location IDs
+				$aLocationIDsOfFollowing = FollowManager::getFollowingLocationIDsList($aFollowingIDsList);
+				
+				// get location updates
+				$aAvails = Availability::followinglatestNoDate($aLocationIDsOfFollowing);	
+				//$aStatuses = Status::followinglatestKeys($aUserIDsOfFollowing);
+			}
 		}
 
 /*
@@ -77,43 +117,73 @@ echo '<div id="tabs-1" class="clearfix">';
 	}
 */
 
-    
+// Location Activity
 echo '</div>';
-  
-echo '<div id="tabs-2" class="clearfix">';
 
-	
-	    	if(count($aFollowingIDsList)!=0){
+    echo '<div id="tabs-2" class="clearfix">';
+    if(!empty($aAvails)){
+	    echo View::renderLocationUpdates($aAvails,$domain,$limit);
+    } else {
+	    echo "<p>You're not following any locations yet</p>";
+    }
+	echo '</div>';
 
-		View::renderFollowingList($aFollowingIDsList);
+
+// List of those you are following
+echo '<div id="tabs-3" class="clearfix">';
+
+
+/*
+	    if(count($aFollowingIDsList)!=0){
+		View::renderFollowingList($aFollowingIDsList,$domain);
+		}
+*/
+
+
+	    if(count($aFollowingIDsList)!=0){
+		echo '<h4 class="solidline">Users<h4>';
+		View::renderFollowingUsers($aFollowingIDsList,$domain);
 		}
 		
+	    if(count($aFollowingIDsList)!=0){
+		echo '<h4 class="solidline">Locations<h4>';
+		View::renderFollowinglocation($aFollowingIDsList,$domain);
+		}
+			
+	    if(count($aFollowingIDsList)!=0){
+		echo '<h4 class="solidline">Breweries<h4>';
+		View::renderFollowingbrewery($aFollowingIDsList,$domain);
+		}
+
+/*
+	echo "<pre>";
+	print_r($aFollowingIDsList);
+	echo "</pre>";
+*/
+			
 	echo '</div>';
 
-    echo '<div id="tabs-3" class="clearfix">';
+// List of those who are following you
+    echo '<div id="tabs-4" class="clearfix">';
+	echo View::renderFollowersList($aFollowersIDsList,$domain);
+
 	
+	echo '</div>';
+	
+    echo '<div id="tabs-5" class="clearfix">';	
 	// Load Beers related to user
-
-
 	//$aBeersLiked = Likes::loadBeers($iUserID);
 	echo View::renderBeersLiked($oUser->likes);
-
-
-	echo '</div>';
-		
-    echo '<div id="tabs-4" class="clearfix">';
-	
-// VIEW COMMENTS
-
-	// Load commentID array
-	$oCommentIDs = CommentIDs::loadCommentIDsByUser($iUserID);
-	
-
-	// Load comments
-	echo View::renderUserComments($oCommentIDs);
-
 	echo '</div>';
 
+    echo '<div id="tabs-6" class="clearfix">';	
+
+	$oForm->makeCheckboxInput("Notifications","Settings","1","disable");
+	$oForm->makeSubmitLeft("Save Settings","submit");
+	echo $oForm->html;
+	
+	//echo '<p>Please <a class="btn btn-default" href="http://brewhound.nz/about.php">contact admin</a> for help</p>';
+	echo '</div>';
 
 	echo '</div>'; // close tabs
 
@@ -205,10 +275,42 @@ echo '</div>'; // close wrapper
 
 	
 	include_once'includes/footer.php';
-	
+
 /*
 echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";	
+*/
+
+/*
+	echo "<pre>";
+	print_r($oForm->data);
+	echo "</pre>";
+*/
+
+/*
+	echo "<pre>";
+	echo "user id ".$iUserID;
+	echo "</pre>";
+
+echo "<pre>user ids of those you are following ";
+print_r($aUserIDsOfFollowing);
+echo "</pre>";
+
+	echo "<pre>status updates/checkins ";
+	print_r($aStatusUpdates);
+	echo "</pre>";
+	
+	echo "<pre>latest status updates/checkins ";
+	print_r($aStatusUpdatesLatest);
+	echo "</pre>";
+	
+echo "<pre>Following IDs ";
 print_r($aFollowingIDsList);
+echo "</pre>";
+
+echo "<pre>Followers IDs ";
+print_r($aFollowersIDsList);
 echo "</pre>";
 */
 	

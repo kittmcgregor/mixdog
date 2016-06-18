@@ -1,9 +1,9 @@
 <?php
 //define constants
-define("DB_SERVER", "localhost");
-define("DB_USER", "hound");
+define("DB_SERVER", "mysqlhost");
+define("DB_USER", "baskerville");
 define("DB_PASSWORD", "#Voll3yb4ll");
-define("DB_NAME", "brewhound16");
+define("DB_NAME", "baskerville");
 
 class Connection {
 
@@ -23,6 +23,7 @@ class Connection {
 	public function query($sql) {
 
 		//execute query
+		
 		$result = $this->mysqli->query($sql);
 		return $result;
 	}

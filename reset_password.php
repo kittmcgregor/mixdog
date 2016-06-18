@@ -52,7 +52,8 @@
 		if($verifytoken==false){
 			$error = "token not verified";
 		} else {
-			$oExistingUser->password = $_POST["Password"];
+			$password = $_POST["Password"];
+			$oExistingUser->password = password_hash($password,PASSWORD_DEFAULT);
 			$oExistingUser->updatepassword();
 					// login
 		$_SESSION["UserID"] = $oExistingUser->userID;

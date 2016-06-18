@@ -1,28 +1,19 @@
 <?php include_once'includes/header.php'; 
 ?>
-	
-	
-	
-	
-<!-- 	<div id="banner"></div> -->
-<!-- 		<div id="content" class="wrapper clearfix"></div> -->
-			
-			<div id="searchResults">
-
+			<div id="maincontent">
 					<div class="wrapper clearfix">
 			
 						<div class="col-md-8">
 							<div id="mapfilters" class="marginbottom">
 							<a href"#" class="btn btn-default" id="auckland">AKL</a> <a href"#" class="btn btn-default" id="wellington">WGTN</a> <a href"#" class="btn btn-default" id="chch">CHC</a> <a href"#" class="btn btn-default" id="reset">ALL</a>
 							</div>
-
+							<div id="filter" class="marginbottom">
+							<input type="checkbox" id="toggle-event" data-toggle="toggle" data-on="Unfilter" data-off="Filter"> Show takeaway fill locations (off-license)
+							</div>
 							<div id="map" class="fullheightmap"></div>
-<!-- 							<a href"#" class="btn btn-default" id="today">tapped today</a> <a href"#" class="btn btn-default" id="thisweek">tapped this week</a>  
-	<a href"#" class="btn btn-default" id="hawkesbay">Hawkes Bay</a>
-	 -->
 						</div>
+						
 						<div class="col-md-4">
-							
 							<div class="aside">
 								<h4>Social Media</h4>
 								<h5><a href="https://www.facebook.com/brewhoundnz/" target="_blank"><i class="fa fa-facebook-square"></i> facebook</a> &nbsp;<a href="https://twitter.com/brewhoundnz" target="_blank"><i class="fa fa-twitter-square"></i> twitter</a>
@@ -46,7 +37,6 @@
 							$oAllBeers->loadMostLikes();
 							echo View::rendermostLiked($oAllBeers,$show,$domain);
 							?>
-<!-- 						<a href="stats.php" class="">view all</a> -->
 							</div>							
 							
 						</div>
@@ -59,18 +49,8 @@
 	$lat_long = file_get_contents($url);
 	
 	$datetime = new DateTime();
-	$now = '2016-05-09 18:00:00';
-	//$now = $datetime->format('Y-m-d H:m:s');
+	$now = $datetime->format('Y-m-d H:m:s');
 	$midnight = $datetime->setTime(0,0,0);
-
-
-		echo "<pre>";
-		echo $midnight->format('Y-m-d H:m:s');
-		echo "</pre>";
-		
-		echo "<pre>";
-		echo $now;
-		echo "</pre>";
 	
 	 include_once'includes/footer.php'; ?>
 
@@ -85,17 +65,12 @@
 		    });
 			
 		    var markers = <?php echo $lat_long; ?>;
-		    
-/*
-		    var t = <?php echo $now; ?>.split(/[- :]/);
-		    var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
-*/
+		    regionselect = 'all';
 
 		    var now = '2016-05-09 18:00:00';
 			var midnight = '2016-05-09 00:05:00';
 			var lastweek = '2016-05-06 00:05:00';
-		    //console.log(markers[0].markername);
-		    //console.log(d);
+
 		    // create array of marker objects
 		    markerobjects = [];
 		    	    
@@ -110,8 +85,7 @@
 				var url = 'http://brewhound.nz/thumbs/' + size + '/images/' + image;
 				var updated = markers[i].updated;
 				var region = markers[i].region;
-				//console.log(image);
-				console.log(markers[i].region);
+				var offlicense = markers[i].offlicense;
 				
 			    marker = new google.maps.Marker({
 					position: latlng,
@@ -121,19 +95,16 @@
 					title: markername,
 					 // Custom Attributes / Data / Key-Values
 				    updated: updated,
-				    region: region
+				    region: region,
+				    offlicense: offlicense
 				});
 				
 				// add marker to array
-				//console.log(marker);
 				markerobjects.push(marker);
 				
 				marker.info = new google.maps.InfoWindow({
 				  content: '<a href="http://brewhound.nz/location/' + link + '">' + latest + ' @ ' + markername + '</a>'
-				  //content: '<a href="http://brewhound.nz/location/' + link + '">' + latest + ' @ ' + markername + '</a>'
 				});
-
-				//console.log(markername);
 				 
 				google.maps.event.addListener(marker, 'click', function() {  
 				    var marker_map = this.getMap();
@@ -172,6 +143,8 @@
 			});
 			
 			$(document).on('click', '#reset', function(){
+				$('#toggle-event').bootstrapToggle('off');
+				regionselect = 'all';
 				$.each(markerobjects, function(i, marker) {
 				marker.setVisible(true);
 				bounds.extend( marker.getPosition() );
@@ -180,8 +153,10 @@
 			});
 
 			$(document).on('click', '#auckland', function(){
+				$('#toggle-event').bootstrapToggle('off');
 				var bounds = new google.maps.LatLngBounds();
-				console.log(marker.region);
+				regionselect = 'Auckland';
+				console.log(regionselect);
 				$.each(markerobjects, function(i, marker) {
 				    if( marker.region == 'Auckland' ){
 					    marker.setVisible(true);
@@ -192,26 +167,13 @@
 				    }
 				});
 				map.fitBounds(bounds);
-			});
-
-			$(document).on('click', '#hawkesbay', function(){
-				var bounds = new google.maps.LatLngBounds();
-				console.log(marker.region);
-				$.each(markerobjects, function(i, marker) {
-				    if( marker.region == 'Hawkes Bay' ){
-					    marker.setVisible(true);
-				        // extending bounds to contain this visible marker position
-						bounds.extend( marker.getPosition() );
-				    } else {
-					    marker.setVisible(false);
-				    }
-				});
-				map.fitBounds(bounds);
-			});			
+			});	
 
 			$(document).on('click', '#wellington', function(){
+				$('#toggle-event').bootstrapToggle('off');
 				var bounds = new google.maps.LatLngBounds();
-				console.log(marker.region);
+				regionselect = 'Wellington';
+				console.log(regionselect);
 				$.each(markerobjects, function(i, marker) {
 				    if( marker.region == 'Wellington' ){
 					    marker.setVisible(true);
@@ -222,12 +184,14 @@
 				    }
 				});
 				map.fitBounds(bounds);
-			});	
-
+			});
+		
 
 			$(document).on('click', '#chch', function(){
+				$('#toggle-event').bootstrapToggle('off');
 				var bounds = new google.maps.LatLngBounds();
-				console.log(marker.region);
+				regionselect = 'Christchurch';
+				console.log(regionselect);
 				$.each(markerobjects, function(i, marker) {
 				    if( marker.region == 'Christchurch' ){
 					    marker.setVisible(true);
@@ -248,6 +212,41 @@
 			}
 			
 			map.fitBounds(bounds);
+						
+			//$(document).on('click', '#offlicence', function(){
+			$('#toggle-event').change(function() {
+				if($('#toggle-event').prop('checked')){
+					console.log('checked');
+					//var bounds = new google.maps.LatLngBounds();
+					//console.log(marker.offlicense);
+					console.log(regionselect+' current selection');
+					$.each(markerobjects, function(i, marker) {
+					    if( marker.region == regionselect && marker.offlicense == 1){
+						    marker.setVisible(true);
+					        // extending bounds to contain this visible marker position
+							bounds.extend( marker.getPosition() );
+					    } else if(regionselect == 'all' && marker.offlicense == '1') {
+						    marker.setVisible(true);
+					        // extending bounds to contain this visible marker position
+							bounds.extend( marker.getPosition() );
+					    }
+					    else {
+						    marker.setVisible(false);
+					    }
+					});
+
+				} else {
+					console.log('not checked');
+
+
+					$.each(markerobjects, function(i, marker) {
+						marker.setVisible(true);
+					});
+					
+				}
+			});		
+
+
 	
 			
   	}

@@ -91,6 +91,23 @@ class Status{
 		
 		$oCon->close();
 	}
+
+	public function saveAjaxTest(){
+		
+		$oCon = new Connection();
+		$sSql = "INSERT INTO statusupdates ( beerid ) VALUES ('".$oCon->escape($this->
+					beerid)."')";
+			//echo $sSql;
+			$bResult = $oCon->query($sSql);
+			if($bResult==true){
+				// update the iBeerID
+				$this->id = $oCon->getInsertID();
+			} else {
+				die($sSql . "save status did not run");
+			}
+		
+		$oCon->close();
+	}
 	
 	public function loadByUser($userid){
 		
@@ -168,7 +185,7 @@ class Status{
 		return $aUsersActivity;
 		}
 
-	static public function BACKUPollowinglatest($aUserIDsOfFollowing){
+	static public function BACKUPfollowinglatest($aUserIDsOfFollowing){
 		
 		$comma_separated = implode(",", $aUserIDsOfFollowing);
 		

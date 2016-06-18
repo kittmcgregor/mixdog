@@ -100,6 +100,7 @@ $message .= "</body></html>";
 	$oForm->makeTextInput("Phone","LocationContact","09xxxxxx or +6421xxxxxx");
 	$oForm->makeTextInput("Website","LocationWebsite","mysite.com");
 	$oForm->makeTextArea("Info","LocationInfo","");
+	$oForm->makeCheckboxInput("Fills","fills","1","Off License");
 	$oForm->makeSubmit("Add Location","submit");
 ?>
 

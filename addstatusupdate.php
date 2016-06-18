@@ -8,8 +8,10 @@
 	
 	
 	$oUsername = new User();
-	$oUsername->load($_SESSION["UserID"]);
+	$id = $_SESSION["UserID"];
+	$oUsername->load($id);
 	$username = $oUsername->username;
+
 	
 /*
 		echo "<pre>";
@@ -79,7 +81,59 @@
 			$oNewStatusUpdate->save();
 			
 			$redirectSlug = $_GET["name"];
+
 			
+			$brew = new Beer();
+			$brew->load($_POST["beerid"]);
+			$title = $brew->title;
+			$brewery = $brew->breweryname;
+			
+			$table = 'followUserID';
+			$aFollowersMailList = FollowManager::getFollowersMailList($id,$table);
+			
+				echo "<pre>";
+				print_r($aFollowersMailList);
+				echo "</pre>";
+
+			
+			foreach($aFollowersMailList as $contact){
+				
+			// Send email notification to follower
+			$to      = $contact;
+			$subject = "Brewhound: Activity Notification";
+						
+			$message = '<html><body>';
+			$message .= '<p><a href="'.$domain.'user/'.strip_tags($username).'">'.strip_tags($username).'</a> added a checkin</p>';
+			$message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
+			$message .= "<tr style='background: #eee;'><td><strong>Brew:</strong> </td><td>" . strip_tags($title) . "</td></tr>";
+			$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($brewery)."</td></tr>";
+			$message .= "<tr><td><strong>Rating:</strong> </td><td>".strip_tags($_POST["rating"])."/5</td></tr>";
+			$message .= "</table>";
+			$message .= "<p><b>Review:</b> ".strip_tags($_POST["review"])."</p>";
+			$message .= "</body></html>";
+
+						
+			// In case any of our lines are larger than 70 characters, we should use wordwrap()
+			$message = wordwrap($message, 70, "\r\n");
+			
+			$headers = "MIME-Version: 1.0" . "\r\n";
+			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+			
+			$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
+			    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
+			    'X-Mailer: PHP/' . phpversion();
+			
+/*
+				echo "<pre>";
+				echo $to;
+				echo $message;
+				echo "</pre>";
+*/
+			
+			mail($to, $subject, $message, $headers);
+				
+			}
+					
 			if($_GET["name"]){
 				header("location:http://brewhound.nz/$redirectSlug");
 				exit;
@@ -173,7 +227,7 @@
 	  	source: function( request, response ) {
 		  	$('#beerselect').addClass('loading');
 	  		$.ajax({
-	  			url : 'listAjaxBrews.php',
+	  			url : 'listBrews.php',
 	  			sortResults: false,
 	  			dataType: "json",
 	  			type: 'Get',
@@ -185,6 +239,7 @@
 							label: item,
 							value: i
 						}
+						
 					}));
 				//call the filter here
 	            response($.ui.autocomplete.filter(array, request.term));
@@ -224,29 +279,37 @@
     function(){
         $(this).val('');
     });
-    
+
 	$('#locationselect').autocomplete({
 	  	source: function( request, response ) {
 		  	$('#locationselect').addClass('loading');
 	  		$.ajax({
-	  			url : 'listAjaxLocations.php',
+	  			url : 'listLocations.php',
 	  			sortResults: false,
 	  			dataType: "json",
 	  			type: 'Get',
 	  			data: {term: request.term},
 				success: function( data ) {
 					$('#locationselect').removeClass('loading');
-					
 					 var array = ( $.map( data, function( item,i ) {
 						return {
 							label: item,
 							value: i
 						}
-					
+						
 					}));
 				//call the filter here
 	            response($.ui.autocomplete.filter(array, request.term));
-	            
+	            //$('#addbrewajax').removeClass('transparent');
+	            //$('.helptip').css("opacity","1");
+	            //$('#help-beerselect').html("Having trouble finding your brew? <br/>Try using the brewery as search term");
+	            //$('#help-beerselect').append(' or <button data-toggle="modal" data-target="#addbrewajax" class="btn btn-primary">add new brew</button> ');
+				//$('#addlocationajax').modal() 
+/*
+	            $('#addnewbrew').on('click', function(){
+					console.log('pop');
+				});
+*/
 				console.log(request.term);
 				},
 				error: function() {
@@ -256,17 +319,18 @@
 	  	},
 	  	select: function(event, ui) { 
 		  	event.preventDefault(); 
-		  	$('#locationselect').removeClass('loading');
 		  	$(this).val(ui.item.label);
 	/*
 		  	console.log(ui.item.value);
 		  	console.log(ui.item.label);
 		  	$(this).val(ui.item.label);
 	*/
-		  	$('input[name="locationid"]').val(ui.item.value.replace('-', ''));
+		  	$('input[name="locationid"]').val(ui.item.value);
+		  	$('.helptip').css("opacity","0");
 		  	//$('input[name="locationid"]').val(ui.item.label);
 		  	//$('input[name="beerselect"]').val(ui.item.label);
 	    } 	
 	});
+
 
 </script>

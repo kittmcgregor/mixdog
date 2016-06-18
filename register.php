@@ -14,18 +14,24 @@
 	if(isset($_POST["submit"])){
 		// is it a post request?
 		$oForm->data = $_POST;
-		$oForm->files = $_FILES;
+		//$oForm->files = $_FILES;
 		
-		$oForm->checkRequired("Username");
 		$oForm->checkRequired("Email");
 		$oForm->checkRequired("Password");
 		
+		$testUser = new  User();
+		$isThere = $testUser->loadByUserEmail($_POST["Email"]);
+		
+		if($isThere){
+			$oForm->raiseCustomError("Email","This email is already registered");
+		}
 				
 		if($oForm->valid==true){
 			// insert data to database to create new page
 			$oNewUser = new User();
 
 			
+/*
 			if($_FILES["photo"]["error"] == 0){
 				if($_FILES["photo"]["type"] == "image/jpeg"){
 					
@@ -40,22 +46,35 @@
 				$oForm->moveFile("photo",$newName);
 				$oNewUser->photo = $newName;
 			}
+*/
 			
+			$usernameslug = strtolower(str_replace(array(':','+','&','!','#','.',"'",'(',')'),"",str_replace(' ','-',$_POST["Username"])));
+			$email = $_POST["Email"];
 			// set values;
+			$oNewUser->slug = $usernameslug;
 			$oNewUser->username = $_POST["Username"];
 			$oNewUser->firstname = $_POST["FirstName"];
 			$oNewUser->lastname = $_POST["LastName"];
-			$oNewUser->email = $_POST["Email"];
-			$oNewUser->password = $_POST["Password"];
+			$oNewUser->email = $email;
+			$password = $_POST["Password"];
+			$oNewUser->password = password_hash($password,PASSWORD_DEFAULT);
 			$sEmail = $_POST["Email"];
 			//$oNewUser->password = password_hash($_POST["Password"],PASSWORD_DEFAULT);
-			$oNewUser->save();
+			$oNewUser->saveUsingEmail();
 			
 			$oNewUserID = $oNewUser->userID;
 			$_SESSION["UserID"] = $oNewUserID;
 			$_SESSION["NewUserEmail"] = $_POST["Email"];
 			$_SESSION["LocationManagerID"] = $oTestUser->locationID;
 			$_SESSION["BreweryManagerID"] = $oTestUser->breweryID;
+			if($usernameslug==''){
+				$oNewUser->username = 'hound'.$oNewUserID;
+				$oNewUser->slug = 'hound'.$oNewUserID;
+				$usernameslug = 'hound'.$oNewUserID;
+				$username = 'hound'.$oNewUserID;
+				$oNewUser->update();
+			}
+			
 			// Send email confirmation to New User
 			$to      = "$sEmail";
 			
@@ -63,7 +82,7 @@
 			
 			$message = '<html><body>';
 			$message .= '<p>' . 'New user registration confirmation at brewhound.nz'.'</p>';
-			$message .= '<p>' . "'" . $_POST["Username"]. "'" ." " .$_POST["Email"].'</p>';
+			$message .= '<p>username: <a href="http://brewhound.nz/user/'.$usernameslug.'">' . $oNewUser->username . '</a> ' .$email.'</p>';
 			$message .= '<p>' .'You can view your profile here: <a href="http://brewhound.nz/viewuseradmin.php">brewhound.nz</a>'.'</p>';
 			$message .= '</body></html>';
 			
@@ -93,11 +112,12 @@
 	
 	echo "</pre>";
 */
-	$oForm->makeTextInput("Username","Username","required");	
-	$oForm->makeTextInput("First Name","FirstName","optional - not shown publicly");
-	$oForm->makeTextInput("Last Name","LastName","optional - not shown publicly");
 	$oForm->makeTextInput("Email","Email","required - not shown publicly");
 	$oForm->makePasswordInput("Password","Password","required");
+	$oForm->makeTextInput("Username","Username","optional");	
+	$oForm->makeTextInput("First Name","FirstName","optional - not shown publicly");
+	$oForm->makeTextInput("Last Name","LastName","optional - not shown publicly");
+
 	//$oForm->makeFileInput("Upload Photo","photo");
 		
 	$oForm->makeSubmit("Register","submit");
@@ -114,3 +134,26 @@
 </div>
 
 <?php require_once 'includes/footer.php'; ?>
+
+<script>
+$(document).ready(function() {
+    $('#regex').formValidation({
+        framework: 'bootstrap',
+        icon: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            Username: {
+                validators: {
+                    regexp: {
+                        regexp: /^[a-z\s]+$/i,
+                        message: 'The full name can consist of alphabetical characters and spaces only'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>

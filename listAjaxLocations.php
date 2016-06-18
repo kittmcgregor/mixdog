@@ -38,7 +38,8 @@
 		$listBrews = Beer::listBrews();
 		$sortArray = ksort($listBrews);
 */
-		echo json_encode(Location::listAjaxLocations());
+		//echo json_encode(Location::listAjaxLocations());
+		echo json_encode(Location::applistLocations());
 		
 		
 ?>

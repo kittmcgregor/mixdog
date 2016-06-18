@@ -48,39 +48,39 @@
     function(){
         $(this).val('');
     });
-$('#brewerySearch').autocomplete({
-  	source: function( request, response ) {
-  		$.ajax({
-  			url : '<?php echo $domain ?>listBreweries.php',
-  			dataType: "json",
-  			type: 'Get',
-  			data: {term: request.term},
-			success: function( data ) {
-				console.log(data);
-				 var array = ( $.map( data, function( item,i ) {
-					return {
-						label: item.name,
-						value: i,
-						slug:item.slug
-					}
-					//console.log(item);
-				}));
-			//call the filter here
-            response($.ui.autocomplete.filter(array, request.term));
-			console.log(request.term);
-			},
-			error: function() {
-		         $('.searcherror').html('<p>An error has occurred</p>');
-		    }
-  		});
-  	},
-  	select: function(event, ui) {  
-	  	console.log(ui.item);
-	  	console.log(ui.item.slug);
-	  	location.href="<?php echo $domain ?>brewery/" + ui.item.slug;
-               //location.href="<?php echo $domain ?>viewbrewery.php?breweryID=" + ui.item.value;
-        } 	
-});	
+	$('#brewerySearch').autocomplete({
+	  	source: function( request, response ) {
+	  		$.ajax({
+	  			url : '<?php echo $domain ?>listBreweries.php',
+	  			dataType: "json",
+	  			type: 'Get',
+	  			data: {term: request.term},
+				success: function( data ) {
+					//console.log(data);
+					 var array = ( $.map( data, function( item,i ) {
+						return {
+							label: item.name,
+							value: i,
+							slug:item.slug
+						}
+						//console.log(item);
+					}));
+				//call the filter here
+	            response($.ui.autocomplete.filter(array, request.term));
+				console.log(request.term);
+				},
+				error: function() {
+			         $('.searcherror').html('<p>An error has occurred</p>');
+			    }
+	  		});
+	  	},
+	  	select: function(event, ui) {  
+		  	//console.log(ui.item);
+		  	//console.log(ui.item.slug);
+		  	location.href="<?php echo $domain ?>brewery/" + ui.item.slug;
+	               //location.href="<?php echo $domain ?>viewbrewery.php?breweryID=" + ui.item.value;
+	        } 	
+	});	
 	
 /*
   	autoFocus: true,

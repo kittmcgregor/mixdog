@@ -1,7 +1,3 @@
-php_flag display_errors 1
-php_value error_reporting 30719
-php_value date.timezone 'Pacific/Auckland'
-
 RewriteEngine on
 
 RewriteRule    ^locations/?$    viewlocations.php    [NC,L]    # Handle specific before wild cards
@@ -11,6 +7,7 @@ RewriteRule    ^exclusive/?$    exclusive.php    [NC,L]
 RewriteRule    ^login/?$    login.php    [NC,L]
 RewriteRule    ^logout/?$    logout.php    [NC,L]
 RewriteRule    ^register/?$    register.php    [NC,L]
+RewriteRule    ^addbrew/?$    addbeer.php    [NC,L]
 RewriteRule    ^viewuseradmin/?$    viewuseradmin.php    [NC,L]
 RewriteRule		^freshhop/?$ freshhop.php	[NC,L]
 RewriteRule		^addstatusupdate/?$ addstatusupdate.php	[NC,L]
@@ -18,12 +15,10 @@ RewriteRule		^addstatusupdate/?$ addstatusupdate.php	[NC,L]
 RewriteRule		^freshmap/?$ map.php	[NC,L]
 RewriteRule		^map/?$ map.php	[NC,L]
 
-RewriteRule    ^app/?$    app/    [NC,L]
-
 RewriteRule    ^([A-Za-z0-9-]+)/?$    viewbeerbyname.php?name=$1    [NC,QSA,L]    # Process all products
 
 RewriteRule		^location/([A-Za-z0-9-]+)/?$ viewlocationByName.php?name=$1 	[NC,QSA,L]    # Handle requests for all locations
 
 RewriteRule		^brewery/([A-Za-z0-9-]+)/?$ viewbrewerybyslug.php?slug=$1 	[NC,QSA,L]    # Handle requests for all breweries
 
-RewriteRule		^user/([A-Za-z0-9-]+)/?$ viewuserbyusername.php?username=$1 	[NC,QSA,L]    # Handle requests for all breweries
+RewriteRule		^user/([A-Za-z0-9-]+)/?$ viewuserbyslug.php?slug=$1 	[NC,QSA,L]    # Handle requests for user profiles

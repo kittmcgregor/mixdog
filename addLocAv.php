@@ -47,6 +47,65 @@
 	Availability::addAvLoc($beerID,$breweryID,$locationID,$userID);
 	Location::activty($locationID,date('Y-m-d H:i:s'));
 	
+	
+	if(isset($_GET["locationID"])){
+		// Send location update to followers
+			
+			$oLocation = new Location();
+			$oLocation->load($_GET["locationID"]);
+			
+			$brew = new Beer();
+			$brew->load($beerID);
+			$title = $brew->title;
+			$brewery = $brew->breweryname;
+			
+			$table = 'followLocationID';
+			$aFollowersMailList = FollowManager::getFollowersMailList($locationID,$table);
+			
+			echo "<pre>";
+			print_r($aFollowersMailList);
+			echo "</pre>";
+			
+			foreach($aFollowersMailList as $contact){
+				
+			// Send email notification to follower
+			$to      = $contact;
+			$subject = "Brewhound: Activity Notification";
+						
+			$message = '<html><body>';
+			$message .= '<p><a href="'.$domain.'location/'.strip_tags($oLocation->slug).'">'.strip_tags($oLocation->locationname).'</a> tapped a new brew</p>';
+			$message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
+			$message .= "<tr style='background: #eee;'><td><strong>Brew:</strong> </td><td>" . strip_tags($title) . "</td></tr>";
+			$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($brewery)."</td></tr>";
+			$message .= "</table>";
+			$message .= '<p>You can customise your notification settings <a href="http://brewhound.nz/viewuseradmin">here</a></p>';
+			$message .= "</body></html>";
+
+						
+			// In case any of our lines are larger than 70 characters, we should use wordwrap()
+			$message = wordwrap($message, 70, "\r\n");
+			
+			$headers = "MIME-Version: 1.0" . "\r\n";
+			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+			
+			$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
+			    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
+			    'X-Mailer: PHP/' . phpversion();
+			
+/*
+				echo "<pre>";
+				echo $to;
+				echo $message;
+				echo "</pre>";
+*/
+
+			mail($to, $subject, $message, $headers);
+				
+			} // end for each
+		
+	} // end if
+	
+	
 	if(isset($_GET["quickadd"])){
 		
 		//echo $domain.$slug.'?addAvLoc=true';

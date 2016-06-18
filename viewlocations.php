@@ -64,6 +64,7 @@
 				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Matakana" class="btn btn-default">Matakana</a>';
 				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Mt%20Maunganui" class="btn btn-default">Mt Maunganui</a>';
 				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Nelson" class="btn btn-default">Nelson</a>';
+				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Raglan" class="btn btn-default">Raglan</a>';
 				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Rotorua" class="btn btn-default">Rotorua</a>';
 				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Tauranga" class="btn btn-default">Tauranga</a>';
 				$sHTML .= '<a href="'.$domain.'viewlocations.php?suburb=Waihi%20Beach" class="btn btn-default">Waihi Beach</a>';
@@ -123,21 +124,23 @@
 	$('#locationSearch').autocomplete({
 	  	source: function( request, response ) {
 	  		$.ajax({
-	  			url : '<?php echo $domain ?>listLocations.php',
+	  			url : '<?php echo $domain ?>listAjaxLocations.php',
 	  			dataType: "json",
 	  			type: 'Get',
 	  			data: {term: request.term},
 				success: function( data ) {
+					//console.log(data);
 					 var array = ( $.map( data, function( item,i ) {
 						return {
 							label: item.name,
 							value: i,
 							slug: item.slug
 						}
+						//console.log(item);
 					}));
 				//call the filter here
 	            response($.ui.autocomplete.filter(array, request.term));
-				console.log(request.term);
+				//console.log(request.term);
 				},
 				error: function() {
 			         $('.searcherror').html('<p>An error has occurred</p>');
@@ -145,7 +148,9 @@
 	  		});
 	  	},
 	  	select: function(event, ui) {  
-			console.log(ui);
+			//console.log(ui);
+			//console.log(ui.item);
+		  	//console.log(ui.item.slug);
 			location.href="<?php echo $domain ?>location/" + ui.item.slug;
 			//location.href="<?php echo $domain ?>viewlocation.php?locationID=" + ui.item.value;
 	    } 	
@@ -192,7 +197,7 @@
 				markerobjects.push(marker);
 				
 				marker.info = new google.maps.InfoWindow({
-				  content: latest + ' @ <a href="http://brewhound.nz/location/' + link + '">' + markername + '</a>'
+				  content: '<a href="http://brewhound.nz/location/' + link + '">' + latest + ' @ ' + markername + '</a>'
 				});
 
 				//console.log(markername);

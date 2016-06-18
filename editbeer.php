@@ -16,6 +16,7 @@
 	$oExistingBeer = new Beer();
 	$oExistingBeer->load($beerID);
 	
+	$slug = $oExistingBeer->slug;
 
 	
 	$aExistingData = array();
@@ -30,6 +31,7 @@
 //	$aExistingData["Style"] = $oExistingBeer->style;
 	$aExistingData["Brewery"] = $oExistingBeer->brewery;
 	$aExistingData["Alcohol"] = $oExistingBeer->alcohol;
+	$aExistingData["IBU"] = $oExistingBeer->ibu;
 	$aExistingData["Active"] = $oExistingBeer->active;
 	$aExistingData["Exclusive"] = $oExistingBeer->exclusive;
 	$aExistingData["FreshHop"] = $oExistingBeer->freshhop;
@@ -111,9 +113,21 @@
 			$oExistingBeer->breweryID = $_POST["BreweryID"];
 			$oExistingBeer->brewery = $_POST["Brewery"];
 			$oExistingBeer->alcohol = $_POST["Alcohol"];
+			$oExistingBeer->ibu = $_POST["IBU"];
 			//$oExistingBeer->active = $_POST["Active"];
-			$oExistingBeer->exclusive = $_POST["Exclusive"];
-			$oExistingBeer->freshhop = $_POST["FreshHop"];
+
+	if($_POST["Exclusive"]!=''){
+		$oExistingBeer->exclusive = $_POST["Exclusive"];
+	} else {
+		$oExistingBeer->exclusive = 0;
+	}
+	if($_POST["FreshHop"]!=''){
+		$oExistingBeer->freshhop = $_POST["FreshHop"];
+	} else {
+		$oExistingBeer->freshhop = 0;
+	}
+
+
 			if(isset($_POST["Locations"])){
 				$oExistingBeer->locations = $_POST["Locations"];
 				$aLocations = $_POST["Locations"];
@@ -139,7 +153,8 @@
 			//Availability::updateSpecificAvailability($beerID,$aLocations,$_POST["BreweryID"],$aLocationIDs);
 
 
-			header("location:viewbeer.php?beerUpdatedSuccess=true&beerID=".$beerID);
+			//header("location:viewbeer.php?beerUpdatedSuccess=true&beerID=".$beerID);
+			header('location:'.$domain.$slug);
 			exit;
 		}
 		
@@ -157,13 +172,14 @@
 	$oForm->makeTextInput("Beer Name","Title","");
 	$oForm->makeTextArea("Description","Description","");
 	$oForm->makeSelectInput("Brewery","BreweryID",Brewery::brewerylist());
-	$oForm->makeTextInput("New Brewery","Brewery","");
+	//$oForm->makeTextInput("New Brewery","Brewery","");
 	$oForm->makeFileInput("Brew image (Optional)<br/><span class='small'>If not added the existing Brewery image will be used if available.</span>","photo");
 	$oForm->makeSelectInput("Style","StyleID",Style::stylelist());
 
-	$oForm->makeTextInput("Alcohol %","Alcohol","");
-	$oForm->makeCheckboxInput("Exclusive","Exclusive","1","Tap Only");
-	$oForm->makeCheckboxInput("Special Edition","FreshHop","1","Fresh Hop");
+	$oForm->makeTextInputCol50ALC("Alcohol %","Alcohol","");
+	$oForm->makeTextInputCol50("IBU","IBU","");
+	$oForm->makeCheckboxInputCol50("Exclusive","Exclusive","1","Tap Only");
+	$oForm->makeCheckboxInputCol50("Special Edition","FreshHop","1","Fresh Hop");
 	//$oForm->makeCheckboxResident("Resident","Resident","1");
 	//$oForm->makeSelectInput("Location","LocationID",Location::lists());
 	//$oForm->makeTextInput("Available at:","Location","multiple locations allowed");
@@ -185,7 +201,7 @@
 <div class="wrapper clearfix">
     <div class="col-md-6">
         <div class="box">
-            <h2>Edit Beer: </h2>
+            <h2>Edit Brew: </h2>
             <hr>
             <?php echo $oForm->html; ?>
         </div>

@@ -15,9 +15,14 @@
 			echo "</pre>";
 */
 		//exit;	
-			
+	
+	$intended = '';
+	if($_GET['intended']){
+		$intended = $_GET['intended'];
+	}
+	
 	if (isset($_SESSION["UserID"])==false){
-		header("location:login.php?requirelogin=true");
+		header("location:login.php?requirelogin=true&intended=".$intended);
 	}
 	if($_SESSION["LocationManagerID"]!=0){
 		$ManagingLocation = $_SESSION["LocationManagerID"];
@@ -84,13 +89,23 @@
 				$createslug = $brewery.'-'.$title;
 			$oNewProduct->slug = $createslug;
 			$oNewProduct->description = $_POST["Description"];
-			$oNewProduct->newstyle = $_POST["NewStyle"];
+			//$oNewProduct->newstyle = $_POST["NewStyle"];
 			$oNewProduct->styleID = $_POST["StyleID"];
-			$oNewProduct->brewery = $_POST["Brewery"];
+			//$oNewProduct->brewery = $_POST["Brewery"];
 			$oNewProduct->alcohol = $_POST["Alcohol"];
+			$oNewProduct->alcohol = $_POST["IBU"];
 			$oNewProduct->active = 1;
-			$oNewProduct->exclusive = $_POST["Exclusive"];
-			$oNewProduct->freshhop = $_POST["FreshHop"];
+			if($_POST["Exclusive"]!=''){
+				$oNewProduct->exclusive = $_POST["Exclusive"];
+			} else {
+				$oNewProduct->exclusive = 0;
+			}
+			if($_POST["FreshHop"]!=''){
+				$oNewProduct->freshhop = $_POST["FreshHop"];
+			} else {
+				$oNewProduct->freshhop = 0;
+			}
+
 			if($_SESSION["LocationManagerID"]>0){
 				$_POST["NewLocation"]=0;
 			}
@@ -105,13 +120,14 @@
 			$oBrewery = new Brewery();
 			$oBrewery->load($_POST["BreweryID"]);
 			$oNewProduct->breweryname = $oBrewery->breweryname;
-		
+
+			
 			$oNewProduct->save();
 			$newBeerID = $oNewProduct->beerID;
 			$pageTitle = $_POST["Title"];
 			
 			if($_SESSION["LocationManagerID"]>0){
-				Availability::updateAvailabilityLocationManager($newBeerID,$_SESSION["LocationManagerID"],$_POST["BreweryID"]);
+				Availability::updateAvailabilityLocationManager($newBeerID,$_SESSION["LocationManagerID"],$_POST["BreweryID"],$_SESSION["UserID"]);
 			} else {
 				Availability::updateAvailability($newBeerID,$_POST["Locations"],$_POST["BreweryID"],$_SESSION["UserID"]);
 			}
@@ -127,9 +143,9 @@ $message = '<html><body>';
 $message .= '<p>A new beer was added at brewhound.nz</p>';
 $message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
 $message .= "<tr style='background: #eee;'><td><strong>Title:</strong> </td><td>" . strip_tags($_POST["Title"]) . "</td></tr>";
-$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($_POST["Brewery"])."</td></tr>";
+//$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($_POST["Brewery"])."</td></tr>";
 $message .= "<tr><td><strong>Alcohol:</strong> </td><td>".strip_tags($_POST["Alcohol"])."%</td></tr>";
-$message .= "<tr><td><strong>New Style:</strong> </td><td>".strip_tags($_POST["NewStyle"])."</td></tr>";
+//$message .= "<tr><td><strong>New Style:</strong> </td><td>".strip_tags($_POST["NewStyle"])."</td></tr>";
 $message .= "</table>";
 $message .= "<p><b>New Location:</b> ".strip_tags($_POST["NewLocation"])."</p>";
 $message .= "<p><b>Description:</b> ".strip_tags($_POST["Description"])."</p>";
@@ -154,6 +170,60 @@ $message .= "</body></html>";
 			$iBreweryID = $_POST["BreweryID"];
 			//Follow::followActivity($iBreweryID,$newBeerID);
 			
+			if($_SESSION["LocationManagerID"]!=0){
+				// Send location update to followers
+					
+					$oLocation = new Location();
+					$oLocation->load($_SESSION["LocationManagerID"]);
+
+					$title = $_POST["Title"];
+					$brewery = $breweryID->breweryname;
+					
+					$table = 'followLocationID';
+					$aFollowersMailList = FollowManager::getFollowersMailList($ManagingLocation,$table);
+					
+					echo "<pre>";
+					print_r($aFollowersMailList);
+					echo "</pre>";
+					
+					foreach($aFollowersMailList as $contact){
+						
+					// Send email notification to follower
+					$to      = $contact;
+					$subject = "Brewhound: Activity Notification";
+								
+					$message = '<html><body>';
+					$message .= '<p><a href="'.$domain.'location/'.strip_tags($oLocation->slug).'">'.strip_tags($oLocation->locationname).'</a> tapped a new brew</p>';
+					$message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
+					$message .= "<tr style='background: #eee;'><td><strong>Brew:</strong> </td><td>" . strip_tags($title) . "</td></tr>";
+					$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($brewery)."</td></tr>";
+					$message .= "</table>";
+					$message .= '<p>You can customise your notification settings <a href="http://brewhound.nz/viewuseradmin">here</a></p>';
+					$message .= "</body></html>";
+		
+								
+					// In case any of our lines are larger than 70 characters, we should use wordwrap()
+					$message = wordwrap($message, 70, "\r\n");
+					
+					$headers = "MIME-Version: 1.0" . "\r\n";
+					$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+					
+					$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
+					    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
+					    'X-Mailer: PHP/' . phpversion();
+					
+		/*
+						echo "<pre>";
+						echo $to;
+						echo $message;
+						echo "</pre>";
+		*/
+		
+					mail($to, $subject, $message, $headers);
+						
+					} // end for each
+				
+			} // end if
 			
 			// redirect to success page
 			header("location:addbeer.php?beerAddedSuccess=true&newBeerID=".$newBeerID);
@@ -177,12 +247,13 @@ $message .= "</body></html>";
 	//$oForm->makeTextInput("Brewery ID","BreweryID","");
 
 	
-	$oForm->makeTextInput("Alcohol %","Alcohol","");
+	$oForm->makeTextInputCol50ALC("Alcohol %","Alcohol","");
+	$oForm->makeTextInputCol50("IBU","IBU","");
 	//$oForm->makeSelectInput("Location","LocationID",Location::lists());
 	//$oForm->makeCheckboxInput("Status","Active","1");
 	
-	$oForm->makeCheckboxInput("Exclusive","Exclusive","1","Tap Only");
-	$oForm->makeCheckboxInput("Special Edition","FreshHop","1","Fresh Hop");
+	$oForm->makeCheckboxInputCol50("Exclusive","Exclusive","1","Tap Only");
+	$oForm->makeCheckboxInputCol50("Special Edition","FreshHop","1","Fresh Hop");
 	
 	if($_SESSION["LocationManagerID"]>0){
 
@@ -217,7 +288,7 @@ $('#Title').autocomplete({
   	source: function( request, response ) {
 	  	$('#Title').addClass('loading');
   		$.ajax({
-  			url : 'listBrews.php',
+  			url : 'listBrewsMeta.php',
   			sortResults: false,
   			dataType: "json",
   			type: 'Get',
@@ -240,8 +311,9 @@ $('#Title').autocomplete({
   		});
   	},
   	select: function(event, ui) {  
-	  	console.log(ui);
-               location.href="viewbeer.php?beerID=" + ui.item.value.replace('-', '');
+	  	//console.log(ui);
+	  		location.href=ui.item.value;
+             //location.href="viewbeer.php?beerID=" + ui.item.value.replace('-', '');
         } 	
 });	
 	

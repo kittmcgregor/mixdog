@@ -3,31 +3,83 @@
 	require_once("follow.php");
 	
 class FollowManager{
-		static public function getFollowingIDsList($iUserID){
-				
-		//1 make connection
-		$oCon = new Connection();
+	
+		static public function getFollowersIDsList($id,$table){
+
+			//1 make connection
+			$oCon = new Connection();
+			
+			//2 create query
+			$sSql = "SELECT userID FROM FollowingTable
+			WHERE $table =".$id;
+			
+			//3 execute query
+			$oResultSet = $oCon->query($sSql);
+			$aFollowers = array();
+			//4 fetch data
+			while($aRow = $oCon->fetchArray($oResultSet)){
+			$iFollowerID = $aRow["userID"];
+			$aFollowers[] = $iFollowerID; // add locations to list
+			}		
+	
+			//5 close connection
+			$oCon->close();
+			
+		return $aFollowers;
+		}
+
+		static public function getFollowersMailList($iUserID,$table){
+			//1 make connection
+			$oCon = new Connection();
+			
+			//2 create query
+			$sSql = "SELECT userID FROM FollowingTable
+			WHERE $table =".$iUserID;
+			
+			//3 execute query
+			$oResultSet = $oCon->query($sSql);
+			$aFollowersEmails = array();
+			//4 fetch data
+			while($aRow = $oCon->fetchArray($oResultSet)){
+			$id = $aRow["userID"];
+			//$aFollowers[] = $iFollowerID; // add to list
+			
+			$oUser = new User();
+			$oUser->load($id);
+			$email = $oUser->email;
+			$aFollowersEmails[] = $email; // add to list
+			}		
+	
+			//5 close connection
+			$oCon->close();
 		
-		//2 create query
-		$sSql = "SELECT followID FROM FollowingTable
-	WHERE userID =".$iUserID;
-		//echo $sSql;
-		
-		//3 execute query
-		
-		$oResultSet = $oCon->query($sSql);
-		
-		$aFollowing = array();
-		
-		//4 fetch data
-		while($aRow = $oCon->fetchArray($oResultSet)){
-		$iFollowingID = $aRow["followID"];
-		
-		$aFollowing[] = $iFollowingID; // add locations to list
+		return $aFollowersEmails;
 		}
 		
-		//5 close connection
-		$oCon->close();
+		static public function getFollowingIDsList($iUserID){
+				
+			//1 make connection
+			$oCon = new Connection();
+			
+			//2 create query
+			$sSql = "SELECT followID FROM FollowingTable
+			WHERE userID =".$iUserID;
+			//echo $sSql;
+			
+			//3 execute query
+			$oResultSet = $oCon->query($sSql);
+			
+			$aFollowing = array();
+			
+			//4 fetch data
+			while($aRow = $oCon->fetchArray($oResultSet)){
+			$iFollowingID = $aRow["followID"];
+			
+			$aFollowing[] = $iFollowingID; // add locations to list
+			}
+			
+			//5 close connection
+			$oCon->close();
 		
 		return $aFollowing;
 	}
@@ -54,8 +106,9 @@ class FollowManager{
 		//4 fetch data
 		while($aRow = $oCon->fetchArray($oResultSet)){
 		$iFollowUserID = $aRow["FollowUserID"];
-		
-		$aFollowingUsers[] = $iFollowUserID; // add locations to list
+			if($iFollowUserID!=0){
+				$aFollowingUsers[] = $iFollowUserID; // add user to list
+			}
 		}
 		
 		//5 close connection
@@ -74,8 +127,10 @@ class FollowManager{
 		$oCon = new Connection();
 		
 		//2 create query
-		$sSql = "SELECT FollowBreweryID FROM FollowingTable
-	WHERE followID IN ($comma_separated)";
+		$sSql = "SELECT followBreweryID FROM FollowingTable
+	WHERE userID IN ($comma_separated)";
+		
+		//echo $sSql;
 		
 		//3 execute query
 		
@@ -151,13 +206,42 @@ class FollowManager{
 
 		return $followID;
 	}
+	
+	static public function getFollowBreweryID($userID,$Bid){
+		
+		//$comma_separated = implode(",", $aFollowingIDsList);
+		
+		//1 make connection
+		$oCon = new Connection();
+		
+		//2 create query
+		$sSql = "SELECT followID FROM FollowingTable
+	WHERE userID=$userID AND followBreweryID=$Bid";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$followID = $aRow["followID"];
+		
+		//5 close connection
+		$oCon->close();
+
+		return $followID;
+	}
+
 
 }
+// $aFollowing = FollowManager::loadFollowing(1);
+
 /*
-$aFollowing = FollowManager::loadFollowing(1);
+$aFollowingIDsList = FollowManager::getFollowingIDsList(1);
 
 echo "<pre>";
-print_r($aFollowing);
+print_r($aFollowingIDsList);
 echo "</pre>";
 */
+
+
 ?>

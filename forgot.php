@@ -24,7 +24,7 @@ $oForm = new Form();
 		$oTestUser = new User();
 		$bLoaded = $oTestUser->CheckEmailExists($recoverEmail);
 		
-			if($bLoaded==false){
+			if($bLoaded==false||$recoverEmail=='webmaster@brewhound.nz'){
 				$topMessage = "<p>Sorry we can't find that email in our database.<br/>
 				Please enter your email that you used to sign up with.</p>";
 			} else {

@@ -47,6 +47,6 @@
 
 	// redirect 
 	
-	//header("location:viewuseradmin.php?removedAvLoc=true&removedAvLocbeerID=$beerID"); 
+	header("location:viewuseradmin.php?removedAvLoc=true&removedAvLocbeerID=$beerID"); 
 	exit;
 	?>

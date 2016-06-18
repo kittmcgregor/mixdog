@@ -20,6 +20,39 @@ function make_thumb($src, $dest, $desired_width) {
 	imagejpeg($virtual_image, $dest);
 }
 
+function convertPass($id){
+	
+	$oUser = new User();
+	$oUser->load($id);
+	$password = $oUser->password;
+	$encrypted = password_hash($password,PASSWORD_DEFAULT);
+	$oUser->password = $encrypted;
+	$oUser->updatepassword();
+	
+	return 'done';
+}
+
+function createUserSlugs($users) {
+	$i = 1;
+	
+	foreach($users as $user) {
+		
+		$oUser = new User();
+		$oUser->load($user);
+		
+		$slug = strtolower(str_replace(array(':','+','&','!','#','.',"'",'(',')'),"",str_replace(' ','-',$oUser->username)));
+		$oUser->slug = $slug;
+		
+		echo "<pre>";
+		echo $slug;
+		echo "</pre>";
+		
+		$oUser->updateUserSlugs();
+		$i++;
+	}
+}
+
+
 function createslugs($beers) {
 	$i = 1;
 	
@@ -124,7 +157,9 @@ function time2str($ts) {
 class View{
 	
 	
-	static public function renderCheckins($aStatusUpdates,$beerID,$domain){
+	static public function renderCheckins($aStatusUpdates,$beerID,$domain,$oForm){
+		
+		$sFormHTML = $oForm->html;
 		
 		$averageRating = 0;
 		$averageRating = Status::averageRating($beerID);
@@ -192,15 +227,20 @@ class View{
 				//$sHTML .= '<div class="clearfix"></div>';
 				
 
-				$sHTML .= '</div>';
 				
-				$sHTML .= '<div class="collapse" id="details'.$iCount.'">';
-				$sHTML .= '<h4>Review/Comments</h4>';			
-				$sHTML .= '<p>'.$oStatus->review.'</p>';
-				if($oStatus->photo){
-					$sHTML .= '<img style="max-width:100%" src="http://brewhound.nz/assets/images/'.$photo.'"/>';	
-				}
-			
+				
+					$sHTML .= '<div class="collapse" id="details'.$iCount.'">';
+					$sHTML .= '<h4>Review/Comments</h4>';			
+					$sHTML .= '<p>'.$oStatus->review.'</p>';
+					if($oStatus->photo){
+						$sHTML .= '<img style="max-width:100%" src="http://brewhound.nz/assets/images/'.$photo.'"/>';	
+					}
+					$sHTML .= '<div class="comments">';
+					// render comment form
+					//$sHTML .= "$sFormHTML";
+					$sHTML .= '</div>';
+					$sHTML .= '</div>';
+				
 				$sHTML .= '</div>';	
 				
 				
@@ -213,11 +253,37 @@ class View{
 		return $sHTML;	
 	}
 	
+	static public function renderLocationUpdates($aAvails,$domain,$limit){
+		$sHTML = '';
+				
+		for($iCount=0;$iCount<count($aAvails);$iCount++){
+			$oAvail = new Availability();
+			$oAvail->load($aAvails[$iCount]);
+			$beerID = $oAvail->beerID;
+			$date = time2str($oAvail->date);
+			
+			$locationID = $oAvail->locationID;
+			
+			$oBeer = new Beer();
+			$oBeer->load($beerID);
+			$brewslug = $oBeer->slug;
+			
+			$oLocation = new Location();
+			$oLocation->load($locationID);
+			$location = $oLocation->locationname;
+			$locationslug = $oLocation->slug;
+			
+			$sHTML .= '<p><a href="'.$domain.$brewslug.'">'.$oBeer->breweryname.' - '.$oBeer->title.'</a> @ <a href="'.$domain.'location/'.$locationslug.'">'.$location.'</a> '.$date.'</p>';
+		}
+		$sHTML .= '';
+		return $sHTML;	
+	}
+
 	static public function renderStatusUpdates($aStatusUpdates,$domain,$limit){
 		
 		$sHTML = '';
-				
-		for($iCount=0;$iCount<count($aStatusUpdates);$iCount++){
+		
+		for($iCount=0;$iCount<$limit;$iCount++){
 			$oStatus = new Status();
 			$oStatus->load($aStatusUpdates[$iCount]);
 			
@@ -227,8 +293,10 @@ class View{
 			for($i=0;$i<$rating;$i++){
 				$starsHTML .= '<i class="fa fa-star" aria-hidden="true"></i> ';
 			}
+			
 			$blankstarsHTML = "";
 			$addblank = 5-$rating;
+			
 			for($i=0;$i<$addblank;$i++){
 				$blankstarsHTML .= '<i class="fa fa-star-o" aria-hidden="true"></i> ';
 			}
@@ -252,27 +320,28 @@ class View{
 			$oLocation = new Location();
 			$oLocation->load($oStatus->locationid);
 			
-			
-			
 			$sHTML .= '<div class="sideitem">';
 				$sHTML .= '<div class="sideitemLogo">
 							<a href="'.$domain.$oBeer->slug.'">
 							<img class="minilogo" src="'.$domain.'assets/images/'.$logo.'"/>
 							</a></div>';
-				$sHTML .= '<div class="sideitemText"><a href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a> 
+				$sHTML .= '<div class="sideitemText">';
+							if($rating!=0){
+				$sHTML .=	'<span class="stars">'.$starsHTML.$blankstarsHTML.'</span>';
+							}
+				$sHTML .= '<a href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a> 
 							checked in <a href="'.$domain.$oBeer->slug.'">'.$oBeer->breweryname.' '.$oBeer->title.'</a> 
 							at <a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a> '.time2str($oStatus->created_at).' 
 							<a href="'.$domain.$oBeer->slug.'">details <i class="fa fa-chevron-right" aria-hidden="true"></i></a>
 							</div>';
 							
-				if($rating!=0){
-					$sHTML .=	'<span class="stars">'.$starsHTML.$blankstarsHTML.'</span>';
-				}
-				$sHTML .= '<div class="clearfix"></div>';
+
+				//$sHTML .= '<div class="clearfix"></div>';
 			$sHTML .= '</div>';
 			}
 		
 		$sHTML .= '';
+		
 		return $sHTML;	
 	}
 	
@@ -439,12 +508,15 @@ static public function renderActivity($aAvIDs,$getlimit){
 				$breweryphoto = "assets/images/hound.png";
 				
 				if($oBrewery->breweryphoto){
-					$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+					//$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+					$breweryphoto = "thumbs/50x50/images/".$oBrewery->breweryphoto;
 					$beerphoto = $breweryphoto;
 				}
 				
 				if ($oBeer->photo){
-					$beerphoto = "assets/images/".$oBeer->photo;
+					//$beerphoto = "assets/images/".$oBeer->photo;
+					$beerphoto = "thumbs/50x50/images/".$oBeer->photo;
+					// 'http://brewhound.nz/thumbs/' + size + '/images/' + image;
 				}
 				
 
@@ -659,9 +731,70 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 	$sHTML .= '</div>';
 	return $sHTML;
 }
+	
+	static public function renderFollowersList($aFollowersIDsList,$domain){
+	
+		$sHTML = "";
+		for($iCount=0;$iCount<count($aFollowersIDsList);$iCount++){
+			$iFollower = $aFollowersIDsList[$iCount];
+			$oUser = new User();
+			$oUser->load($iFollower);
+			$sHTML .= '<p><a href="'.$domain.'user/'.$oUser->slug.'">'.$oUser->username.'</a></p>';
+		}
+		echo $sHTML;
+	}
 
 
-	static public function renderFollowingList($aFollowingIDsList){
+	static public function renderFollowingUsers($aFollowingIDsList,$domain){
+		$sHTML = "";
+		for($iCount=0;$iCount<count($aFollowingIDsList);$iCount++){
+			$iFollowing = $aFollowingIDsList[$iCount];
+			$oFollowing = new Follow();
+			$oFollowing->load($iFollowing);
+			//Find correct table to get user from
+			if($oFollowing->followuserID!=0){
+			$oUser = new User();
+			$oUser->load($oFollowing->followuserID);
+			$sHTML .= '<p><a href="'.$domain.'user/'.$oUser->slug.'">'.$oUser->username.'</a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'" class="btn btn-default" >unfollow</a></p> ';
+			}	
+		}
+	echo $sHTML;
+	}
+
+
+	static public function renderFollowinglocation($aFollowingIDsList,$domain){
+		$sHTML = "";
+		for($iCount=0;$iCount<count($aFollowingIDsList);$iCount++){
+			$iFollowing = $aFollowingIDsList[$iCount];
+			$oFollowing = new Follow();
+			$oFollowing->load($iFollowing);
+			//Find correct table to get user from
+			if($oFollowing->followlocationID!=0){
+			$oLocation = new Location();
+			$oLocation->load($oFollowing->followlocationID);
+			$sHTML .= '<p><a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.' </a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'&slug='.$oLocation->slug.'" class="btn btn-default">unfollow</a></p> ';
+			}
+		}
+	echo $sHTML;
+	}
+
+	static public function renderFollowingbrewery($aFollowingIDsList,$domain){
+		$sHTML = "";
+		for($iCount=0;$iCount<count($aFollowingIDsList);$iCount++){
+			$iFollowing = $aFollowingIDsList[$iCount];
+			$oFollowing = new Follow();
+			$oFollowing->load($iFollowing);
+			//Find correct table to get user from
+			if($oFollowing->followbreweryID!=0){
+					$oBrewery = new Brewery();
+					$oBrewery->load($oFollowing->followbreweryID);
+					$sHTML .= '<p><a href="'.$domain.'brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'&slug='.$oBrewery->slug.'" class="btn btn-default" >unfollow</a></p> ';
+			}
+		}
+	echo $sHTML;
+	}
+
+	static public function renderFollowingList($aFollowingIDsList,$domain){
 		
 /*
 		echo "<pre>";
@@ -670,7 +803,52 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 */
 		
 			
-		$sHTML = "<h4>following list</h4>";
+		$sHTML = "";
+		
+		for($iCount=0;$iCount<count($aFollowingIDsList);$iCount++){
+			$iFollowing = $aFollowingIDsList[$iCount];
+			$oFollowing = new Follow();
+			$oFollowing->load($iFollowing);
+			
+			//Find correct table to get user from
+			
+			if($oFollowing->followbreweryID!=0){
+					$oBrewery = new Brewery();
+					$oBrewery->load($oFollowing->followbreweryID);
+					$sHTML .= '<p><a href="'.$domain.'brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'&slug='.$oBrewery->slug.'" class="btn btn-default" >unfollow</a></p> ';
+			}
+
+			
+			if($oFollowing->followlocationID!=0){
+			$oLocation = new Location();
+			$oLocation->load($oFollowing->followlocationID);
+			$sHTML .= '<p><a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.' </a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'&slug='.$oLocation->slug.'" class="btn btn-default">unfollow</a></p> ';
+			}
+			
+			if($oFollowing->followuserID!=0){
+			$oUser = new User();
+			$oUser->load($oFollowing->followuserID);
+			$sHTML .= '<p><a href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'" class="btn btn-default" >unfollow</a></p> ';
+			}			
+			
+		}
+
+
+
+	echo $sHTML;
+	
+	}
+
+	static public function renderFollowingListBasic($aFollowingIDsList,$domain){
+		
+/*
+		echo "<pre>";
+		print_r($aFollowingIDsList);
+		echo "</pre>";
+*/
+		
+			
+		$sHTML = "";
 		
 		for($iCount=0;$iCount<count($aFollowingIDsList);$iCount++){
 			$iFollowing = $aFollowingIDsList[$iCount];
@@ -686,20 +864,20 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 			if($oFollowing->followbreweryID!=0){
 					$oBrewery = new Brewery();
 					$oBrewery->load($oFollowing->followbreweryID);
-					$sHTML .= '<p><a href="viewbrewery.php?breweryID='.$oBrewery->breweryID.'">'.$oBrewery->breweryname.'</a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'" class="btn btn-default" >unfollow</a></p> ';
+					$sHTML .= '<p><a href="'.$domain.'brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a></p> ';
 			}
 
 			
 			if($oFollowing->followlocationID!=0){
 			$oLocation = new Location();
 			$oLocation->load($oFollowing->followlocationID);
-			$sHTML .= '<p><a href="viewlocation.php?locationID='.$oLocation->locationID.'">'.$oLocation->locationname.' </a> <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'" class="btn btn-default">unfollow</a></p> ';
+			$sHTML .= '<p><a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.' </a></p> ';
 			}
 			
 			if($oFollowing->followuserID!=0){
 			$oUser = new User();
 			$oUser->load($oFollowing->followuserID);
-			$sHTML .= '<p><a href="viewuser.php?viewUserID='.$oUser->userID.'">'.$oUser->username.' <a href="followupdate.php?removefollow=true&followID='.$oFollowing->followID.'" class="btn btn-default" >unfollow</a></p> ';
+			$sHTML .= '<p><a href="'.$domain.'user/'.$oUser->slug.'">'.$oUser->username.' </a></p> ';
 			}			
 			
 		}
@@ -710,8 +888,14 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 	
 	}
 
+		static public function renderBeerDebug($oBeer,$likeStatus,$userID,$aBeerlocations,$aExistingData,$domain){
+
+		}
+		
 		static public function renderBeer($oBeer,$likeStatus,$userID,$aBeerlocations,$aExistingData,$domain){
 				$iBeerID = $oBeer->beerid;
+				
+
 				
 				if(isset($_SESSION["UserID"])){
 					$userID=$_SESSION["UserID"];
@@ -746,12 +930,12 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 				}
 				
 				if ($oBeer->photo){
-					$beerphoto = "assets/images/".$oBeer->photo;
+					$beerphoto = "thumbs/300x300/images/".$oBeer->photo;
 				} else {
 					$photo = "assets/images/hound.png";
 				}
 				
-				if($oBeer->breweryID>1){
+				if($oBeer->breweryID>1 && $oBrewery->breweryphoto!=''){
 					$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
 				}
 				
@@ -780,6 +964,9 @@ static public function renderActivitySidebar($aAvIDs,$getlimit){
 							}
 							if($oBeer->alcohol!=""){
 							$sHTML .= '<li class="">ABV: '.$oBeer->alcohol.'%</li>';
+							}
+							if($oBeer->ibu!=""){
+							$sHTML .= '<li class="">IBU: '.$oBeer->ibu.'</li>';
 							}
 							$sHTML .= '</ul>';
 						$sHTML .= '</div>';
@@ -1378,8 +1565,6 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 				$iUserID = $_SESSION["UserID"];
 				$iViewUserID = $oUser->userID;
 
-				
-
 				//get following list for logged in user
 				$aFollowingIDsList = FollowManager::getFollowingIDsList($iUserID);
 
@@ -1401,7 +1586,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 					
 					// show follow button
 					$sHTML .= '<div class="">
-					<a class="btn btn-default" href="followupdate.php?addfollow=true&revu=true&fu='.$oUser->userID.'">
+					<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revu=true&fu='.$oUser->userID.'&slug='.$oUser->username.'">
 					follow</a></div>';	
 					
 					} else {
@@ -1413,7 +1598,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 						// match > show unfollow
 						$sHTML .= '<div class="">
 						<a class="btn btn-default" 
-						href="viewuseradmin.php">
+						href="'.$domain.'viewuseradmin.php">
 						unfollow</a></div>';
 					} else {
 						// no match show follow button
@@ -1725,14 +1910,16 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 			$oLocation = new Location();
 			$oLocation->load($aExistinglocations[$iCount]);
 			//$oLocation = $aExistinglocations[$iCount];
-			$sHTML .= '<li>
-				<div class="row">
-					<div class="col itemTitle desktopVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>
-					<div class="phoneFullWidth phoneVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>
-					<div class="col item-brewery desktopVisible">'.$oLocation->locationsuburb.', '.$oLocation->locationregion.'</a></div>
-					
-				</div>
-				</li>';
+			$sHTML .= '<li>';
+				$sHTML .= '<div class="row">';
+					if($oLocation->fills==1){
+						$sHTML .=  '<div class="col-icon"><i class="fa fa-shopping-cart"></i></div>';
+					}
+					$sHTML .=  '<div class="col itemTitle desktopVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>';
+					$sHTML .=  '<div class="phoneFullWidth phoneVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>';
+					$sHTML .=  '<div class="col item-brewery desktopVisible">'.$oLocation->locationsuburb.', '.$oLocation->locationregion.'</a></div>';
+				$sHTML .= '</div>';
+				$sHTML .= '</li>';
 			}
 		$sHTML .= '</ul>';
 		//$sHTML .= '</div>';
@@ -1740,7 +1927,6 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 	}
 	
 	static public function renderLocation($oLocation,$domain){
-		
 		
 		$sHTML = '<div class="wrapper clearfix locationDetails">';
 		$sHTML .= '<h3>'.$oLocation->locationname.'</h3>';
@@ -1757,6 +1943,10 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 				$sHTML .= '<div class="contactDetails">'.$oLocation->locationsuburb.' '.$oLocation->locationregion.'</div>';
 				$sHTML .= '<div class="contactDetails">Phone: <a href="tel:'.$oLocation->locationcontact.'">'.$oLocation->locationcontact.'</a></div>';
 				$sHTML .= '<div class="contactDetails"><a target="_blank" href="http://'.$oLocation->locationwebsite.'">'.$oLocation->locationwebsite.'</a></div>';
+				if($oLocation->fills==1){
+					$sHTML .=  '<div class="contactDetails"><i class="fa fa-shopping-cart locationspec"> Off-license</i></div>';
+				}
+				
 				
 				// START FOLLOW Checks...
 			
@@ -1780,7 +1970,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 				
 				$sHTML .= '<div class="collapse" id="requireLoginMessage">';
 				$sHTML .= 'login required';
-				$sHTML .= '</div>';	
+				$sHTML .= '</div>';
 			}
 			
 			if($loggedin==1){
@@ -1795,7 +1985,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 					
 					// show follow button
 					$sHTML .= '<div class="">
-					<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revl=true&fl='.$oUser->userID.'">
+					<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revl=true&fl='.$oUser->userID.'&slug='.$oLocation->slug.'">
 					follow</a></div>';	
 					
 					} else {
@@ -1810,12 +2000,12 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 
 						$sHTML .= '<div class="">
 						<a class="btn btn-default" 
-						href="'.$domain.'followupdate.php?removefollow=true&followID='.$followID.'">
+						href="'.$domain.'followupdate.php?removefollow=true&followID='.$followID.'&slug='.$oLocation->slug.'">
 						unfollow</a></div>';
 					} else {
 						// no match show follow button
 						$sHTML .= '<div class="">
-						<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revl=true&fl='.$oLocation->locationID.'">
+						<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revl=true&fl='.$oLocation->locationID.'&slug='.$oLocation->slug.'">
 						follow</a></div>';	
 					}
 
@@ -1826,7 +2016,20 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 			
 // 			} 
 			// close if on admin page
+			
+			
+				$sHTML .= '<h4>Followed by</h4>';
+						
+				$aFollowingIDsList = FollowManager::getFollowersIDsList($oLocation->locationID,'followLocationID');
 				
+				foreach($aFollowingIDsList as $follower){
+					$oUser = new User();
+					$oUser->load($follower);
+					$sHTML .= '<span><a class="pil" href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a></span> ';
+				}
+	
+			
+			
 			$sHTML .= '</div>';
 			
 			
@@ -1850,7 +2053,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 						if($oLocation->claimstatus==0){
 						$sHTML .= '<div class="spacer"></div>';
 						$sHTML .= '<div class="claim">Are you the owner of this location?<br/>Claim your free management account now.</div>';
-						$sHTML .= '<div class="claim"><a class="btn btn-default" href="about.php">Claim</a></div>';
+						$sHTML .= '<div class="claim"><a class="btn btn-default" href="'.$domain.'about.php">Claim</a></div>';
 			}
 			$sHTML .= '<div id="map" class="smallmap"></div>';
 			$sHTML .= '</div>';
@@ -1886,7 +2089,7 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 			// LOGO
 			$sHTML .= '<div class="col-md-2">';
 			if ($oBrewery->breweryphoto){
-				$photo = $domain."assets/images/".$oBrewery->breweryphoto;
+				$photo = $domain."thumbs/300x300/images/".$oBrewery->breweryphoto;
 				} else {
 				$photo = $domain."assets/images/hound.png";
 				}
@@ -1907,9 +2110,6 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 	
 } else {
-	
-
-
 
 		// START FOLLOW Checks...
 			
@@ -1935,6 +2135,7 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 				$sHTML .= '</div>';	
 			}
 
+			$aFollowingIDsList = FollowManager::getFollowersIDsList($oBrewery->breweryID,'followBreweryID');
 		
 			if($loggedin==1){
 				//check list has items
@@ -1943,29 +2144,39 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 					
 					// show follow button
 					$sHTML .= '<div class="">
-					<a class="btn btn-default" href="followupdate.php?addfollow=true&revu=true&fu='.$iUserID.'">
+					<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revb=true&fb='.$iBreweryID.'">
 					follow</a></div>';	
 					
 					} else {
 					//get user IDs from list
-					$aUserIDsCurrentlyFollowing = FollowManager::getFollowingBreweryIDsList($aFollowingIDsList);
+					//$aUserIDsCurrentlyFollowing = FollowManager::getFollowingBreweryIDsList($aFollowingIDsList);
 					
+
 						//check if user viewed is already on follow list
-						if(in_array($iBreweryID, $aUserIDsCurrentlyFollowing)){
+						if(in_array($iUserID, $aFollowingIDsList)){
 							// match > show unfollow
 							$sHTML .= '<div class="">
 							<a class="btn btn-default" 
-							href="viewuseradmin.php">
+							href="'.$domain.'followupdate.php?removefollowB=true&fb='.$iBreweryID.'&slug='.$oBrewery->slug.'">
 							unfollow</a></div>';
 						} else {
 							// no match show follow button
 							$sHTML .= '<div class="">
-							<a class="btn btn-default" href="followupdate.php?addfollow=true&revb=true&fb='.$oBrewery->breweryID.'">
+							<a class="btn btn-default" href="'.$domain.'followupdate.php?addfollow=true&revb=true&fb='.$iBreweryID.'">
 							follow</a></div>';	
 						}
 
 				}
 			}
+	
+			$sHTML .= '<h4>Followed by</h4>';
+			
+			foreach($aFollowingIDsList as $follower){
+				$oUser = new User();
+				$oUser->load($follower);
+				$sHTML .= '<span><a class="pil" href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a></span> ';
+			}
+	
 			
 			// END FOLLOW checks...
 }
@@ -1977,7 +2188,7 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 			if($oBrewery->claimstatus==0){
 					$sHTML .= '<div class="claim">Are you the owner of this brewery?<br/>';
 					$sHTML .= 'Claim your free management account now.</div>';
-					$sHTML .= '<div class="claim"><a class="btn btn-default" href="about.php">Claim</a></div>';
+					$sHTML .= '<div class="claim"><a class="btn btn-default" href="'.$domain.'about.php">Claim</a></div>';
 			}
 		$sHTML .= '</div>';
 
@@ -2019,12 +2230,18 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 			$oLocation = new Location();
 			$oLocation->load($location->locationID);
 		
-			$aBeersAvailable = Availability::loadBeers($oLocation->locationID);
+			//$aBeersAvailable = Availability::loadBeers($oLocation->locationID);
 		
-			$taps = count($aBeersAvailable);
+			//$taps = count($aBeersAvailable);
 			
 			$sHTML .= '<a href="'.$domain.'location/'.$oLocation->slug.'"><li><div class="row">';
 // 				$sHTML .= '<div class="col item-logo"></div>';
+
+				if($oLocation->fills==1){
+					$sHTML .=  '<div class="contactDetails"><i class="fa fa-shopping-cart locationspec"></i></div>';
+				}
+				
+
 				$sHTML .= '<div class="col itemTitle desktopVisible"><h3>'.$oLocation->locationname.'</h3></div>';
 				$sHTML .= '<div class="col itemTitleCol phoneVisible"><h3>'.$oLocation->locationname.'</h3></div>';
 				$sHTML .= '<div class="col phoneCol phoneVisible">'.$oLocation->locationsuburb.'</div>';
@@ -2032,8 +2249,8 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 				$sHTML .= '<div class="col responsive desktopVisible">'.$oLocation->locationsuburb.'</div>';
 				$sHTML .= '<div class="col responsive desktopVisible">'.$oLocation->locationregion.'</div>';
 				
-				$sHTML .= '<div class="col responsive desktopVisible"><b>'.$taps.'</b> Taps listed</div>';
-				$sHTML .= '<div class="col phoneCol phoneVisible"><b>'.$taps.'</b> Taps</div>';
+				//$sHTML .= '<div class="col responsive desktopVisible"><b>'.$taps.'</b> Taps listed</div>';
+				//$sHTML .= '<div class="col phoneCol phoneVisible"><b>'.$taps.'</b> Taps</div>';
 				
 			$sHTML .= '</li></a>';	
 		}
@@ -2094,10 +2311,12 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 				$oBrewery = new Brewery();
 				$oBrewery->load($iBrewery->breweryID);
 				
-				$iTotalAvaial = Availability::loadBrewery($iBrewery->breweryID);
-				$iTotalAvaial = count($iTotalAvaial);
+				//$iTotalAvail = Availability::loadBrewery($iBrewery->breweryID);
+				//$iTotalAvail = count($iTotalAvail);
 				
-				$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+				$iTotalAvail = Availability::getTapCount($iBrewery->breweryID);
+				
+				$breweryphoto = "thumbs/50x50/images/".$oBrewery->breweryphoto;
 				//$aBeersAvailable = Availability::loadBeers($oLocation->locationID);
 			
 				//$taps = count($aBeersAvailable);
@@ -2109,8 +2328,8 @@ if($_SERVER['REQUEST_URI']=="/viewuseradmin.php"){
 					$sHTML .= '<div class="col itemTitleCol phoneFullWidth phoneVisible"><h3><a href="'.$domain.'brewery/'.$oBrewery->slug.'">'.$oBrewery->breweryname.'</a></h3></div>';
 					//$sHTML .= '<div class="col responsive desktopVisible">'.$oBrewery->locationsuburb.'</div>';
 					//$sHTML .= '<div class="col responsive desktopVisible">'.$oBrewery->locationregion.'</div>';
-					$sHTML .= '<div class="col itemTitle desktopVisible">'.$iTotalAvaial.' Brews Available</div>';
-					$sHTML .= '<div class="col item-edit  phoneVisible">'.$iTotalAvaial.'</div>';
+					$sHTML .= '<div class="col itemTitle desktopVisible">'.$iTotalAvail.' Brews Available</div>';
+					$sHTML .= '<div class="col item-edit  phoneVisible">'.$iTotalAvail.'</div>';
 					
 				$sHTML .= '</li>';
 			}
@@ -2376,10 +2595,12 @@ static public function renderBeersByBrewery($aBeersAvailable,$domain){
 		$sHTML .= '<li>
 				<div class="row">';
 		
-		if($oBeer->photo){
+		if($oBeer->photo!=''){
 			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$photo.'"/></a></div>';
-		} else {
+		} elseif($oBrewery->breweryphoto!='') {
 			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$breweryphoto.'"/></a></div>';
+		} else {
+			$sHTML .= '<div class="col itemLogo"><a href="'.$domain.$oBeer->slug.'"><img src="'.$photo.'"/></a></div>';
 		}
 
 		$sHTML .= '<div class="col itemTitleCol">';

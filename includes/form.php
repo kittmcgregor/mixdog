@@ -9,19 +9,61 @@
 		private $aData;
 		private $aFiles;
 		private $aErrors;
-		//private $sCustomError;
+		private $sCustomError;
 		//private $sPmatch;
 
 		public function __construct(){
-			$this->sHTML = '<form action="" method="post" enctype="multipart/form-data">';
+			$this->sHTML = '<form action="" method="post" enctype="multipart/form-data" id="regex">';
 			$this->aData = array();
 			$this->aFiles = array();
 			$this->aErrors = array();
+			$this->sCustomError = "";
+		}
+
+		// form building method
+		public function makeTextInputCol50ALC($sControlLabel,$sControlName,$placeholder){
+			$sControlData = "";
+			if(isset($this->aData[$sControlName])==true){
+				$sControlData = $this->aData[$sControlName];
+			}
+			$sError = "";
+			$sCustomError = "";
 			
- 			//$this->sCustomError = "***";
+			if(isset($this->aErrors[$sControlName])==true){
+				$sError = '<div class="error">'.$this->aErrors[$sControlName].'</div>';
+			}
+			//$this->sHTML .= '<div id="help-'.$sControlName.'" class="helptip"></div>';
+			$this->sHTML .= '<div class="form-group col-md-6">';
+			$this->sHTML .= '<label for="'.$sControlName.'" id="label-'.$sControlName.'">'.$sControlLabel.'</label>';
+			$this->sHTML .=	'<input type="text" class="form-control" id="'.$sControlName.'" name="'.$sControlName.'" placeholder="'.$placeholder.'" value="'.$sControlData.'" />';
+			$this->sHTML .=	$sError;
+			$this->sHTML .= $sCustomError;
+			$this->sHTML .= '</div>';
 		}
 
 
+
+		// form building method
+		public function makeTextInputCol50($sControlLabel,$sControlName,$placeholder){
+			$sControlData = "";
+			if(isset($this->aData[$sControlName])==true){
+				$sControlData = $this->aData[$sControlName];
+			}
+			$sError = "";
+			$sCustomError = "";
+			
+			if(isset($this->aErrors[$sControlName])==true){
+				$sError = '<div class="error">'.$this->aErrors[$sControlName].'</div>';
+			}
+			//$this->sHTML .= '<div id="help-'.$sControlName.'" class="helptip"></div>';
+			$this->sHTML .= '<div class="form-group col-md-6">';
+			$this->sHTML .= '<label for="'.$sControlName.'" id="label-'.$sControlName.'">'.$sControlLabel.'</label>';
+			$this->sHTML .=	'<input type="text" class="form-control" id="'.$sControlName.'" name="'.$sControlName.'" placeholder="'.$placeholder.'" value="'.$sControlData.'" />';
+			$this->sHTML .=	$sError;
+			$this->sHTML .= $sCustomError;
+			$this->sHTML .= '</div>';
+		}
+			
 		// form building method
 		public function makeTextInput($sControlLabel,$sControlName,$placeholder){
 			$sControlData = "";
@@ -29,22 +71,24 @@
 				$sControlData = $this->aData[$sControlName];
 			}
 			$sError = "";
+			$sCustomError = "";
 			
 			if(isset($this->aErrors[$sControlName])==true){
 				$sError = '<div class="error">'.$this->aErrors[$sControlName].'</div>';
 			}
-			$this->sHTML .= '<div id="help-'.$sControlName.'" class="helptip"></div>';
+			//$this->sHTML .= '<div id="help-'.$sControlName.'" class="helptip"></div>';
 			$this->sHTML .= '<div class="form-group">';
 			$this->sHTML .= '<label for="'.$sControlName.'" id="label-'.$sControlName.'">'.$sControlLabel.'</label>';
 			$this->sHTML .=	'<input type="text" class="form-control" id="'.$sControlName.'" name="'.$sControlName.'" placeholder="'.$placeholder.'" value="'.$sControlData.'" />';
 			$this->sHTML .=	$sError;
-			//$this->sHTML .= $sCustomError;
+			$this->sHTML .= $sCustomError;
 			$this->sHTML .= '</div>';
 		}
 		
 		public function makeHiddenInput($sControlLabel,$sControlName,$placeholder){
 			$this->sHTML .=	'<input type="hidden" name="redirect" value="" />';
 		}
+		
 		public function makeHiddenSelectInput($sControlLabel,$sControlName,$placeholder){
 			$sError = "";
 			if(isset($this->aErrors[$sControlName])==true){
@@ -52,7 +96,8 @@
 			}
 			$this->sHTML .=	'<input type="hidden" name="'.$sControlName.'" value="" />';
 			$this->sHTML .=	$sError;
-		}	
+		}
+		
 		public function makeSelectInput($sControlLabel,$sControlName,$aOptions){
 			
 			$sControlData = "";
@@ -85,7 +130,7 @@
 			//$this->sHTML .= $sCustomError;
 		}
 
-public function makeSelectBreweryInput($sControlLabel,$sControlName,$aOptions){
+		public function makeSelectBreweryInput($sControlLabel,$sControlName,$aOptions){
 			
 			$sControlData = "";
 			if(isset($this->aData[$sControlName])==true){
@@ -117,7 +162,7 @@ public function makeSelectBreweryInput($sControlLabel,$sControlName,$aOptions){
 			//$this->sHTML .= $sCustomError;
 		}
 
-public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
+		public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			
 			$sControlData = "";
 			if(isset($this->aData[$sControlName])==true){
@@ -149,7 +194,7 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			//$this->sHTML .= $sCustomError;
 		}
 
-	public function makeRatingSelectInput($sControlLabel,$sControlName){
+		public function makeRatingSelectInput($sControlLabel,$sControlName){
 			
 			$optionName = "rating";
 			$selected = 0;
@@ -241,6 +286,33 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			$this->sHTML .=	$sError;
 			//$this->sHTML .= $sCustomError;
 		}
+
+		public function makeCheckboxInputCol50($sControlLabel,$sControlName,$sPossibleValue,$checkboxLabel){
+			$sControlData = "";
+			if(isset($this->aData[$sControlName])==true){
+				$sControlData = $this->aData[$sControlName];
+			}
+			$sError = "";
+			if(isset($this->aErrors[$sControlName])==true){
+				$sError = '<p>'.$this->aErrors[$sControlName].'</p>';
+			}
+
+			$this->sHTML .= '<div class="form-group col-md-6">';
+			$this->sHTML .= '<label for="'.$sControlName.'">'.$sControlLabel.'</label>';
+			
+			$this->sHTML .= '<div class="singleCheckbox">';
+			if($sControlData == false){
+				$this->sHTML .=	'<input type="checkbox" class="checkbox checkbox-success" id="'.$sControlName.'" name="'.$sControlName.'" value="'.$sPossibleValue.'"/><label>'.$checkboxLabel.'</label>';
+			}else{
+				$this->sHTML .=	'<input type="checkbox" class="checkbox checkbox-success" id="'.$sControlName.'" name="'.$sControlName.'"  checked value="'.$sPossibleValue.'"/><label>'.$checkboxLabel.'</label>';
+			}		
+			$this->sHTML .= '</div>';
+			
+			$this->sHTML .= '</div>';
+			$this->sHTML .=	$sError;
+			//$this->sHTML .= $sCustomError;
+		}
+
 		
 		public function makeCheckboxInput($sControlLabel,$sControlName,$sPossibleValue,$checkboxLabel){
 			$sControlData = "";
@@ -267,6 +339,7 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			$this->sHTML .=	$sError;
 			//$this->sHTML .= $sCustomError;
 		}
+		
 		public function makeCheckboxResident($sControlLabel,$sControlName,$sPossibleValue){
 			$sControlData = "";
 			if(isset($this->aData[$sControlName])==true){
@@ -292,6 +365,7 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			$this->sHTML .=	$sError;
 			//$this->sHTML .= $sCustomError;
 		}		
+		
 		public function makeCheckboxInputSet($sControlLabel,$sControlName,$aOptions){
 
 			$aControlData = array();
@@ -336,7 +410,7 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			//$this->sHTML .= $sCustomError;
 		}
 		
-	public function makeLocAvButtons($sControlLabel,$sControlName,$aOptions,$aExistinglocations,$iBreweryID,$iBeerID,$slug){
+		public function makeLocAvButtons($sControlLabel,$sControlName,$aOptions,$aExistinglocations,$iBreweryID,$iBeerID,$slug){
 		
 /*
 			$aControlData = array();
@@ -388,7 +462,6 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			$this->sHTML .=	$sError;
 			//$this->sHTML .= $sCustomError;
 		}
-		
 				
 		public function makeFileInput($sControlLabel,$sControlName){
 			$sControlData = "";
@@ -425,6 +498,7 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			//$this->sHTML .= $sCustomError;
 
 		}
+		
 		public function makePasswordInput($sControlLabel,$sControlName,$placeholder){
 			$sControlData = "";
 			if(isset($this->aData[$sControlName])==true){
@@ -442,7 +516,6 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			$this->sHTML .=	$sError;
 			//$this->sHTML .= $sCustomError;
 		}
-		
 		
 		public function makeTextArea($sControlLabel,$sControlName,$placeholder){
 			$sControlData = "";
@@ -467,6 +540,12 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 			$this->sHTML .= "</div>";
 		}
 		
+		public function makeSubmitLeft($sControlLabel,$sControlName){
+			
+			$this->sHTML .= '<div class="">';
+			$this->sHTML .= "\t\t\t".'<button type="submit" name="'.$sControlName.'" class="btn btn-primary" value="'.$sControlLabel.'"/>'.$sControlLabel.'</button>'."\n";
+			$this->sHTML .= "</div>";
+		}		
 		
 		public function moveFile($sControlName,$sNewName){
 			$sNewPath = dirname(__FILE__).'/../assets/images/'.$sNewName;
@@ -517,6 +596,9 @@ public function makeSelectStyleInput($sControlLabel,$sControlName,$aOptions){
 					}
 					return false;
 					break;
+				case 'data';
+					return $this->aData;
+					break;				
 				default;
 					die($var . "is not accessible");
 					break;

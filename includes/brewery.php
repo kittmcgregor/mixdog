@@ -75,6 +75,23 @@ class Brewery{
 		$oCon->close();
 		}
 
+	static public function totalBreweries(){
+		//return a list of all likes
+					
+		// query 
+		$oCon = new Connection();
+		//$sSql = "SELECT `beerID` FROM `availability` WHERE locationID='$locationID' ORDER BY beerID DESC";
+		$sSql = "SELECT COUNT(*) FROM BreweryTable";
+	
+		$oResultSet = $oCon->query($sSql);
+			
+		// load all subjects and add to array
+		$aRow = $oCon->fetchArray($oResultSet);
+		$iTotal = $aRow["COUNT(*)"];
+		
+		$oCon->close();
+		return $iTotal;
+	}
 
 	static public function all(){
 		//1 make connection
@@ -115,8 +132,7 @@ class Brewery{
 					sBreweryWebsite)."', '".$oCon->escape($this->
 					sAddress)."', '".$oCon->escape($this->
 					sPhoto)."')";
-					
-			echo $sSql;
+
 			$bResult = $oCon->query($sSql);
 			if($bResult==true){
 				// update the iBeerID

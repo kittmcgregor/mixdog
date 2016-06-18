@@ -71,7 +71,10 @@
 			$oBeer = new Beer();
 			$oBeer->loadByName($_GET["name"]);
 			echo '<meta property="og:site_name" content="Brewhound" />';
-			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/'.$oBeer->photo.'" />';
+			echo '<meta property="og:image" content="http://brewhound.nz/thumbs/300x300/images/'.$oBeer->photo.'" />';
+			echo '<meta property="og:image:type" content="image/png">';
+			echo '<meta property="og:image:width" content="300">';
+			echo '<meta property="og:image:height" content="300">';
 				if($oBeer->breweryID<2){
 					$brewery = $oBeer->brewery;
 				} else {
@@ -82,7 +85,17 @@
 			echo '<meta property="og:title" content="'.$brewery.' '.$oBeer->title.' - Brewhound" />';
 			echo '<meta property="og:url" content="http://brewhound.nz/'.$oBeer->slug.'" />';
 			echo '<meta property="og:description" content="'.$oBeer->description.'"/>';
-			}	else {
+			}	elseif(isset($_GET["slug"])){
+			$oBrewery = new Brewery();
+			$oBrewery->loadBySlug($_GET["slug"]);
+			echo '<meta property="og:site_name" content="Brewhound" />';
+			echo '<meta property="og:image" content="http://brewhound.nz/thumbs/300x300/images/'.$oBrewery->breweryphoto.'" />';
+			echo '<meta property="og:image:type" content="image/png">';
+			echo '<meta property="og:image:width" content="300">';
+			echo '<meta property="og:image:height" content="300">';
+			echo '<meta property="og:title" content="'.$oBrewery->breweryname.' - Brewhound" />';
+			echo '<meta property="og:url" content="http://brewhound.nz/brewery/'.$oBrewery->slug.'" />';
+			} else {
 			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/brewhound-og.png" />';
 			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/brewhound-og.png" />';
 			echo '<meta property="og:image" content="http://brewhound.nz/assets/images/brewhound-og-hound-solo.png" />';
@@ -97,16 +110,20 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 	<link rel='stylesheet' href="<?php echo $domain ?>assets/css/style.css">
+	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 	</head>
 	
 	<body>
 	
 		<header>
 			<nav class="clearfix">
-				<div id="branding" style="cursor: pointer;" onclick="window.location='http://brewhound.nz/';"><span class="beta phoneVisible">beta</span> <span class="logotext">brew hound</span> <span class="beta hidePhone">beta</span></div> 
-		
+<!-- 				<div id="branding" style="cursor: pointer;" onclick="window.location='http://brewhound.nz/';"><span class="beta phoneVisible">beta</span> <span class="logotext">brew hound</span> <span class="beta hidePhone">beta</span></div>  -->
+				
+				<div id="branding" style="cursor: pointer;" onclick="window.location='http://brewhound.nz/';"> <span class="logotext">brew hound</span> </div> 
+				
+				
 				<ul id="mainNav">
-					<li><a href="/map"><i class="fa fa-globe fa-2x" aria-hidden="true"></i></a></li>
+					<li><a href="/map" id="mapmenu"><i class="fa fa-globe fa-2x" aria-hidden="true"></i></a></li>
 					<li id="searchhover"><form id="QSform" action="">
 							<input id="quicksearchinput" name="search" type="text" placeholder="Start typing...">
 							<i id="qs" class="fa fa-search fa-lg"></i>
@@ -125,7 +142,7 @@
 					<li class="dropdown">
 				        <a href="#"><i class="fa fa-bars dropdown-toggle"></i>add listing</a>
 				        <ul class="dropdown-menu">
-							<li><a href="<?php echo $domain ?>addbeer.php">new brew</a></li>
+							<li><a href="<?php echo $domain ?>addbeer.php?intended=addbrew">new brew</a></li>
 							<li><a href="<?php echo $domain ?>viewbreweries.php">select from brewery</a></li>
 							<li><a href="<?php echo $domain ?>search.php">find/search</a></li>
 							<li><a href="<?php echo $domain ?>addstyle.php">new style</a></li>
@@ -152,33 +169,40 @@
 				        <div class="collapse" id="mobileToggle">
 					        
 					        <ul class="mobileNav">
-						        <?php if(isset($_SESSION["UserID"])){
-									echo '<li><a href="'.$domain.'viewuseradmin">my account <i class="fa fa-sign-in"></i></a></li>';
-								} ?>
-								<li><a href="<?php echo $domain ?>viewlocations.php">locations <i class="fa fa-map-marker" aria-hidden="true"></i></a></li>
-								<li><a href="<?php echo $domain ?>viewbreweries.php">breweries <i class="fa fa-beer" aria-hidden="true"></i></a></li>
-								<li><a href="<?php echo $domain ?>map">map <i class="fa fa-globe fa-lg"></i></a></li>
-								<li><a href="<?php echo $domain ?>searchmobile.php">Search <i class="fa fa-search fa-lg"></i></a></li>
-								<div class="clear"></div>
+						        <?php //if(isset($_SESSION["UserID"])){
+									//echo '<li><a href="'.$domain.'viewuseradmin">my account <i class="fa fa-sign-in"></i></a></li>';
+								//} ?>
+								
+								<li><a href="<?php echo $domain ?>viewlocations.php"><i class="fa fa-map-marker" aria-hidden="true"></i> locations </a></li>
+								<li><a href="<?php echo $domain ?>viewbreweries.php"><i class="fa fa-beer" aria-hidden="true"></i> breweries </a></li>
+								<li><a href="<?php echo $domain ?>map"><i class="fa fa-globe fa-lg"></i> map </a></li>
+<!-- 								<li id="mobilesearch"><i class="fa fa-search fa-lg"></i> <input id="mobilesearchinput" name="mobilesearch" type="text" placeholder="Start typing..."></li> -->
+<!-- 								<div class="clear"></div> -->
 							<div class="line"></div>
-							<li class="navTitle"><i class="fa fa-plus"></i> add new</li>
-								<li><a href="<?php echo $domain ?>addbeer.php">brew <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
-								<li><a href="<?php echo $domain ?>addstyle.php">style <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
-								<li><a href="<?php echo $domain ?>addlocation.php">location <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
-								<li><a href="<?php echo $domain ?>addbrewery.php">brewery <i class="fa fa-plus-square" aria-hidden="true"></i></a></li>
-								<div class="clear"></div>
+							<li><a role="button" data-toggle="collapse" href="#addnew" aria-expanded="false" aria-controls="collapse"><i class="fa fa-plus"></i> add new</a></li>
+							
+							<div class="collapse" id="addnew">
+								<li><a href="<?php echo $domain ?>addbeer.php"><i class="fa fa-plus-square" aria-hidden="true"></i> brew </a></li>
+								<li><a href="<?php echo $domain ?>addlocation.php"><i class="fa fa-plus-square" aria-hidden="true"></i> location </a></li>
+								<li><a href="<?php echo $domain ?>addbrewery.php"><i class="fa fa-plus-square" aria-hidden="true"></i> brewery </a></li>
+								<li><a href="<?php echo $domain ?>addstyle.php"><i class="fa fa-plus-square" aria-hidden="true"></i> style </a></li>
+							</div>
+								
 							<div class="line"></div>
-							<li class="navTitle"><i class="fa fa-user"></i> account</li>
+							<li>
 								<?php 
 								if(isset($_SESSION["UserID"])){
-									echo '<li><a href="'.$domain.'logout">logout <i class="fa fa-sign-out"></i></a></li>';
+									echo '<li><a href="'.$domain.'viewuseradmin"><i class="fa fa-user"></i> account</a></li>';
+									echo '<li><a href="'.$domain.'logout"><i class="fa fa-sign-out"></i> logout </a></li>';
+									//echo '<li><a href="'.$domain.'viewuseradmin">my account <img src="'.$domain.'assets/images/dogbowl-20.png"/></a></li>';
 								} else {
-									echo '<li><a href="'.$domain.'login">login <i class="fa fa-sign-in"></i></a></li>';
+									echo '<li><a href="'.$domain.'login"><i class="fa fa-sign-in"></i> login</a></li>';
+									echo '<li><a href="'.$domain.'register"><i class="fa fa-pencil-square-o"></i> sign up </a></li>';
 								}
 								?>
-								<li><a href="<?php echo $domain ?>register">sign up <i class="fa fa-pencil-square-o"></i></a></li>
-								<li><a href="<?php echo $domain ?>viewuseradmin">my account <img src="<?php echo $domain ?>assets/images/dogbowl-20.png"/></a></li>
-								<div class="clear"></div>
+								
+									
+								
 					    	</ul>
 					    </div>
 				</div>

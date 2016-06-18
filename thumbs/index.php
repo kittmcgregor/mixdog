@@ -34,9 +34,11 @@ if (!in_array($size,$sizes)) {
 	error('invalid size');
 }
 
+/*
 	echo "<pre>";
 	echo $image;
 	echo "</pre>";
+*/
 
 // ensure the image file exists
 if (!file_exists($image)) {
@@ -60,7 +62,11 @@ if (!$phpThumb->GenerateThumbnail()) {
 if (!mkpath(dirname($thumb),true)) {
         error('cannot create directory');
 }
-
+/*
+echo "<pre>";
+print_r($phpThumb);
+echo "</pre>";
+*/
 
 
 // write the file

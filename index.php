@@ -1,8 +1,4 @@
-<?php include_once'includes/header.php'; 
-?>
-	
-	
-	
+<?php include_once'includes/header.php'; ?>
 	
 	<div id="banner"></div>
 
@@ -23,82 +19,51 @@
 			
 		</div> <!-- end content container -->
 			
-			<div id="searchResults">
+			<div id="maincontent">
 
 					<div class="wrapper clearfix">
 						<div class="col-md-8">
 						
 						<p>New Zealand's craft beer tap guide <a class="btn btn-link" href="about.php">read more...</a></p>
-<!-- 						<div class="solidline"></div> -->
 
 						<?php	$totalTaps = Availability::totalTaps();
-								$totalBrews = Beer::allBeers();
-								$totalLoc = Location::all();
-								$totalLocExcl = Beer::exclusive();
-								$aFreshHop = Beer::FreshHop();
-							echo '<p class="quicklinks"><a class="btn btn-default" href="brews">'.$totalTaps.' taps </a> <a class="btn btn-default" href="locations">'.count($totalLoc).' Locations</a> <a class="btn btn-default" href="breweries">'.count(Brewery::all()).' Breweries </a> <a class="btn btn-default" href="exclusive">'.count($totalLocExcl).' tap exclusives </a> <a class="btn btn-default" href="freshhop"> '.count($aFreshHop).' Fresh Hop</a> </p>'; 
-						
-
+								//$totalBrews = Beer::totalBrews();
+								$totalLoc = Location::totalLocations();
+								$totalBreweries = Brewery::totalBreweries();
+								
+									echo '<p class="quicklinks">';
+									echo '<a class="btn btn-default" href="brews">'.$totalTaps.' taps</a> ';
+									//echo '<a class="btn btn-default" href="brews">'.$totalBrews.' brews</a> ';
+									echo '<a class="btn btn-default" href="locations">'.$totalLoc.' Locations</a> ';
+									echo '<a class="btn btn-default" href="breweries">'.$totalBreweries.' Breweries</a> ';
+									//echo ' <a class="btn btn-default" href="exclusive">'.count($totalLocExcl).' tap exclusives </a>';
+									//echo ' <a class="btn btn-default" href="freshhop"> '.count($aFreshHop).' Fresh Hop</a>';
+									echo '</p>';
 						?>
-						
-<!--
-						<div class="responsivemap">
-						<div id="map" class="tinymap"></div>
-						<a href="/freshmap">Bigger Map</a>
-						</div>
--->
-						
 						<p class="quicklinks">
 <a class="btn btn-success" href="addstatusupdate">Check In <i class="fa fa-check-square" aria-hidden="true"></i></a> <a class="btn btn-info" href="addstatusupdate">Rate <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i></a> <a class="btn btn-warning" href="addstatusupdate">Review <i class="fa fa-pencil" aria-hidden="true"></i></a> <a type="button" class="btn btn-primary" href="addstatusupdate">Upload Photo <i class="fa fa-picture-o" aria-hidden="true"></i></a>
 </p>
+
 						<?php
+
+							//$tapCount = Availability::getTapCount();
 							
 							// LOCATION ACTIVITY
-					$aAvIDs = Availability::all();
-					
-
-					echo "<h4>Recently Tapped</h4>";
-					
-					$limit = 5;
-					echo View::renderActivity($aAvIDs,$limit);
+							$aAvIDs = Availability::all();
+			
+							echo "<h4>Recently Tapped</h4>";
 							
-							
-									
+							$limit = 5;
+							echo View::renderActivity($aAvIDs,$limit);
+	
 							echo '<p class="quicklinks"><a class="btn btn-default" href="taps.php"> more fresh taps</a></p>';
-							
-							//pagination();
-							//echo View::renderAllBeers($oAllBeers,$loggedin);
-							
-/*
-								echo "<pre>";
-								print_r($oAllBeers);
-								echo "</pre>";
-*/
-							
-/*
-							$oAllBeers = new AllBeers();
-							$oAllBeers->load();
-							$loggedin = 0;
-							$userID = 0;
-							if(isset($_SESSION["UserID"])){
-								$userID = $_SESSION["UserID"];
-								$loggedin = 1;
-							}
-							
-							echo '<h4>Newly Listed</h4>';
-							$iBeersPerPage = 5;
-							$currentpage = "home";
-							echo View::renderAllBeers($oAllBeers,$loggedin,$userID,$iBeersPerPage,$currentpage);
-*/
-							
-
 	
 						?>
 						
 						<h4>Fresh Hop Brews</h4>
 							<ul id="listings">
 								<?php
-								
+								$aFreshHop = Beer::FreshHop();
 								if(count($aFreshHop)<6){
 									$xpp = count($aFreshHop);
 								} else {
@@ -112,56 +77,25 @@
 						
 
 						<div class="spacer clearfix"></div>
-						<h4>Exclusively on Tap</h4>
-							<ul id="listings">
-								<?php
-								$aExclusive = Beer::exclusive();
-								$xpp = 5;
-								$paginate = 0;
-								echo View::renderExclusiveBeers($aExclusive,$xpp,$paginate,$domain);
-								?>
-							</ul>
-							<?php echo '<p><a class="btn btn-default" href="exclusive.php">View all exclusive taps </a></p>'; ?>
+						
 							
 						
 						</div>
 						<div class="col-md-4">
-							
 							<div class="aside">
 								<h4>Fresh Taps</h4>
 								<div id="map" class="smallmap margintop"></div>
-								<a href="/map">View larger map</a>
 								<div id="mapfilters">
 								<a href"#" class="btn btn-default" id="auckland">AKL</a> <a href"#" class="btn btn-default" id="wellington">WGTN</a> <a href"#" class="btn btn-default" id="chch">CHC</a> <a href"#" class="btn btn-default" id="reset">ALL</a>
 								</div>
+								<a href="/map">View larger map</a>
 							</div>
-							
-<!--
-							<div class="aside">
-								<h4>News</h4>
-		
-								<?php $aNews = News::all();
-								 echo View::rendernewsfeed($aNews);?>
 
-							</div>
--->
-							
 							<div class="aside">
 								<h4>Social Media</h4>
 								<h5><a href="https://www.facebook.com/brewhoundnz/" target="_blank"><i class="fa fa-facebook-square"></i> facebook</a> &nbsp;<a href="https://twitter.com/brewhoundnz" target="_blank"><i class="fa fa-twitter-square"></i> twitter</a>
 							</div>
-							
-<!--
-							<div class="promo">
-								<h4>Owner?</h4>
-								<p>
-								Breweries, Bars & Shops can claim ownership and manage their brews exclusivly.</p>
-								<a href="about.php" class="btn btn-default claimleft">claim</a>
-								<a href="about.php"><img class="imgspace" src="<?php echo $imgpath; ?>promoadd.png"/></a>
-								<a href="about.php"><img class="imgspace" src="<?php echo $imgpath; ?>promoremove.png"/></a>
-							</div>
--->
-							
+
 							<div class="activity">
 								<h4>Activity</h4>
 								<?php
@@ -171,29 +105,7 @@
 								?>
 							
 							</div>
-								
-							<div class="mostliked">
-								<h4>Most Likes</h4>
-								<?php
-								$show = 5;
-								$oAllBeers = new AllBeers();
-								$oAllBeers->loadMostLikes();
-								echo View::rendermostLiked($oAllBeers,$show,$domain);
-								?>
-							
-<!--
-							<div>
-								<?php
-								$likestreamlimit = 5;
-								$aLikeStream = Likes::getRecentLikeActivity();
-								echo View::renderLikeStream($aLikeStream,$likestreamlimit,$domain);
-								?>
-							</div>
--->
-
-
-<!-- 						<a href="stats.php" class="">view all</a> -->
-							</div>							
+						
 							
 						</div>
 					</div>
@@ -201,18 +113,10 @@
 		
 		
 <?php
-/*
-						echo "<pre>";
-						print_r($aAvIDs);
-						echo "</pre>";
-*/
-		$url = 'http://brewhound.nz/listLocationMarkers.php';
+	$url = 'http://brewhound.nz/listLocationMarkers.php';
 	$lat_long = file_get_contents($url);
-	 include_once'includes/footer.php'; 
-	 
-	 //echo '<img src="'.htmlspecialchars(phpThumbURL('src=/assets/images/conehead.png1460599490.png&w=50', '/phpThumb/phpThumb.php')).'">';
-	 ?>
-	 
+	include_once'includes/footer.php'; 
+?>
 <script>	
 	var map;
 	function initMap() {
@@ -225,7 +129,6 @@
 			
 		    var markers = <?php echo $lat_long; ?>;
 		    var markerobjects = [];
-		    //console.log(markers[0].markername);
 		    		    
 		    for (var i = 0; i < markers.length; i++) {
 
@@ -237,7 +140,6 @@
 				var size = '25x25';
 				var url = 'http://brewhound.nz/thumbs/' + size + '/images/' + image;
 				var region = markers[i].region;
-				//console.log(image);
 				
 			    marker = new google.maps.Marker({
 					position: latlng,
@@ -253,8 +155,6 @@
 				marker.info = new google.maps.InfoWindow({
 				  content: '<a href="http://brewhound.nz/location/' + link + '">' + latest + ' @ ' + markername + '</a>'
 				});
-
-				//console.log(markername);
 				 
 				google.maps.event.addListener(marker, 'click', function() {  
 				    var marker_map = this.getMap();
@@ -319,7 +219,6 @@ $(document).on('click', '#reset', function(){
 				map.fitBounds(bounds);
 			});	
 
-
 			$(document).on('click', '#chch', function(){
 				var bounds = new google.maps.LatLngBounds();
 				console.log(marker.region);
@@ -334,24 +233,17 @@ $(document).on('click', '#reset', function(){
 				});
 				map.fitBounds(bounds);
 			});	
-
-
 						
 		    var bounds = new google.maps.LatLngBounds();
-			
 			for (var i = 0; i < markers.length; i++) {
 			 		//  And increase the bounds to take this point
 				  bounds.extend (new google.maps.LatLng (markers[i][0].lat,markers[i][0].lng));
 			}
 			
 			map.fitBounds(bounds);
-
-
-	    
-
 	
   	}
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEwC6wpxW99D8hw95lEoBjCV1a_qVvcrs&callback=initMap"
     async defer>
-</script>
+</script>	 

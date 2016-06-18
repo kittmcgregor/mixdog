@@ -18,17 +18,20 @@ echo "</pre>";
 	
 	$oBeer = new Beer();
 	$oBeer->loadByName($beerName);
+	
 	$beerID = $oBeer->beerid;
 	
 	
 	$userID = 0;
 	$likeStatus = "";
+/*
 	if(isset($_SESSION["UserID"])){
 		$userID = $_SESSION["UserID"];
 		// GET LIKE STATUS
 	$likeStatus = new Like();
 	$likeStatus->loadIfLiked($beerID,$userID);
 	}
+*/
 
 	if(isset($_POST["submit"])){
 		// is it a post request?
@@ -56,12 +59,12 @@ echo "</pre>";
 			$to      = 'admin@version.nz';
 			$subject = "Brewhound Notification: New Comment";
 			
-$message = '<html><body>';
-$message .= '<p>A new comment was added at brewhound.nz</p>';
-$message .= "<p><b>Comment:</b> ".strip_tags($_POST["Comment"])."</p>";
-$message .= '<p><a href="http://brewhound.nz'.$uri.'">on this beer</a></p>';
-$message .= "<p><b>User:</b> ".$sUsername."</p>";
-$message .= "</body></html>";
+			$message = '<html><body>';
+			$message .= '<p>A new comment was added at brewhound.nz</p>';
+			$message .= "<p><b>Comment:</b> ".strip_tags($_POST["Comment"])."</p>";
+			$message .= '<p><a href="http://brewhound.nz'.$uri.'">on this beer</a></p>';
+			$message .= "<p><b>User:</b> ".$sUsername."</p>";
+			$message .= "</body></html>";
 
 						
 			// In case any of our lines are larger than 70 characters, we should use wordwrap()
@@ -169,10 +172,16 @@ $message .= "</body></html>";
 <a class="btn btn-success" href="addstatusupdate?brew='.$beerID.'&name='.$beerName.'">Check In <i class="fa fa-check-square" aria-hidden="true"></i></a> <a class="btn btn-info" href="addstatusupdate">Rate <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i></a> <a class="btn btn-warning" href="addstatusupdate">Review <i class="fa fa-pencil" aria-hidden="true"></i></a> <a type="button" class="btn btn-primary" href="addstatusupdate">Photo <i class="fa fa-picture-o" aria-hidden="true"></i></a>
 </p>';
 	
+			if (isset($_SESSION["UserID"])==true){
+			$oForm->makeTextArea("Add Comment","Comment","");
+			$oForm->makeSubmit("Add Comment","submit");
+		} else {
+			$oForm->makeTextArea("Add Comment","Comment","you must be logged in to add a Comment ");
+		}
 	
 	
 	$checkins = Status::loadbybeer($beerID);
-	echo view::renderCheckins($checkins,$beerID,$domain);
+	echo view::renderCheckins($checkins,$beerID,$domain,$oForm);
 	
 /*
 	// Load commentID array
@@ -191,13 +200,11 @@ $message .= "</body></html>";
 		
 	
 		// Build & Render Comment form
+*/
 	
-		if (isset($_SESSION["UserID"])==true){
-			$oForm->makeTextArea("Add Review","Comment","");
-			$oForm->makeSubmit("Add Review","submit");
-		} else {
-			$oForm->makeTextArea("Add Review","Comment","you must be logged in to add a review");
-		}
+
+
+/*
 		echo View::renderCommentForm($oForm);
 */
 		//echo $uri;
@@ -235,7 +242,7 @@ $message .= "</body></html>";
 				var image = markers[i].image;
 				var size = '50x50';
 				var url = 'http://brewhound.nz/thumbs/' + size + '/images/' + image;
-				//console.log(image);
+				console.log(latlng);
 				
 			    marker = new google.maps.Marker({
 					position: latlng,

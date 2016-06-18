@@ -2,8 +2,12 @@
 	ob_start(); // for redirection to work
 	require_once'includes/header.php';
 
-	$redirectafterlogin = 'viewuseradmin.php';
-
+	$redirectafterlogin = 'viewuseradmin';
+	
+	if($_GET['intended']){
+		$redirectafterlogin = $_GET['intended'];
+	}
+	
 /*
 	echo "<pre>";
 	print_r($_SESSION);
@@ -15,9 +19,19 @@
 	if(isset($_POST["submit"]) == true){
 		// is it a post request?
 		$oForm->data = $_POST;
-		$oForm->checkRequired("Username");
 		$oForm->checkRequired("Password");
 
+		$login = $_POST["Username"];
+		//echo $login;
+		if(filter_var($login, FILTER_VALIDATE_EMAIL)){
+			//echo 'is email';
+			$logintype = 'email';
+			
+		} else {
+			//echo 'is not email';
+			$logintype = 'username';
+		}
+		
 /*
 echo "<pre>";
 print_r($_POST);
@@ -25,27 +39,50 @@ echo "</pre>";
 */
 
 		if($oForm->valid==true){
+			
+			if($_POST["Username"]&&$logintype!='email'){
 			$oTestUser = new User();
-			$bLoaded = $oTestUser->loadByUserName($_POST["Username"]);
+			$bLoaded = $oTestUser->loadByUserName($_POST["Username"]);				
+			} else {
+				
+			//echo 'test email';
+			$oTestUser = new User();
+			$bLoaded = $oTestUser->loadByUserEmail($_POST["Username"]);			
+			}
+
+
+		$password = $_POST["Password"];
+		$hash = $oTestUser->password;
 
 /*
 echo "<pre>";
 print_r($oTestUser);
 echo "</pre>";
 */
-
+	if($_POST["Username"]&&$logintype!='email'){
 		if($bLoaded==false){
-				$oForm->raiseCustomError("Username","username does not exist");
-			} else { // username does exist
-			if ($oTestUser->password!= $_POST["Password"]){
-			//if  ( (password_verify($_POST["Password"],$oCheckUsername->Password)) || ($oCheckUsername->Password == $_POST["Password"]) ) {
-/*
-				echo '<pre>database: "'.$oTestUser->password.'"</pre>';
-				echo '<pre>forminput: "'.$_POST["Password"].'"</pre>';
-*/
-					$oForm->raiseCustomError("Password","Incorrect Password");
+			$oForm->raiseCustomError("Username","username does not exist");
+		} else { // username does exist
+			if (password_verify($password,$hash)){
+			//if ($oTestUser->password!= $_POST["Password"]){
+					
+			} else {
+				$oForm->raiseCustomError("Password","Incorrect Password");
 			}
 		}
+	} else {
+		if($bLoaded==false){
+			$oForm->raiseCustomError("Email","Email does not exist");
+		} else { // username does exist
+			if (password_verify($password,$hash)){
+			//if ($oTestUser->password!= $_POST["Password"]){
+					
+			} else {
+				$oForm->raiseCustomError("Password","Incorrect Password");
+			}
+		}
+	}
+
 
 
 		if($oForm->valid==true){
@@ -83,7 +120,7 @@ echo "</pre>";
 		}
 	}
 
-	$oForm->makeLoginInput("Username","Username","Username");
+	$oForm->makeLoginInput("Email or Username","Username","Username");
 	$oForm->makePasswordInput("Password","Password","Password");
 	$oForm->makeHiddenInput("Redirect","label","$redirectafterlogin");
 	$oForm->makeSubmit("Login","submit");

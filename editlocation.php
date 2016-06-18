@@ -22,6 +22,8 @@
 	$oExistingLocation = new Location();
 	$oExistingLocation->load($editLocation);	
 	
+	$slug = $oExistingLocation->slug;
+	
 	$aExistingData = array();
 	//$aExistingData["BeerID"] = $oExistingBeer->beerID;
 	$aExistingData["locationID"] = $oExistingLocation->locationID;
@@ -34,6 +36,7 @@
 	$aExistingData["locationContact"] = $oExistingLocation->locationcontact;		
 	$aExistingData["locationWebsite"] = $oExistingLocation->locationwebsite;	
 	$aExistingData["locationInfo"] = $oExistingLocation->locationinfo;
+	$aExistingData["fills"] = $oExistingLocation->fills;
 	$aExistingData["locationEvents"] = $oExistingLocation->locationevents;
 		
 	$oForm = new Form();
@@ -71,14 +74,24 @@
 		//$oExistingLocation->locationwebsite = $_POST["locationWebsite"];
 		$oExistingLocation->locationwebsite = $clensedurl;
 		$oExistingLocation->locationinfo = $_POST["locationInfo"];
+		//$oExistingLocation->fills = $_POST["fills"];
+		
+		if($_POST["fills"]!=''){
+			$oExistingLocation->fills = $_POST["fills"];
+		} else {
+			$oExistingLocation->fills = 0;
+		}
+		
+		
 		$oExistingLocation->locationevents = $_POST["locationEvents"];
 		//$oExistingUser->password = $_POST["Password"];
 		
-		$oExistingLocation->newlocationmanagerID = $_POST["newLocationManagerID"];
+		//$oExistingLocation->newlocationmanagerID = $_POST["newLocationManagerID"];
 
 		$oExistingLocation->update();
 
-		header("location:viewlocation.php?locationID=".$redirecteditLocation);
+		//header("location:viewlocation.php?locationID=".$redirecteditLocation);
+		header('location:'.$domain.'location/'.$slug);
 		exit;
 	}
 }
@@ -90,7 +103,8 @@
 	$oForm->makeTextInput("location Region","locationRegion","required");
 	$oForm->makeTextInput("location Contact (ph prefix 09 or +64)","locationContact","");
 	$oForm->makeTextInput("location Website (remove the http:// - we'll add it)","locationWebsite","");
-	$oForm->makeTextArea("location Info","locationInfo","");	
+	$oForm->makeTextArea("location Info","locationInfo","");
+	$oForm->makeCheckboxInput("Fills","fills","1","Off License");
 	$oForm->makeTextArea("location Events","locationEvents","");
 /*
 	if(isset($_SESSION["UserID"])){
@@ -129,7 +143,7 @@ print_r($_POST);
 echo "</pre>";
 
 echo "<pre>";
-print_r($oExistingUser);
+print_r($oExistingLocation);
 echo "</pre>";
 */
 	

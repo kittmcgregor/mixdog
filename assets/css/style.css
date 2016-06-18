@@ -1,21 +1,36 @@
+#mobilesearchinput {
+	height: 2em;
+	background-color: #fff;
+	color: #000;
+}
+
 /* HEADER NAV LOGO */
-/* .stars {float: right;} */
-
-/*
-.desktopmap {
-	display: block;
+#maincontent{
+	background-color: #fff;
+}
+.locationspec {
+	background-color: #ddd;
+	padding: 0.5em;
+	font-size: .9em;
 	}
-.responsivemap{
-		display: none;
-	}	
-*/
-
+.col-icon {
+	padding-left: .5em;
+	}
+.pil {
+	padding: .1em .3em;
+	margin-bottom: .3em;
+	border: 1px solid #ddd;
+	display: inline-block;
+	}
 #mapfilters {
 	}
 #mapfilters.margintop {
 	margin-top: 1em;
 }
 #mapfilters.marginbottom {
+	margin-bottom: 1em;
+}
+#filter.marginbottom {
 	margin-bottom: 1em;
 }
 #mapfilters .btn{
@@ -27,7 +42,8 @@
 	color: #FFF;
 }
 .fa-globe {
-	padding-top: .5em;
+/* 	padding-top: .5em; */
+vertical-align: sub;
 }
 
 .fullheightmap {
@@ -42,6 +58,19 @@
 .tallmap {
 	height: 500px;
 	}
+.app_fullheightmap {
+	height: 0;
+}
+.app_tinymap {
+	height: 0;
+}
+.app_smallmap {
+	height: 0;
+}	
+.app_tallmap {
+	height: 0;
+	}
+	
 #map{
 	
 }
@@ -117,7 +146,14 @@ input#quicksearchinput[type="submit"]{
 	width: 16px;
 	height: 16px;
 }	
-
+.MSloading {
+	z-index: 400;
+	position: relative;
+	display: block;
+	background: url(../images/ajax-loader.gif) no-repeat left center;
+	width: 16px;
+	height: 16px;
+}	
 .loading {
 	background: url(../images/ajax-loader.gif) no-repeat right;
 	width: 100%;
@@ -132,29 +168,22 @@ input#quicksearchinput[type="submit"]{
 .sideitem {
 	padding: .5em;
 	margin-bottom: 1em;
+	display: -webkit-flex;
+  display: flex;
+  justify-content: flex-start;
 }
-.sideitemLogo {
-	width: 60px;
-	float: left;
-}
-.sideitemtext {
-	float: left;
-}
-.helptip {
-	opacity: 0;
-	position: absolute;
-	top: 5px;
-	right: 30px;
-	background: #eee;
-	padding: 1em;
-/*
-	-webkit-box-shadow: -3px 3px 3px 3px rgba(0,0,0,0.2);
-	box-shadow: -3px 3px 3px 3px rgba(0,0,0,0.2);
-*/
-	}
-#help-locationselect {
 
-	}
+.sideitemLogo {
+ -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    margin-right: 2em;
+}
+.sideitemText {
+ -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+}
 .sideitem {
 	background: #eee;
 }
@@ -268,7 +297,6 @@ aside {
 }
 .breweryimage img {
 	max-width: 100%;
-/* 	padding-top: 1em; */
 	}
 .beerphotocontainer{
 	margin-top: 1em;
@@ -289,12 +317,6 @@ text-align: center;
 .beerphotocontainer img {
 	text-align: center;
 	max-width: 100%;
-}
-.beerphoto{
-/*
-flex: 1;
--webkit-box-flex: 1;
-*/
 }
 .claimbox {
 	margin-top: 1em;
@@ -319,7 +341,6 @@ flex: 1;
 	}
 .brewdetails .breweryphoto {
 	margin-top: 1em;
-/* 	width: 50%; */
 	}
 .brewdetails .beerphoto {
 	margin-top: 2em;
@@ -410,7 +431,7 @@ body {
 
 }
 #banner {
-	background: #000 url(../images/beerhead.jpg) no-repeat center -12em;;
+	background: #000 url(../images/beerhead.jpg) no-repeat center -12em;
 	background-size: 100em auto;
 	position: absolute;
 	display: block;
@@ -455,6 +476,7 @@ nav li a {
 	padding-left: 3em;
 	color: #fff;
 	font-size: 2em;
+	    height: 2em;
 	}
 }
 #branding img {
@@ -470,15 +492,12 @@ nav li a {
 	display: -webkit-flex;
 	-webkit-justify-content: flex-end;
    justify-content: flex-end;
-/*
-	justify-content: space-around;
-	-webkit-justify-content: space-around;
-*/
 	margin: 0;
 	padding: 0;
 	position: absolute;
 	right: 0;
 	top: 0;
+	height: 56px;
 }
 #mainNav li {
 	list-style: none;
@@ -493,15 +512,13 @@ nav li a {
 #mainNav .dropdown:hover > .dropdown-menu {
 	display: block;
 }
+#mapmenu {
+	
+}
 .dropdown-menu {
 	background: #853232;
 	margin: 0;
 }
-/*
-.dropdown-menu li a:hover {
-	background: #461818;
-}
-*/
 
 #mobileNavContainer {
 	position: absolute;
@@ -703,16 +720,12 @@ input #submit {
 
 }
 .itemTitle {
-/* 	display: block; */
-/* 	margin-top: .5em; */
 	line-height: 1em;
 	padding: .5em 0;
 	font-weight: 500;
 	font-size: 1.2em;
 }
-.itemDescription {
-/* 	width: 50%; */
-}
+
 .itemStyle {
 	margin-bottom: .5em;
 	line-height: 1em;
@@ -723,7 +736,6 @@ a .itemStyle:hover {
 }
 
 .image {
-	//float: right;
 	max-width: 100%;
 }
 .image img {
@@ -785,18 +797,11 @@ footer {
 	.brewdetails{
 		min-height: 200px;
 	}
-		
-/*
-	.desktopmap{
-		display: none;
-	}
-	.responsivemap{
-		display: block;
-		margin-bottom: 2em;
-	}
-*/
 }
 @media (max-width: 600px) {
+	#mainNav li a {
+		padding: 1.5em .5em; 
+	}
 }
 @media (max-width: 800px) {
 	.brewTitle h2 {
@@ -807,9 +812,6 @@ footer {
 	}
 	.brewTitle{
 		word-wrap: break-word;
-	}
-	.specs {
-/* 		width: 200%; */
 	}
 	.phoneCol {
 		line-height: 1.5em;
@@ -850,7 +852,8 @@ footer {
 		background: url(../images/brewhound-icon-hires.png) no-repeat left 4px;
 		background-size: 70px 35px;
 		padding-left: 3em;
-		line-height: 0.7em;
+/* 		line-height: 0.7em; */
+		line-height: 1.7em;
 		margin-top: .2em;
 	}
 	#branding:hover {
@@ -941,16 +944,6 @@ footer {
 	text-align: left;
 	margin-left: 1em;
 	}
-/*
-	#listings .locationData {
-	flex: 0 0 25%;
-	-webkit-flex: 0 0 25%;
-	text-align: left;
-	margin-left: 1em;
-	margin-right: 1em;
-	}
-*/
-
 	.itemTitle {
 	margin-top: 0;	
 	}
@@ -1000,7 +993,7 @@ footer {
 		font-size: 1.5em;
 	}
     #logo img {
-	height: 1.5em;;
+	height: 1.5em;
 	width: auto;
 	}
 	.sort-col {

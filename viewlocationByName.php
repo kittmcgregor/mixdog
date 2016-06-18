@@ -20,11 +20,11 @@
 	$oLocation = new Location();
 	$oLocation->loadByName($name);
 	$locationID = $oLocation->locationID;
+	$slug = $oLocation->slug;
 	
 	$claimstatus = $oLocation->claimstatus;
 	echo View::renderLocation($oLocation,$domain);
 
-	
 // superadmin edit
 	if(isset($_SESSION["UserID"])){
 		if ($_SESSION["UserID"]==1) {
@@ -61,6 +61,13 @@ echo "</pre>";
 	include_once'includes/footer.php';
 	$url = 'http://brewhound.nz/listSingleLocation.php?locationID='.$locationID;
 	$lat_long = file_get_contents($url);
+
+/*
+echo "<pre>";
+print_r($oLocation);
+echo "</pre>";
+*/
+
 
 ?>
 <script>
@@ -134,7 +141,7 @@ echo "</pre>";
   	}
 </script>
 <?php if($lat_long!='null'){
-	echo $lat_long;
+	//echo $lat_long;
 	echo '<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCEwC6wpxW99D8hw95lEoBjCV1a_qVvcrs&callback=initMap"
     async defer>
 </script>';

@@ -5,6 +5,7 @@
 	
 class User{
 	private $iUserID;
+	private $sSlug;
 	private $iBreweryID;
 	private $iLocationID;
 	private $sUsername;
@@ -13,11 +14,12 @@ class User{
 	private $sEmail;
 	private $sPassword;
 	private $sPhoto;
-	
+	private $aSettings;
 	private $aLikes;
 	
 	public  function __construct(){
 		$this->iUserID = 0;
+		$this->sSlug = '';
 		$this->iBreweryID = 0;
 		$this->iLocationID = 0;
 		$this->sUsername = "";
@@ -26,6 +28,7 @@ class User{
 		$this->sEmail = "";
 		$this->sPassword = "";
 		$this->sPhoto = "";
+		$this->aSettings = "";
  		$this->aLikes = array();
 		}
 	
@@ -35,7 +38,7 @@ class User{
 		$oCon = new Connection();
 
 		//2 create query
-		$sSql = "SELECT UserID, BreweryID, LocationID, UserName, FirstName, LastName, Email, Password FROM  user WHERE  UserID = $iUserID";
+		$sSql = "SELECT UserID, slug, BreweryID, LocationID, UserName, FirstName, LastName, Email, Password, Settings FROM  user WHERE  UserID = $iUserID";
 		
 		//3 execute query
 		$oResultSet = $oCon->query($sSql);
@@ -43,6 +46,7 @@ class User{
 		//4 fetch data
 		$aRow = $oCon->fetchArray($oResultSet);
 		$this->iUserID = $aRow["UserID"];
+		$this->sSlug = $aRow["slug"];
 		$this->iBreweryID = $aRow["BreweryID"];
 		$this->iLocationID = $aRow["LocationID"];
 		$this->sUsername = $aRow["UserName"];
@@ -50,7 +54,7 @@ class User{
 		$this->sLastname = $aRow["LastName"];
 		$this->sEmail = $aRow["Email"];
 		$this->sPassword = $aRow["Password"];
-		
+		$this->aSettings = $aRow["Settings"];
 		//load liked beers
 		$sSql = "SELECT likeID, beerID FROM `like` WHERE UserID =".$iUserID;
 		$oResultSet = $oCon->query($sSql);
@@ -65,7 +69,46 @@ class User{
 		//5 close connection
 		$oCon->close();
 	}
-	
+
+	public function loadByLocation($iLocID){
+		
+		//1 make connection
+		$oCon = new Connection();
+
+		//2 create query
+		$sSql = "SELECT Email FROM  user WHERE  LocationID = $iLocID";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$this->sEmail = $aRow["Email"];
+		
+		//5 close connection
+		$oCon->close();
+	}
+
+
+	public function loadByBrewery($Bid){
+		
+		//1 make connection
+		$oCon = new Connection();
+
+		//2 create query
+		$sSql = "SELECT Email FROM  user WHERE  BreweryID = $Bid";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$this->sEmail = $aRow["Email"];
+		
+		//5 close connection
+		$oCon->close();
+	}
+		
 	public function loadUserNameProfile($username){
 				//1 make connection
 		$oCon = new Connection();
@@ -103,14 +146,45 @@ class User{
 		//5 close connection
 		$oCon->close();
 	}
-	
+
+	public function loadUserSlugProfile($slug){
+				//1 make connection
+		$oCon = new Connection();
+
+		//2 create query
+		$sSql = "SELECT UserID, BreweryID, LocationID, UserName, FirstName, LastName, Email, Password FROM  user WHERE slug = '$slug'";
+		
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+		
+		//4 fetch data
+		$aRow = $oCon->fetchArray($oResultSet);
+		$this->iUserID = $aRow["UserID"];
+		$this->iBreweryID = $aRow["BreweryID"];
+		$this->iLocationID = $aRow["LocationID"];
+		$this->sUsername = $aRow["UserName"];
+		$this->sFirstname = $aRow["FirstName"];
+		$this->sLastname = $aRow["LastName"];
+		$this->sEmail = $aRow["Email"];
+		$this->sPassword = $aRow["Password"];
+			
+		//4 fetch data
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$oLike = new Like();
+			$oLike->load($aRow["likeID"]);
+			$this->aLikes[] = $oLike; // add to array
+		}
+		
+		//5 close connection
+		$oCon->close();
+	}
 	
 public function save(){
 		// insert a new page - for now
 		$oCon = new Connection();
 	
 		if($this->userID==0){
-		// beer does not exist - do insert
+		// user does not exist - do insert
 		$sSql = "INSERT INTO user (UserName, FirstName, LastName, Email, Password) 
 			VALUES ('".$oCon->escape($this->
 					sUsername)."', '".$oCon->escape($this->
@@ -131,16 +205,47 @@ public function save(){
 		
 		}
 
+public function saveUsingEmail(){
+		// insert a new page - for now
+		$oCon = new Connection();
+	
+		if($this->userID==0){
+		// user does not exist - do insert
+		$sSql = "INSERT INTO user (UserName, FirstName, LastName, Email, Password, slug) 
+			VALUES ('".$oCon->escape($this->
+					sUsername)."', '".$oCon->escape($this->
+					sFirstname)."', '".$oCon->escape($this->
+					sLastname)."', '".$oCon->escape($this->
+					sEmail)."', '".$oCon->escape($this->
+					sPassword)."', '".$oCon->escape($this->
+					sSlug)."')";
+			$bResult = $oCon->query($sSql);
+			if($bResult==true){
+				// update the iUserID
+				$this->iUserID = $oCon->getInsertID();
+			} else {
+				die($sSql . "did not run");
+			}
+		}
+		//5 close connection
+		$oCon->close();
+		
+		}
+		
 public function update(){
 		$oCon = new Connection();
 		
 		$sSql = "UPDATE user SET 
+			slug = '".$oCon->escape($this->
+					sSlug)."',
 			UserName = '".$oCon->escape($this->
 					sUsername)."', 
 			FirstName = '".$oCon->escape($this->
 					sFirstname)."', 
 			LastName = '".$oCon->escape($this->
 					sLastname)."',
+			Settings = '".$oCon->escape($this->
+					aSettings)."',
 			Email = '".$oCon->escape($this->
 					sEmail)."' WHERE UserID = ".$this->
 					iUserID;
@@ -151,6 +256,7 @@ public function update(){
 		
 		$oCon->close();
 		}
+
 
 static public function checktoken($token,$email){
 	$oCon = new Connection();
@@ -369,13 +475,62 @@ public function loadByUserByToken(){
 			}
 		$oCon->close();
 	}
+
+	static public function userIDs(){
+		//1 make connection
+		$oCon = new Connection();
+		$aLocations = array();
+		
+		// exclude WHERE ClaimStatus=0
+		
+		//2 create query
+		$sSql = "SELECT UserID FROM user";
 	
+		//3 execute query
+		$oResultSet = $oCon->query($sSql);
+
+		//4 fetch data
+			while($aRow=$oCon->fetchArray($oResultSet)){
+			
+				$iUserID = $aRow["UserID"];
+				$aUsers[] = $iUserID; // add to array
+			}
+
+		//5 close connection
+		$oCon->close();
+
+		return $aUsers;
+
+	}
+
+
+public function updateUserSlugs(){
+	// update product
+	$oCon = new Connection();
+	
+	$sSql = "UPDATE user SET 
+		slug = '".$oCon->escape($this->
+				sSlug)."' WHERE UserID = ".$this->iUserID;	
+		
+		echo $sSql;
+		
+		$bResult = $oCon->query($sSql);
+		if($bResult==false){
+			die($sSql."did not run");
+		}
+
+	
+	$oCon->close();
+	}	
 		
 	// getter method
 	public function __get($var){
 		switch ($var){
 		case 'userID';
 			return $this->iUserID;
+		break;
+		case 'slug';
+			return $this->sSlug;
 		break;
 		case 'breweryID';
 			return $this->iBreweryID;
@@ -401,6 +556,9 @@ public function loadByUserByToken(){
 		case 'photo';
 			return $this->sPhoto;
 		break;
+		case 'settings';
+			return $this->aSettings;
+		break;
 		case 'likes';
 			return $this->aLikes;
 		break;
@@ -416,6 +574,9 @@ public function loadByUserByToken(){
 		case 'username';
 			$this->sUsername = $value;
 			break;
+		case 'slug';
+			$this->sSlug = $value;
+			break;
 		case 'firstname';
 			$this->sFirstname = $value;
 			break;
@@ -430,6 +591,9 @@ public function loadByUserByToken(){
 			break;
 		case 'photo';
 			$this->sPhoto = $value;
+			break;
+		case 'settings';
+			$this->aSettings = $value;
 			break;
 		default;
 			die($var . " is not accessible");

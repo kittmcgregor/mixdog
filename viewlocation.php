@@ -12,11 +12,11 @@
 		}
 	}
 */
-	
+	$slug = 1;
 	$oLocation = new Location();
 	$oLocation->load($locationID);
 	$claimstatus = $oLocation->claimstatus;
-	echo View::renderLocation($oLocation,$domain);
+	echo View::renderLocation($oLocation,$domain,$slug);
 
 // superadmin edit
 	if(isset($_SESSION["UserID"])){

@@ -223,7 +223,33 @@ static public function lastWeek($iLocationID){
 	
 		return $aLocationActivity;
 		}
-			
+
+static public function followinglatestNoDate($aLocationIDsOfFollowing){
+		
+		$comma_separated = implode(",", $aLocationIDsOfFollowing);
+		
+		//return a list of all likes
+		$aLocationActivity = array();
+		
+		// query all subject IDs
+		$oCon = new Connection();
+		$sSql = "SELECT availabilityID, date  FROM availability WHERE locationID IN ($comma_separated) ORDER BY date DESC LIMIT 0 , 10 ";
+		//echo $sSql;
+		
+		$oResultSet = $oCon->query($sSql);
+		
+		while($aRow = $oCon->fetchArray($oResultSet)){
+			$iAvID = $aRow["availabilityID"];
+			//$time = $aRow["date"];
+			//$timestring = strtotime($time);
+			$aLocationActivity[] = $iAvID;
+		}
+		$oCon->close();
+	
+		return $aLocationActivity;
+		}
+
+
 	static public function all(){
 		$oCon = new Connection();
 		$sSql = "SELECT availabilityID FROM `availability` WHERE archive = 0 ORDER BY date DESC LIMIT 0 , 30";
@@ -289,7 +315,7 @@ static public function lastWeek($iLocationID){
 				
 	// query 
 	$oCon = new Connection();
-	$sSql = "SELECT `locationID` FROM `availability` WHERE archive = 0 AND beerID=$beerID";
+	$sSql = "SELECT `locationID` FROM `availability` WHERE archive = 0 AND beerID=$beerID ORDER BY date DESC";
 	
 	$oResultSet = $oCon->query($sSql);
 		
@@ -541,6 +567,16 @@ static public function loadBeerIDs($locationID){
 		
 		return $aBeers;
 	}
+
+	static public function getTapCount($breweryID){		
+	$oCon = new Connection();
+	$sSql = "SELECT count(DISTINCT `beerID`) as total_count FROM `availability` WHERE breweryID='$breweryID' AND archive='0'";
+	$Result = $oCon->query($sSql);
+	$array = mysqli_fetch_array($Result, MYSQLI_NUM);
+	$oCon->close();
+	return $array[0];
+	}
+
 	
 	static public function updateAvailability($iBeerID,$aLocations,$iBreweryID,$userID){
 		//insert into avalab
@@ -559,12 +595,12 @@ static public function loadBeerIDs($locationID){
 			
 	}
 
-	static public function updateAvailabilityLocationManager($iBeerID,$locationID,$iBreweryID){
+	static public function updateAvailabilityLocationManager($iBeerID,$locationID,$iBreweryID,$iUserID){
 		//insert into avalab
 
 		$oCon = new Connection();
-		$sSql = "INSERT INTO availability (beerID, breweryID, locationID ) VALUES ('".$iBeerID."','".$iBreweryID."','".$locationID."')";
-		echo $sSql . '<br> <2';
+		$sSql = "INSERT INTO availability (beerID, breweryID, locationID, userID ) VALUES ('".$iBeerID."','".$iBreweryID."','".$locationID."','".$iUserID."')";
+		//echo $sSql;
 
 		$bResult = $oCon->query($sSql);
 		if($bResult==false){

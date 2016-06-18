@@ -590,9 +590,14 @@ class phpthumb {
 			$renderfilename = $this->ResolveFilenameToAbsolute($renderfilename);
 		}
 		
-		// added line to correct absolute path
-		$renderfilename = '/home/www/brewhound/brewhound/public/thumbs/'.$filename;
-		// added line to correct absolute path
+		//
+			//
+				// added line to correct absolute path
+					//$renderfilename = '/home/www/brewhound/brewhound/public/thumbs/'.$filename;
+					$renderfilename = '/container/application/public/thumbs/'.$filename;
+				// added line to correct absolute path
+			//
+		//
 		
 		if (!@is_writable(dirname($renderfilename))) {
 				echo "<pre>";

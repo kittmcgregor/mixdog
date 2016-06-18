@@ -13,9 +13,12 @@
 */
 
 	$editBrewery = $_GET["breweryID"];
+
 	
 	$oExistingBrewery = new Brewery();
 	$oExistingBrewery->load($editBrewery);	
+	
+	$breweryslug = $oExistingBrewery->slug;
 	
 	$aExistingData = array();
 	$aExistingData["BreweryName"] = $oExistingBrewery->breweryname;
@@ -55,7 +58,7 @@
 				$newName = $_FILES["photo"]["name"].time().'.gif';
 				}
 				$oForm->moveFile("photo",$newName);
-				$oNewBrewery->breweryphoto = $newName;
+				$oExistingBrewery->breweryphoto = $newName;
 			}
 			$oExistingBrewery->breweryname = $_POST["BreweryName"];
 			$oExistingBrewery->fullbreweryname = $_POST["FullBreweryName"];
@@ -66,7 +69,7 @@
 
 			
 			// redirect to success page
-			header("location:viewbrewery.php?brewerysuccess=true&breweryID=".$editBrewery);
+			header('location:'.$domain.'brewery/'.$breweryslug);
 			exit;
 
 		}
