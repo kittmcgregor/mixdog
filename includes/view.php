@@ -235,12 +235,37 @@ class View{
 					if($oStatus->photo){
 						$sHTML .= '<img style="max-width:100%" src="http://brewhound.nz/assets/images/'.$photo.'"/>';	
 					}
-					$sHTML .= '<div class="comments">';
-					// render comment form
-					//$sHTML .= "$sFormHTML";
-					$sHTML .= '</div>';
 					$sHTML .= '</div>';
 				
+					// render comments
+					
+					
+					$aComments = CommentIDs::loadCommentIDsByStatus($oStatus->id);
+					
+					if (count($aComments)>0){
+						$sHTML .= "<div>Comments</div>";
+					}
+					if (count($aComments)>0){
+						for($i=0;$i<count($aComments);$i++){
+						$oComment = new Comment();
+						$oComment->load($aComments[$i]);
+						
+						
+						$oUser = new User();
+						$oUser->load($oComment->userID);
+						
+						$sHTML .= '<div>' . $oComment->comment . ' - by <a href="user/' . $oUser->slug . '">' . $oUser->username . '</a> ' . time2str($oComment->date) . '</div>';
+						
+						}
+					}
+					
+					$sHTML .= '<div>';
+						$sHTML .= '<a role="button" data-toggle="collapse" href="#commentform'.$iCount.'" aria-expanded="false" aria-controls="collapseExample">add comment</a>';
+						$sHTML .= '<div class="collapse" id="commentform'.$iCount.'">';
+						$sHTML .= "$sFormHTML";
+						$sHTML .= '</div>';
+					$sHTML .= '</div>';
+					
 				$sHTML .= '</div>';	
 				
 				

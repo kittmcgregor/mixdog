@@ -78,6 +78,29 @@ class CommentIDs{
 		return $aCommentIDs;
 	}
 
+	static public function loadCommentIDsByStatus($iStatus){
+	//return a list of all Comments
+	$aCommentIDs = array();
+				
+	// query all subject IDs
+	$oCon = new Connection();
+	$sSql = "SELECT commentID  FROM `commentTable` WHERE statusID=$iStatus ORDER BY date DESC";
+	
+	$oResultSet = $oCon->query($sSql);
+		
+	// load all subjects and add to array
+	while($aRow = $oCon->fetchArray($oResultSet)){
+		$iCommentID = $aRow["commentID"];
+		
+		$oCommentID = new Comment();
+		$oCommentID->load($iCommentID);
+		$aCommentIDs[] = $oCommentID->commentID;
+	}
+		$oCon->close();
+		
+		return $aCommentIDs;
+	}
+
 
 }	
 /*

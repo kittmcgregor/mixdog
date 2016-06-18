@@ -692,7 +692,7 @@ public function updateslugs(){
 		$sSql = "SELECT BeerID  
 				FROM  beer 
 				WHERE FreshHop=1
-				ORDER BY BeerID DESC ";
+				ORDER BY created_at DESC ";
 		//echo $sSql;
 	
 		//3 execute query
