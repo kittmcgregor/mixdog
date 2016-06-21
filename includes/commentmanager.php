@@ -84,7 +84,7 @@ class CommentIDs{
 				
 	// query all subject IDs
 	$oCon = new Connection();
-	$sSql = "SELECT commentID  FROM `commentTable` WHERE statusID=$iStatus ORDER BY date DESC";
+	$sSql = "SELECT commentID  FROM `commentTable` WHERE statusID=$iStatus ORDER BY date ASC";
 	
 	$oResultSet = $oCon->query($sSql);
 		

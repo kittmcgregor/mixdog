@@ -11,7 +11,7 @@ class FollowManager{
 			
 			//2 create query
 			$sSql = "SELECT userID FROM FollowingTable
-			WHERE $table =".$id;
+			WHERE $table = $id";
 			
 			//3 execute query
 			$oResultSet = $oCon->query($sSql);

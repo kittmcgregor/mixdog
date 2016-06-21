@@ -11,28 +11,17 @@
 	$id = $_SESSION["UserID"];
 	$oUsername->load($id);
 	$username = $oUsername->username;
-
-	
-/*
-		echo "<pre>";
-		print_r($_GET);
-		echo "</pre>";
-*/
 		
 		if(isset($_GET['brew'])){
 			$brewid = $_GET['brew'];
 		}
 		
 	    $oForm = new Form();
-	    $rating = "";
-	    
 		
 		if(isset($_POST["submit"])){
 		// is it a post request?
 		$oForm->data = $_POST;
 		$oForm->files = $_FILES;
-		
-	//	$rating = $_POST["rating"];
 		
 		$oForm->checkRequired("beerid");
 		$oForm->checkRequired("locationid");
@@ -66,22 +55,23 @@
 				$oNewStatusUpdate->photo = $newName;
 			}
 	
-	
-	
+
 			// set values;
 			$oNewStatusUpdate->userid = $_SESSION["UserID"];
 			
 			$oNewStatusUpdate->beerid = $_POST["beerid"];
 			$oNewStatusUpdate->locationid = $_POST["locationid"];
-
-			$oNewStatusUpdate->rating = $_POST["rating"];
+			
+			if(isset($_POST["rating"])){
+				$oNewStatusUpdate->rating = $_POST["rating"];
+				$rating = $oNewStatusUpdate->rating;
+			} else {
+				$rating = 0;
+			}
 			
 			$oNewStatusUpdate->review = $_POST["review"];
 			
 			$oNewStatusUpdate->save();
-			
-			$redirectSlug = $_GET["name"];
-
 			
 			$brew = new Beer();
 			$brew->load($_POST["beerid"]);
@@ -89,52 +79,53 @@
 			$brewery = $brew->breweryname;
 			
 			$table = 'followUserID';
-			$aFollowersMailList = FollowManager::getFollowersMailList($id,$table);
-			
-				echo "<pre>";
-				print_r($aFollowersMailList);
-				echo "</pre>";
+			$aFollowersIDsList = FollowManager::getFollowersIDsList($id,$table);
 
-			
-			foreach($aFollowersMailList as $contact){
+			foreach($aFollowersIDsList as $userid){
 				
-			// Send email notification to follower
-			$to      = $contact;
-			$subject = "Brewhound: Activity Notification";
-						
-			$message = '<html><body>';
-			$message .= '<p><a href="'.$domain.'user/'.strip_tags($username).'">'.strip_tags($username).'</a> added a checkin</p>';
-			$message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
-			$message .= "<tr style='background: #eee;'><td><strong>Brew:</strong> </td><td>" . strip_tags($title) . "</td></tr>";
-			$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($brewery)."</td></tr>";
-			$message .= "<tr><td><strong>Rating:</strong> </td><td>".strip_tags($_POST["rating"])."/5</td></tr>";
-			$message .= "</table>";
-			$message .= "<p><b>Review:</b> ".strip_tags($_POST["review"])."</p>";
-			$message .= "</body></html>";
-
-						
-			// In case any of our lines are larger than 70 characters, we should use wordwrap()
-			$message = wordwrap($message, 70, "\r\n");
-			
-			$headers = "MIME-Version: 1.0" . "\r\n";
-			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-			
-			$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
-			    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
-			    'X-Mailer: PHP/' . phpversion();
-			
-/*
-				echo "<pre>";
-				echo $to;
-				echo $message;
-				echo "</pre>";
-*/
-			
-			mail($to, $subject, $message, $headers);
-				
-			}
+			$oFollower = new User();
+			$oFollower->load($userid);
 					
+				if($oFollower->settings != 1){
+					
+					// Compose email notifications to followers
+					$to      = $oFollower->email;
+	
+					$subject = "Brewhound: Activity Notification";
+								
+					$message = '<html><body>';
+					$message .= '<p><a href="'.$domain.'user/'.strip_tags($username).'">'.strip_tags($username).'</a> added a checkin</p>';
+					$message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
+					$message .= "<tr style='background: #eee;'><td><strong>Brew:</strong> </td><td>" . strip_tags($title) . "</td></tr>";
+					$message .= "<tr><td><strong>Brewery:</strong> </td><td>".strip_tags($brewery)."</td></tr>";
+					if(isset($_POST["rating"])){
+						$message .= "<tr><td><strong>Rating:</strong> </td><td>".strip_tags($rating)."/5</td></tr>";
+					}
+					$message .= "</table>";
+					$message .= "<p><b>Review:</b> ".strip_tags($_POST["review"])."</p>";
+					$message .= "<p></p>";
+					$message .= '<p>You are following <a href="'.$domain.'user/'.strip_tags($username).'">'.strip_tags($username).'</a><p>';
+					$message .= '<p>You can customise your notification settings <a href="http://brewhound.nz/viewuseradmin">here</a></p>';
+					$message .= "</body></html>";
+		
+								
+					// In case any of our lines are larger than 70 characters, we should use wordwrap()
+					$message = wordwrap($message, 70, "\r\n");
+					
+					$headers = "MIME-Version: 1.0" . "\r\n";
+					$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+					
+					$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
+					    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
+					    'X-Mailer: PHP/' . phpversion();
+					
+					// Send each email
+					mail($to, $subject, $message, $headers);
+				}
+			}
+			
 			if($_GET["name"]){
+				$redirectSlug = $_GET["name"];
 				header("location:http://brewhound.nz/$redirectSlug");
 				exit;
 			}

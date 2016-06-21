@@ -43,15 +43,10 @@ echo "</pre>";
 			$oNewComment->userID = $_SESSION["UserID"];
 			$oNewComment->comment = $_POST["Comment"];
 			$oNewComment->statusID = $_POST["status"];
-			$oNewComment->save();
-		}
-
-		//$oForm->checkRequired("Comment");
-
-		if($oForm->valid==true){
+			
 			// insert data to database to create new comment
-
-	
+			$oNewComment->save();
+			
 			$oUser = new User();
 			$oUser->load($_SESSION["UserID"]);
 			$sUsername = $oUser->username;
@@ -79,6 +74,12 @@ echo "</pre>";
 			    'X-Mailer: PHP/' . phpversion();
 			
 			mail($to, $subject, $message, $headers);
+			
+		}
+
+		//$oForm->checkRequired("Comment");
+
+		if($oForm->valid==true){
 		
 			// redirect to success page
 			header("location:viewbeer.php?newcomment=true&beerID=".$beerID);

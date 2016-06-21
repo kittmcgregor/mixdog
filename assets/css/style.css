@@ -172,7 +172,6 @@ input#quicksearchinput[type="submit"]{
   display: flex;
   justify-content: flex-start;
 }
-
 .sideitemLogo {
  -webkit-flex: 0 1 auto;
     -ms-flex: 0 1 auto;
@@ -183,6 +182,11 @@ input#quicksearchinput[type="submit"]{
  -webkit-flex: 0 1 auto;
     -ms-flex: 0 1 auto;
     flex: 0 1 auto;
+}
+.sideitemFull {
+	background: #eee;
+	padding: .5em;
+	margin-bottom: 1em;
 }
 .sideitem {
 	background: #eee;
@@ -698,7 +702,13 @@ input #submit {
 	max-width: 50px;
 	max-height: 40px;
 }
-
+.addcomment{
+	padding-top: 0.5em;
+}
+.comment{
+	padding-top: 0.5em;
+	padding-left: 0.5em;
+}
 .commentFormat img {
 	width: auto;
 	max-width: 30px;

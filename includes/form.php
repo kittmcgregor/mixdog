@@ -538,11 +538,23 @@
 		}
 		
 		public function makeSubmit($sControlLabel,$sControlName){
-			
 			$this->sHTML .= '<div class="text-center">';
 			$this->sHTML .= "\t\t\t".'<button type="submit" name="'.$sControlName.'" class="btn btn-primary" value="'.$sControlLabel.'"/>'.$sControlLabel.'</button>'."\n";
 			$this->sHTML .= "</div>";
 		}
+		
+		public function makeSubmitComment($sControlLabel,$sControlName){
+			$this->sHTML .= '<div>';
+			$this->sHTML .= "\t\t\t".'<button type="submit" name="'.$sControlName.'" class="btn btn-primary" value="'.$sControlLabel.'"/>'.$sControlLabel.'</button>'."\n";
+			$this->sHTML .= "</div>";
+		}
+		
+		public function makeLogReg($sControlLabel,$sControlName){
+			$this->sHTML .= '<div>';
+			$this->sHTML .= "\t\t\t".'<a class="btn btn-primary" href="/login">login/register</a>'."\n";
+			$this->sHTML .= "</div>";
+		}
+		
 		
 		public function makeSubmitLeft($sControlLabel,$sControlName){
 			

@@ -11,6 +11,7 @@ $sizes = array(
 	'50x50',
 	'100x100',
 	'300x300',
+	'600x600',
 );
 
 // ensure there was a thumb in the URL

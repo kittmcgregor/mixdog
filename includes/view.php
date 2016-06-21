@@ -198,26 +198,23 @@ class View{
 			$oLocation = new Location();
 			$oLocation->load($oStatus->locationid);
 			
-			$sHTML .= '<div class="sideitem">';
+			$sHTML .= '<div class="sideitemFull">';
 				$sHTML .= '<div class="sideitemText">';
 				if($rating!=0){
-					$sHTML .=	'<span class="stars">'.$starsHTML.$blankstarsHTML.'</span>';
+					$sHTML .=	'<p><span class="stars">'.$starsHTML.$blankstarsHTML.'</span> '.$oStatus->review.' </p>';
 				}
-				
-
-				$sHTML .= ' by <a href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a> at <a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a>';
+				$sHTML .= '<p>by <a href="'.$domain.'user/'.$oUser->username.'">'.$oUser->username.'</a> at <a href="'.$domain.'location/'.$oLocation->slug.'">'.$oLocation->locationname.'</a>';
 				$sHTML .= ' '.time2str($oStatus->created_at).' ';
 				
-				if($oStatus->photo||$oStatus->review){
+				if($oStatus->photo){
 					$sHTML .= '<a role="button" data-toggle="collapse" href="#details'.$iCount.'" aria-expanded="false" aria-controls="collapseExample">';
 					//icons
 						if($oStatus->photo){
-							$sHTML .= ' <i class="fa fa-picture-o fa-2x" aria-hidden="true"></i> ';
+							//$sHTML .= ' <i class="fa fa-picture-o fa-2x" aria-hidden="true"></i>';
+							$sHTML .= '<img src="http://brewhound.nz/thumbs/100x100/images/'.$photo.'"/>';
 						}
-						if($oStatus->review){
-							$sHTML .= ' <i class="fa fa-pencil fa-2x" aria-hidden="true"></i> ';
-						}
-					$sHTML .= '</a>';
+
+					$sHTML .= '</a></p>';
 					}
 					
 				
@@ -228,10 +225,10 @@ class View{
 				
 				
 					$sHTML .= '<div class="collapse" id="details'.$iCount.'">';
-					$sHTML .= '<h4>Review/Comments</h4>';			
-					$sHTML .= '<p>'.$oStatus->review.'</p>';
+					//$sHTML .= '<h4>Review/Comments</h4>';			
+					
 					if($oStatus->photo){
-						$sHTML .= '<img style="max-width:100%" src="http://brewhound.nz/assets/images/'.$photo.'"/>';	
+						$sHTML .= '<img style="max-width:100%" src="http://brewhound.nz/thumbs/600x600/images/'.$photo.'"/>';	
 					}
 					$sHTML .= '</div>';
 				
@@ -241,7 +238,7 @@ class View{
 					$aComments = CommentIDs::loadCommentIDsByStatus($oStatus->id);
 					
 					if (count($aComments)>0){
-						$sHTML .= "<div>Comments</div>";
+						$sHTML .= "<h5>Comments</h5>";
 					}
 					if (count($aComments)>0){
 						for($i=0;$i<count($aComments);$i++){
@@ -252,13 +249,13 @@ class View{
 						$oUser = new User();
 						$oUser->load($oComment->userID);
 						
-						$sHTML .= '<div>' . $oComment->comment . ' - by <a href="user/' . $oUser->slug . '">' . $oUser->username . '</a> ' . time2str($oComment->date) . '</div>';
+						$sHTML .= '<div class="comment">' . $oComment->comment . ' - by <a href="user/' . $oUser->slug . '">' . $oUser->username . '</a> ' . time2str($oComment->date) . '</div>';
 						
 						}
 					}
 					
-					$sHTML .= '<div>';
-						$sHTML .= '<a role="button" data-toggle="collapse" href="#commentform'.$iCount.'" aria-expanded="false" aria-controls="collapseExample">add comment</a>';
+					$sHTML .= '<div class="addcomment">';
+						$sHTML .= '<a role="button" class="btn btn-default" data-toggle="collapse" href="#commentform'.$iCount.'" aria-expanded="false" aria-controls="collapseExample">comment</a>';
 						$sHTML .= '<div class="collapse" id="commentform'.$iCount.'">';
 						//$sHTML .= "$sFormHTML";
 						$oForm = new Form();
@@ -266,10 +263,11 @@ class View{
 						if (isset($_SESSION["UserID"])==true){
 							$oForm->makeTextArea("Add Comment","Comment","");
 							$oForm->makeHiddenInputValue("Checkin ID","id",$oStatus->id);
-							$oForm->makeSubmit("Add Comment","submit");
+							$oForm->makeSubmitComment("Add","submit");
 							
 						} else {
-							$oForm->makeTextArea("Add Comment","Comment","you must be logged in to add a Comment ");
+							$oForm->makeTextArea("Add Comment","Comment","you must be logged in to add a Comment");
+							$oForm->makeLogReg("Add Comment","submit");
 						}
 		
 						$sHTML .= "$oForm->html";
