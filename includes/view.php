@@ -216,13 +216,6 @@ class View{
 
 					$sHTML .= '</a></p>';
 					}
-					
-				
-							
-				//$sHTML .= '<div class="clearfix"></div>';
-				
-
-				
 				
 					$sHTML .= '<div class="collapse" id="details'.$iCount.'">';
 					//$sHTML .= '<h4>Review/Comments</h4>';			
@@ -1948,9 +1941,11 @@ static public function renderRecentBeers($oAllBeers,$loggedin,$total){
 				$sHTML .= '<div class="row">';
 					if($oLocation->fills==1){
 						$sHTML .=  '<div class="col-icon"><i class="fa fa-shopping-cart"></i></div>';
+					} else {
+						$sHTML .=  '<div class="col-icon"></div>';
 					}
 					$sHTML .=  '<div class="col itemTitle desktopVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>';
-					$sHTML .=  '<div class="phoneFullWidth phoneVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>';
+					$sHTML .=  '<div class="locationMobile phoneVisible"><a href="'.$domain.'location/'.$oLocation->slug.'"><b>'.$oLocation->locationname.'</b></div>';
 					$sHTML .=  '<div class="col item-brewery desktopVisible">'.$oLocation->locationsuburb.', '.$oLocation->locationregion.'</a></div>';
 				$sHTML .= '</div>';
 				$sHTML .= '</li>';
@@ -2759,11 +2754,11 @@ static public function renderAvailableData($aAvailableIDs,$iLocationID,$claimsta
 			$breweryphoto = "assets/images/hound.png";
 			// if beer photo
 			if ($oBeer->photo){
-					$photo = "assets/images/".$oBeer->photo;
+					$photo = "thumbs/50x50/images/".$oBeer->photo;
 			}
 			
 			if($oBrewery->breweryphoto){
-				$breweryphoto = "assets/images/".$oBrewery->breweryphoto;
+				$breweryphoto = "thumbs/50x50/images/".$oBrewery->breweryphoto;
 			} 
 			
 			$oStyle = new Style();

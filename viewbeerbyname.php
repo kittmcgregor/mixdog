@@ -20,7 +20,8 @@ echo "</pre>";
 	$oBeer->loadByName($beerName);
 	
 	$beerID = $oBeer->beerid;
-	
+	$brew = $oBeer->title;
+	$brewery = $oBeer->breweryname;
 	
 	$userID = 0;
 	$likeStatus = "";
@@ -35,57 +36,125 @@ echo "</pre>";
 
 	if(isset($_POST["submit"])){
 		// is it a post request?
-		if(!isset($_GET["success"])){
-			$oNewComment = new Comment();
-			
-			// set values;
-			$oNewComment->beerID = $beerID;
-			$oNewComment->userID = $_SESSION["UserID"];
-			$oNewComment->comment = $_POST["Comment"];
-			$oNewComment->statusID = $_POST["status"];
-			
-			// insert data to database to create new comment
-			$oNewComment->save();
-			
-			$oUser = new User();
-			$oUser->load($_SESSION["UserID"]);
-			$sUsername = $oUser->username;
-			
-				// Send email notification to admin
-			$to      = 'admin@version.nz';
-			$subject = "Brewhound Notification: New Comment";
-			
-			$message = '<html><body>';
-			$message .= '<p>A new comment was added at brewhound.nz</p>';
-			$message .= "<p><b>Comment:</b> ".strip_tags($_POST["Comment"])."</p>";
-			$message .= '<p><a href="http://brewhound.nz'.$uri.'">on this beer</a></p>';
-			$message .= "<p><b>User:</b> ".$sUsername."</p>";
-			$message .= "</body></html>";
-
-						
-			// In case any of our lines are larger than 70 characters, we should use wordwrap()
-			$message = wordwrap($message, 70, "\r\n");
-			
-			$headers .= "MIME-Version: 1.0" . "\r\n";
-			$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-			
-			$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
-			    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
-			    'X-Mailer: PHP/' . phpversion();
-			
-			mail($to, $subject, $message, $headers);
-			
-		}
-
-		//$oForm->checkRequired("Comment");
-
+		
+/*
+		$oForm->checkRequired("Comment");
+		
 		if($oForm->valid==true){
+*/
+	
+			if(!isset($_GET["success"])){
+				$oNewComment = new Comment();
+				
+				// set values;
+				$oNewComment->beerID = $beerID;
+				$oNewComment->userID = $_SESSION["UserID"];
+				$oNewComment->comment = $_POST["Comment"];
+				$oNewComment->statusid = $_POST["status"];
+				
+				$statusID = $oNewComment->statusid;
+				$ActiveCommenter = $oNewComment->userID;
+				
+				// insert data to database to create new comment
+				$oNewComment->save();
+				
+				$oUser = new User();
+				$oUser->load($_SESSION["UserID"]);
+				$sUsername = $oUser->username;
+				
+				$StatusAuthorID = Status::loadAuthor($statusID);
+				$oStatusAuthor = new User();
+				$oStatusAuthor->load($StatusAuthorID);
+				$StatusAuthorEmail = $oStatusAuthor->email;
+				$StatusAuthorUsername = $oStatusAuthor->username;
+/*
+				echo "<pre>";
+				echo $StatusAuthorEmail;
+				echo "</pre>";
+*/
+				if($commenter!=$ActiveCommenter){
+					// Send email notification to admin
+					$to      = $StatusAuthorEmail;
+					$subject = "Brewhound Notification: New Comment";
+					
+					$message = '<html><body>';
+					$message .= '<p>A new comment was added at brewhound.nz</p>';
+					$message .= "<p><b>Comment:</b> ".strip_tags($_POST["Comment"])."</p>";
+					$message .= '<p>on <a href="http://brewhound.nz'.$uri.'">'.$brewery .' '. $brew.'</a></p>';
+					$message .= "<p>by ". $sUsername ."</p>";
+					$message .= "</body></html>";
+		
+								
+					// In case any of our lines are larger than 70 characters, we should use wordwrap()
+					$message = wordwrap($message, 70, "\r\n");
+					
+					$headers .= "MIME-Version: 1.0" . "\r\n";
+					$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+					
+					$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
+					    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
+					    'X-Mailer: PHP/' . phpversion();
+					
+					mail($to, $subject, $message, $headers);
+					
+/*
+					echo "<pre>";
+					echo "email sent to ".$StatusAuthorUsername;
+					echo "</pre>";
+*/
+				}
+				
+				// get previous commentors
+				$aCommenters = CommentIDs::loadCommenters($statusID);
+				
+				foreach($aCommenters as $commenter){
+					
+					if($commenter!=$ActiveCommenter){
+						$recipient = new User();
+						$recipient->load($commenter);
+						$recipientUser = $recipient->username;
+						$recipientEmail = $recipient->email;
+						
+						$to      = $recipientEmail;
+						$subject = "Brewhound Notification: New Comment";
+						
+						$message = '<html><body>';
+						$message .= '<p>A new comment was added at brewhound.nz</p>';
+						$message .= "<p><b>Comment:</b> ".strip_tags($_POST["Comment"])."</p>";
+						$message .= '<p><a href="http://brewhound.nz'.$uri.'">on this beer</a></p>';
+						$message .= "<p>by ". $sUsername ."</p>";
+						$message .= "</body></html>";
+					
+						// In case any of our lines are larger than 70 characters, we should use wordwrap()
+						$message = wordwrap($message, 70, "\r\n");
+						
+						$headers .= "MIME-Version: 1.0" . "\r\n";
+						$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+						
+						$headers .= 'From: webmaster@brewhound.nz' . "\r\n" .
+						    'Reply-To: webmaster@brewhound.nz' . "\r\n" .
+						    'X-Mailer: PHP/' . phpversion();
+						
+						mail($to, $subject, $message, $headers);
+						
+/*
+						echo "<pre>";
+						echo "email sent to ".$recipientUser;
+						echo "</pre>";
+*/
+					} else {
+						// do nothing
+					} // end if
+				} // end for each
+				
+			}
+// 		}
 		
 			// redirect to success page
-			header("location:viewbeer.php?newcomment=true&beerID=".$beerID);
-			exit;
+			//header("location:viewbeer.php?newcomment=true&beerID=".$beerID);
+			//exit;
 		
-		}
+
 	
 	}
 /*

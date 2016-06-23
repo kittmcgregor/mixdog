@@ -100,9 +100,37 @@ class CommentIDs{
 		
 		return $aCommentIDs;
 	}
+	
+	static public function loadCommenters($statusid){
+	// return a list of all commenter ids
+	$aCommentIDs = array();
+				
+	// query all user ids
+	$oCon = new Connection();
+	$sSql = "SELECT DISTINCT userID  FROM `commentTable` WHERE statusID=$statusid";
+	
+	$oResultSet = $oCon->query($sSql);
+		
+	// load all ids and add to array
+	while($aRow = $oCon->fetchArray($oResultSet)){
+		$iCommentID = $aRow["userID"];
+		$aCommentIDs[] = $iCommentID;
+	}
+		$oCon->close();
+		
+		return $aCommentIDs;
+	}
+
+}
 
 
-}	
+/*
+$aCommenters = CommentIDs::loadCommenters(111);
+echo "<pre>";
+print_r($aCommenters);
+echo "</pre>";
+*/
+
 /*
 $oCommentIDs = CommentIDs::loadCommentIDs(72);
 

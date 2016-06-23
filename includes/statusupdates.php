@@ -251,7 +251,6 @@ class Status{
 		$oResultSet = $oCon->query($sSql);
 		
 		//4 fetch data
-				//4 fetch data
 		while($aRow = $oCon->fetchArray($oResultSet)){
 			$statusupdates[]= $aRow["id"];
 		}
@@ -262,6 +261,24 @@ class Status{
 		return $statusupdates;
 	}
 
+	static public function loadAuthor($statusid){
+				
+	// query all subject IDs
+	$oCon = new Connection();
+	$sSql = "SELECT userid  FROM `statusupdates` WHERE id=$statusid";
+	
+	//3 execute query
+	$oResultSet = $oCon->query($sSql);
+		
+	//4 fetch data
+	$aRow = $oCon->fetchArray($oResultSet);
+	$iUserID = $aRow["userid"];
+	
+	$oCon->close();
+	return $iUserID;
+	
+	}
+	
 	// getter method
 	public function __get($var){
 		switch ($var){
@@ -322,6 +339,14 @@ class Status{
 		}
 	}
 }
+
+/*
+$userid = Status::loadAuthor(97);
+
+echo "<pre>";
+echo $userid;
+echo "</pre>";
+*/
 
 /*
 $status = new Status();

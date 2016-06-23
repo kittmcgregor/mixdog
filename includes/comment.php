@@ -90,6 +90,9 @@ static public function remove($commentID){
 		case 'commentID';
 			return $this->iCommentID;
 			break;
+		case 'statusid';
+			return $this->iStatusID;
+			break;			
 		case 'date';
 			return $this->sDate;
 			break;
@@ -114,7 +117,7 @@ static public function remove($commentID){
 		case 'commentID';
 			$this->iCommentID = $value;
 			break;
-		case 'statusID';
+		case 'statusid';
 			$this->iStatusID = $value;
 			break;
 			case 'beerID';
